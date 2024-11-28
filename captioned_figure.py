@@ -44,7 +44,7 @@ class CaptionedFigure(BlockProcessor):
     def test(self, parent, block):
         return re.match(self.RE_FIGURE_START, block, re.MULTILINE)
 
-    def run(self, parent, blocks):
+    def run(self, parent: str, blocks):
         org_blocks = list(blocks)
 
         # remove figure starting delimiter
