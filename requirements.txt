@@ -1,1 +1,3 @@
+importlib-metadata==8.5.0
 Markdown==3.6
+zipp==3.20.2
