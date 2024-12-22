@@ -1,10 +1,12 @@
 import re
 import xml.etree.ElementTree as etree
-from markdown.extensions import Extension
 from markdown.blockprocessors import BlockProcessor
+from markdown.extensions import Extension
+
+from app.markdown_extensions.mixins import HtmlClassMixin
 
 
-class CitedBlockquote(BlockProcessor):
+class CitedBlockquote(BlockProcessor, HtmlClassMixin):
     """
     A blockquote with a citation underneath. Note that the citation goes in a line below the blockquote, so this is
     not designed for formal in-text citations.
@@ -30,7 +32,7 @@ class CitedBlockquote(BlockProcessor):
             <blockquote class="md-cited-blockquote">
               <quote>
             </blockquote>
-            <cite class="md-cited-blockquote__cite">
+            <cite class="md-cited-blockquote__citation">
               <citation>
             </cite>
             ```
@@ -41,6 +43,11 @@ class CitedBlockquote(BlockProcessor):
     RE_BLOCKQUOTE_END = r"^\\end{cited_blockquote}"
     RE_CITATION_START = r"^\\begin{citation}"
     RE_CITATION_END = r"^\\end{citation}"
+
+    def __init__(self, *args, html_class: str="", citation_html_class: str="", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.init_html_class(html_class)
+        self.citation_html_class = citation_html_class
 
     def test(self, parent, block):
         return re.match(self.RE_BLOCKQUOTE_START, block, re.MULTILINE)
@@ -75,7 +82,7 @@ class CitedBlockquote(BlockProcessor):
                 blocks[i] = re.sub(self.RE_CITATION_END, "", block, flags=re.MULTILINE)
                 # build HTML for citation
                 elem_citation = etree.Element("cite")
-                elem_citation.set("class", "md-cited-blockquote__cite")
+                elem_citation.set("class", self.citation_html_class)
                 self.parser.parseBlocks(elem_citation, blocks[citation_start_i:i + 1])
                 # remove used blocks
                 for _ in range(citation_start_i, i + 1):
@@ -95,7 +102,7 @@ class CitedBlockquote(BlockProcessor):
                 blocks[i] = re.sub(self.RE_BLOCKQUOTE_END, "", block, flags=re.MULTILINE)
                 # build HTML for blockquote
                 elem_blockquote = etree.SubElement(parent, "blockquote")
-                elem_blockquote.set("class", "md-cited-blockquote")
+                elem_blockquote.set("class", self.html_class)
                 self.parser.parseBlocks(elem_blockquote, blocks[:i + 1])
                 parent.append(elem_citation) # make sure citation comes after everything else
                 # remove used blocks
@@ -111,7 +118,11 @@ class CitedBlockquote(BlockProcessor):
 
 class CitedBlockquoteExtension(Extension):
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CitedBlockquote(md.parser), "cited_blockquote", 105)
+        md.parser.blockprocessors.register(
+                CitedBlockquote(
+                        md.parser, html_class="md-cited-blockquote",
+                        citation_html_class="md-cited-blockquote__citation"),
+                "cited_blockquote", 105)
 
 
 def makeExtension(**kwargs):

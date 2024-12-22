@@ -1,10 +1,12 @@
 import re
 import xml.etree.ElementTree as etree
-from markdown.extensions import Extension
 from markdown.blockprocessors import BlockProcessor
+from markdown.extensions import Extension
+
+from app.markdown_extensions.mixins import HtmlClassMixin
 
 
-class CaptionedFigure(BlockProcessor):
+class CaptionedFigure(BlockProcessor, HtmlClassMixin):
     """
     A figure with a caption underneath. Useful for images, but the figure content doesn't have to be an image.
 
@@ -41,10 +43,15 @@ class CaptionedFigure(BlockProcessor):
     RE_CAPTION_START = r"^\\begin{caption}"
     RE_CAPTION_END = r"^\\end{caption}"
 
+    def __init__(self, *args, html_class: str="", caption_html_class: str="", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.init_html_class(html_class)
+        self.caption_html_class = caption_html_class
+
     def test(self, parent, block):
         return re.match(self.RE_FIGURE_START, block, re.MULTILINE)
 
-    def run(self, parent: str, blocks):
+    def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove figure starting delimiter
@@ -77,7 +84,7 @@ class CaptionedFigure(BlockProcessor):
                 blocks[i] = re.sub(self.RE_CAPTION_END, "", block, flags=re.MULTILINE)
                 # build HTML for caption
                 elem_caption = etree.Element("figcaption")
-                elem_caption.set("class", "md-captioned-figure__caption")
+                elem_caption.set("class", self.caption_html_class)
                 self.parser.parseBlocks(elem_caption, blocks[caption_start_i:i + 1])
                 # remove used blocks
                 for _ in range(caption_start_i, i + 1):
@@ -97,7 +104,7 @@ class CaptionedFigure(BlockProcessor):
                 blocks[i] = re.sub(self.RE_FIGURE_END, "", block, flags=re.MULTILINE)
                 # build HTML for figure
                 elem_figure = etree.SubElement(parent, "figure")
-                elem_figure.set("class", "md-captioned-figure")
+                elem_figure.set("class", self.html_class)
                 self.parser.parseBlocks(elem_figure, blocks[:i + 1])
                 elem_figure.append(elem_caption) # make sure captions come after everything else
                 # remove used blocks
@@ -113,7 +120,11 @@ class CaptionedFigure(BlockProcessor):
 
 class CaptionedFigureExtension(Extension):
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CaptionedFigure(md.parser), "captioned_figure", 105)
+        md.parser.blockprocessors.register(
+                CaptionedFigure(
+                        md.parser, html_class="md-captioned-figure",
+                        caption_html_class="md-captioned-figure__caption"),
+                "captioned_figure", 105)
 
 
 def makeExtension(**kwargs):
