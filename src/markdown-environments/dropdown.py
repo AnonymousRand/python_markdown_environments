@@ -16,23 +16,20 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         \begin{<type>}
 
         \begin{summary}
-        
         <summary>
-
         \end{summary}
 
         <collapsible content>
-
         \end{<type>}
 
         ```
         - HTML output:
             ```
-            <details class="md-dropdown md-dropdown-[type]">
-              <summary class="md-dropdown__summary last-child-no-mb">
+            <details class="[html_class] [types[type][html_class]]">
+              <summary class="[summary_html_class]">
                 [summary]
               </summary>
-              <div class="md-dropdown__content last-child-no-mb">
+              <div class="[content_html_class]">
                 [collapsible content]
               </div>
             </details>
@@ -58,7 +55,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         # remove summary starting delimiter that must immediately follow dropdown's starting delimiter
         # if no starting delimiter for summary and no default, restore and do nothing
         if not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
-            if self.type_opts.get("name") is None:
+            if self.type_opts.get("display_name") is None:
                 blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
                 blocks.extend(org_blocks)
                 return False
@@ -72,7 +69,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         # find and remove summary ending delimiter, and extract element
         elem_summary = etree.Element("summary")
         elem_summary.set("class", self.summary_html_class)
-        has_valid_summary = self.type_opts.get("name") is not None
+        has_valid_summary = self.type_opts.get("display_name") is not None
         for i, block in enumerate(blocks):
             # if we haven't found summary ending delimiter but have found the overall dropdown ending delimiter,
             # then don't keep going; maybe the summary was omitted since it could've been optional

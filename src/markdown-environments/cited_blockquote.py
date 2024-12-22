@@ -15,13 +15,10 @@ class CitedBlockquote(BlockProcessor, HtmlClassMixin):
         ```
         
         \begin{cited_blockquote}
-        
         <quote>
 
         \begin{citation}
-
         <citation>
-
         \end{citation}
 
         \end{cited_blockquote}
@@ -29,10 +26,10 @@ class CitedBlockquote(BlockProcessor, HtmlClassMixin):
         ```
         - HTML output:
             ```
-            <blockquote class="md-cited-blockquote">
+            <blockquote class="[html_class]">
               <quote>
             </blockquote>
-            <cite class="md-cited-blockquote__citation">
+            <cite class="[citation_html_class]">
               <citation>
             </cite>
             ```

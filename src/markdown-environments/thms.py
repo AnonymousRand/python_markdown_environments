@@ -158,57 +158,57 @@ class ThmsExtension(Extension):
         # TODO:: test without math counter/thm heading (set to False)
         div_types = {
             "coro": {
-                "name": "Corollary",
+                "display_name": "Corollary",
                 "html_class": "md-textbox md-textbox-coro last-child-no-mb",
                 "counter": "0,0,1"
             },
             "defn": {
-                "name": "Definition",
+                "display_name": "Definition",
                 "html_class": "md-textbox md-textbox-defn last-child-no-mb",
                 "counter": "0,0,1"
             },
             r"defn\\\*": {
-                "name": "Definition",
+                "display_name": "Definition",
                 "html_class": "md-textbox md-textbox-defn last-child-no-mb"
             },
             "ex": {
-                "name": "Example",
+                "display_name": "Example",
                 "html_class": "md-div-ex"
             },
             r"notat\\\*": {
-                "name": "Notation",
+                "display_name": "Notation",
                 "html_class": "md-textbox md-textbox-notat last-child-no-mb"
             },
             "prop": {
-                "name": "Proposition",
+                "display_name": "Proposition",
                 "html_class": "md-textbox md-textbox-prop last-child-no-mb",
                 "counter": "0,0,1"
             },
             "thm": {
-                "name": "Theorem",
+                "display_name": "Theorem",
                 "html_class": "md-textbox md-textbox-thm last-child-no-mb",
                 "counter": "0,0,1"
             },
             r"thm\\\*": {
-                "name": "Theorem",
+                "display_name": "Theorem",
                 "html_class": "md-textbox md-textbox-thm last-child-no-mb"
             }
         }
         dropdown_types = {
             "exer": {
-                "name": "Exercise",
+                "display_name": "Exercise",
                 "html_class": "md-dropdown-exer",
                 "counter": "0,0,1",
                 "use_punct_if_nameless": False
             },
             "pf": {
-                "name": "Proof",
+                "display_name": "Proof",
                 "html_class": "md-dropdown-pf",
                 "overrides_heading": True,
                 "use_punct_if_nameless": False
             },
             r"rmk\\\*": {
-                "name": "Remark",
+                "display_name": "Remark",
                 "html_class": "md-dropdown-rmk",
                 "overrides_heading": True,
                 "use_punct_if_nameless": False
@@ -217,7 +217,7 @@ class ThmsExtension(Extension):
         # set default values for dicts
         for d in [dropdown_types, div_types]:
             for type_opts in d.values():
-                type_opts.setdefault("name", "")
+                type_opts.setdefault("display_name", "")
                 type_opts.setdefault("html_class", "")
                 type_opts.setdefault("counter", None)
                 type_opts.setdefault("overrides_heading", False)

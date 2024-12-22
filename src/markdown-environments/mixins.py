@@ -28,7 +28,7 @@ class ThmMixin(ABC):
             self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
 
     def gen_auto_prepend(self, block: str) -> str:
-        prepend = self.type_opts.get("name")
+        prepend = self.type_opts.get("display_name")
         if prepend is None:
             return ""
 

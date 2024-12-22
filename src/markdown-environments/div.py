@@ -14,15 +14,13 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
         ```
 
         \begin{<type>}
-        
         <content>
-
         \end{<type>}
 
         ```
         - HTML output:
             ```
-            <div class="md-div md-div-[type]">
+            <div class="[html_class] [types[type]['html_class']]">
               [content]
             </div>
             ```

@@ -14,13 +14,10 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
         ```
 
         \begin{captioned_figure}
-
         <figure content>
 
         \begin{caption}
-
         <caption>
-
         \end{caption}
 
         \end{captioned_figure}
@@ -28,9 +25,9 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
         ```
         - HTML output:
             ```
-            <figure class="md-captioned-figure">
+            <figure class="[html_class]">
               [figure content]
-              <figcaption class="md-captioned-figure__caption">
+              <figcaption class="[caption_html_class]">
                 [caption]
               </figcaption>
             </figure>
