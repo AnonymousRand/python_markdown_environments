@@ -3,10 +3,10 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from app.markdown_extensions.mixins import HtmlClassMixin, ThmMixin, TypesMixin
+from app.markdown_extensions.mixins import HtmlClassMixin, ThmMixin
 
 
-class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
+class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
     """
     A dropdown that can be toggled open or closed, with only a summary (preview) portion shown when closed.
 
@@ -28,7 +28,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
         ```
         - HTML output:
             ```
-            <details class="md-dropdown md-dropdown--[type]">
+            <details class="md-dropdown md-dropdown-[type]">
               <summary class="md-dropdown__summary last-child-no-mb">
                 [summary]
               </summary>
@@ -46,13 +46,12 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
             use_math_counter: bool=False, use_math_thm_heading: bool=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
-        self.init_thm(use_math_counter, use_math_thm_heading)
-        self.init_types(types)
+        self.init_thm(types, use_math_counter, use_math_thm_heading)
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
 
     def test(self, parent, block):
-        return TypesMixin.test(self, parent, block)
+        return ThmMixin.test(self, parent, block)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
@@ -124,7 +123,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
 class DropdownExtension(Extension):
     def extendMarkdown(self, md):
         types = {
-            "dropdown": {"html_class": "md-dropdown--default"}
+            "dropdown": {"html_class": "md-dropdown-default"}
         }
         md.parser.blockprocessors.register(
                 Dropdown(md.parser, types=types, html_class="md-dropdown",

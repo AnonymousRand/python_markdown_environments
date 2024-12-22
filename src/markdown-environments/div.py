@@ -3,10 +3,10 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from app.markdown_extensions.mixins import HtmlClassMixin, ThmMixin, TypesMixin
+from app.markdown_extensions.mixins import HtmlClassMixin, ThmMixin
 
 
-class Div(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
+class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
     """
     A general-purpose `<div>`.
 
@@ -22,7 +22,7 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
         ```
         - HTML output:
             ```
-            <div class="md-div md-div--[type]">
+            <div class="md-div md-div-[type]">
               [content]
             </div>
             ```
@@ -32,11 +32,10 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
             use_math_thm_heading: bool=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
-        self.init_thm(use_math_counter, use_math_thm_heading)
-        self.init_types(types)
+        self.init_thm(types, use_math_counter, use_math_thm_heading)
 
     def test(self, parent, block):
-        return TypesMixin.test(self, parent, block)
+        return ThmMixin.test(self, parent, block)
 
     def run(self, parent, blocks):
         org_block_start = blocks[0]
@@ -73,7 +72,7 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):
 class DivExtension(Extension):
     def extendMarkdown(self, md):
         types = {
-            "textbox": {"html_class": "md-textbox md-textbox--default last-child-no-mb"}
+            "textbox": {"html_class": "md-textbox md-textbox-default last-child-no-mb"}
         }
         md.parser.blockprocessors.register(Div(md.parser, types=types, html_class="md-div"), "div", 105)
 

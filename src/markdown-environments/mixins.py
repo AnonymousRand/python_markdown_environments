@@ -9,9 +9,23 @@ class HtmlClassMixin(ABC):
 
 
 class ThmMixin(ABC):
-    def init_thm(self, use_math_counter: bool, use_math_thm_heading: bool):
+    def init_thm(self, types: dict, use_math_counter: bool, use_math_thm_heading: bool):
+        self.types = types
         self.use_math_counter = use_math_counter
         self.use_math_thm_heading = use_math_thm_heading
+        self.type_opts = None
+        self.re_start = None
+        self.re_end = None
+
+        # init regex patterns
+        self.re_start_choices = {}
+        self.re_end_choices = {}
+        for typ in self.types:
+            if self.use_math_thm_heading:
+                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
+            else:
+                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}"
+            self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
 
     def gen_auto_prepend(self, block: str) -> str:
         prepend = self.type_opts.get("name")
@@ -58,24 +72,6 @@ class ThmMixin(ABC):
             else:
                 elem_to_prepend_into.text = prepend
 
-
-class TypesMixin(ABC):
-    def init_types(self, types: dict):
-        self.types = types
-        self.type_opts = None
-        self.re_start = None
-        self.re_end = None
-
-        # init regex patterns
-        self.re_start_choices = {}
-        self.re_end_choices = {}
-        for typ in self.types:
-            if self.use_math_thm_heading:
-                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
-            else:
-                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}"
-            self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
-    
     # def not best practice to assume child class is a `BlockProcessor` implementing `test()`
     # but i'm addicted to code reuse
     def test(self, parent, block) -> bool:
