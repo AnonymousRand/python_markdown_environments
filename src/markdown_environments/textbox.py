@@ -3,7 +3,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from app.markdown_extensions.mixins import HtmlClassMixin, ThmMixin, TypesMixin
+from mixins import HtmlClassMixin, ThmMixin, TypesMixin
 
 
 class Textbox(BlockProcessor, HtmlClassMixin, ThmMixin, TypesMixin):

@@ -6,8 +6,8 @@ from markdown.inlinepatterns import InlineProcessor
 from markdown.treeprocessors import Treeprocessor
 
 # TODO: conditional import depending on user config (like if user config includes dropdown, import dropdown)?
-from app.markdown_extensions.dropdown import Dropdown
-from app.markdown_extensions.div import Div
+from dropdown import Dropdown
+from div import Div
 
 
 # TODO: if releasing Counter, test with no adding html/varied params, also linking to counter via URL fragment

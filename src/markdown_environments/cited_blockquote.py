@@ -3,7 +3,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from app.markdown_extensions.mixins import HtmlClassMixin
+from mixins import HtmlClassMixin
 
 
 class CitedBlockquote(BlockProcessor, HtmlClassMixin):
