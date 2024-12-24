@@ -127,7 +127,7 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
     """
 
     def __init__(self, *args, html_class: str, thm_type_html_class: str, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
         self.thm_type_html_class = thm_type_html_class
 
