@@ -7,19 +7,12 @@ from markdown.treeprocessors import Treeprocessor
 
 from .mixins import HtmlClassMixin
 
-# TODO: conditional import depending on user config (like if user config includes dropdown, import dropdown)?
-from .dropdown import Dropdown
-from .div import Div
-
-
-# TODO: if releasing Counter, test with no adding html/varied params, also linking to counter via URL fragment
 
 # the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
 # which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before the TOC extension
 # (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class Counter(Treeprocessor):
-    # TODO: if publishing, verify example
     """
     A counter that is intended to reproduce LaTeX theorem counter functionality by allowing you to specify increments
     for each "counter section".
@@ -43,17 +36,17 @@ class Counter(Treeprocessor):
             Subsection {{0,1,0}} (displays as many sections as given)
             Lemma {{0,0,0,1}}
             Theorem {{0,0,1}} (the fourth counter section is reset here). Let \(s\) be a lorem ipsum.
-            Mental Breakdown {{0,0,0,3}}
-            I have no idea what this means {{1,2,0,3,9}}
+            Reevaluating Life Choices {{0,0,0,3}}
+            I have no idea what this means {{1,2,0,3,9}} (first counter section resets next ones, and so on)
             ```
         - Output:
             ```
             Section 1
             Subsection 1.1.0 (displays as many sections as given)
-            Lemma 1.1.1.1
-            Theorem 1.1.2 (the fourth counter section is reset here). Let \(s\) be a lorem ipsum.
-            Mental Breakdown 1.1.2.3
-            I have no idea what this means 2.3.2.6.9
+            Lemma 1.1.0.1
+            Theorem 1.1.1 (the fourth counter section is reset here). Let \(s\) be a lorem ipsum.
+            Reevaluating Life Choices 1.1.1.3
+            I have no idea what this means 2.2.0.3.9 (first counter section resets next ones, and so on)
             ```
     """
 
@@ -205,11 +198,10 @@ class ThmsExtension(Extension):
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
-        # registering resets state between uses of `markdown.Markdown` object for things like the Counter extension
+        # registering resets state between uses of `markdown.Markdown` object for things like the `Counter` extension
         md.registerExtension(self)
 
-        # TODO: check if lower priority means breaks toc again
-        # priority must be higher than TOC extension
+        # remember `Counter`'s priority must be higher than TOC extension
         md.treeprocessors.register(
                 Counter(md, add_html_elem=self.getConfig("counter_add_html_elem"),
                         html_id_prefix=self.getConfig("counter_html_id_prefix"),
@@ -221,7 +213,6 @@ class ThmsExtension(Extension):
                         thm_type_html_class=self.getConfig("thm_heading_thm_type_html_class")),
                 "thm_heading", 105)
 
-        # TODO: test without math counter/thm heading (set to False)
         # set default options for types
         def apply_default_opts_for_types(d: dict):
             for type, opts in d.items():
@@ -235,17 +226,21 @@ class ThmsExtension(Extension):
         self.setConfig("div_types", apply_default_opts_for_types(self.getConfig("div_types")))
         self.setConfig("dropdown_types", apply_default_opts_for_types(self.getConfig("dropdown_types")))
 
-        md.parser.blockprocessors.register(
-                Div(md.parser, html_class=self.getConfig("div_html_class"), types=self.getConfig("div_types"),
-                        use_thm_counter=True, use_thm_headings=True),
-                "thms_div", 105)
-        md.parser.blockprocessors.register(
-                Dropdown(md.parser, html_class=self.getConfig("dropdown_html_class"),
-                        summary_html_class=self.getConfig("dropdown_summary_html_class"),
-                        content_html_class=self.getConfig("dropdown_content_html_class"),
-                        types=self.getConfig("dropdown_types"),
-                        use_thm_counter=True, use_thm_headings=True),
-                "thms_dropdown", 999)
+        if len(self.getConfig("div_types")) > 0:
+            from .div import Div
+            md.parser.blockprocessors.register(
+                    Div(md.parser, html_class=self.getConfig("div_html_class"), types=self.getConfig("div_types"),
+                            use_thm_counter=True, use_thm_headings=True),
+                    "thms_div", 105)
+        if len(self.getConfig("dropdown_types")) > 0:
+            from .dropdown import Dropdown
+            md.parser.blockprocessors.register(
+                    Dropdown(md.parser, html_class=self.getConfig("dropdown_html_class"),
+                            summary_html_class=self.getConfig("dropdown_summary_html_class"),
+                            content_html_class=self.getConfig("dropdown_content_html_class"),
+                            types=self.getConfig("dropdown_types"),
+                            use_thm_counter=True, use_thm_headings=True),
+                    "thms_dropdown", 999)
 
 
 def makeExtension(**kwargs):
