@@ -26,11 +26,10 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
             ```
     """
 
-    def __init__(self, *args, types: dict, html_class: str="", use_math_counter: bool=False,
-            use_math_thm_heading: bool=False, **kwargs):
+    def __init__(self, *args, html_class: str, types: dict, use_thm_counter: bool, use_thm_headings: bool, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
-        self.init_thm(types, use_math_counter, use_math_thm_heading)
+        self.init_thm(types, use_thm_counter, use_thm_headings)
 
     def test(self, parent, block):
         return ThmMixin.test(self, parent, block)
@@ -68,11 +67,29 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
 
 
 class DivExtension(Extension):
-    def extendMarkdown(self, md):
-        types = {
-            "textbox": {"html_class": "md-textbox md-textbox-default last-child-no-mb"}
+    def __init__(self, **kwargs):
+        self.config = {
+            "html_class": [
+                "",
+                "HTML `class` attribute to add to div (default: `\"\"`)."
+            ],
+            "types": [
+                {},
+                "Types of div environments to define (default: `{}`)."
+            ],
+            "use_thm_counter": [
+                False,
+                "Whether to add theorem counters to div contents (default: `False`)."
+            ],
+            "use_thm_headings": [
+                False,
+                "Whether to add theorem headings to div contents (default: `False`)."
+            ]
         }
-        md.parser.blockprocessors.register(Div(md.parser, types=types, html_class="md-div"), "div", 105)
+        super().__init__(**kwargs)
+
+    def extendMarkdown(self, md):
+        md.parser.blockprocessors.register(Div(md.parser, **self.getConfigs()), "div", 105)
 
 
 def makeExtension(**kwargs):

@@ -39,11 +39,11 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
     RE_SUMMARY_START = r"^\\begin{summary}"
     RE_SUMMARY_END = r"^\\end{summary}"
 
-    def __init__(self, *args, types: dict, html_class: str="", summary_html_class: str="", content_html_class: str="",
-            use_math_counter: bool=False, use_math_thm_heading: bool=False, **kwargs):
+    def __init__(self, *args, html_class: str, summary_html_class: str, content_html_class: str, types: dict,
+            use_thm_counter: bool, use_thm_headings: bool, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
-        self.init_thm(types, use_math_counter, use_math_thm_heading)
+        self.init_thm(types, use_thm_counter, use_thm_headings)
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
 
@@ -55,7 +55,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         # remove summary starting delimiter that must immediately follow dropdown's starting delimiter
         # if no starting delimiter for summary and no default, restore and do nothing
         if not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
-            if self.type_opts.get("display_name") is None:
+            if self.type_opts.get("thm_heading_name") is None:
                 blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
                 blocks.extend(org_blocks)
                 return False
@@ -69,7 +69,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         # find and remove summary ending delimiter, and extract element
         elem_summary = etree.Element("summary")
         elem_summary.set("class", self.summary_html_class)
-        has_valid_summary = self.type_opts.get("display_name") is not None
+        has_valid_summary = self.type_opts.get("thm_heading_name") is not None
         for i, block in enumerate(blocks):
             # if we haven't found summary ending delimiter but have found the overall dropdown ending delimiter,
             # then don't keep going; maybe the summary was omitted since it could've been optional
@@ -118,15 +118,37 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
 
 
 class DropdownExtension(Extension):
-    def extendMarkdown(self, md):
-        types = {
-            "dropdown": {"html_class": "md-dropdown-default"}
+    def __init__(self, **kwargs):
+        self.config = {
+            "html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown (default: `\"\"`)."
+            ],
+            "summary_html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown summary (default: `\"\"`)."
+            ],
+            "content_html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown content (default: `\"\"`)."
+            ],
+            "types": [
+                {},
+                "Types of dropdown environments to define (default: `{}`)."
+            ],
+            "use_thm_counter": [
+                False,
+                "Whether to add theorem counters to dropdown contents (default: `False`)."
+            ],
+            "use_thm_headings": [
+                False,
+                "Whether to add theorem headings to dropdown contents (default: `False`)."
+            ]
         }
-        md.parser.blockprocessors.register(
-                Dropdown(md.parser, types=types, html_class="md-dropdown",
-                        summary_html_class="md-dropdown__summary last-child-no-mb",
-                        content_html_class="md-dropdown__content last-child-no-mb"),
-                "dropdown", 105)
+        super().__init__(**kwargs)
+
+    def extendMarkdown(self, md):
+        md.parser.blockprocessors.register(Dropdown(md.parser, **self.getConfigs()), "dropdown", 105)
 
 
 def makeExtension(**kwargs):

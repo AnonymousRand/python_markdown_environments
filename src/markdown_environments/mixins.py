@@ -9,10 +9,10 @@ class HtmlClassMixin(ABC):
 
 
 class ThmMixin(ABC):
-    def init_thm(self, types: dict, use_math_counter: bool, use_math_thm_heading: bool):
+    def init_thm(self, types: dict, use_thm_counter: bool, use_thm_headings: bool):
         self.types = types
-        self.use_math_counter = use_math_counter
-        self.use_math_thm_heading = use_math_thm_heading
+        self.use_thm_counter = use_thm_counter
+        self.use_thm_headings = use_thm_headings
         self.type_opts = None
         self.re_start = None
         self.re_end = None
@@ -21,29 +21,29 @@ class ThmMixin(ABC):
         self.re_start_choices = {}
         self.re_end_choices = {}
         for typ in self.types:
-            if self.use_math_thm_heading:
+            if self.use_thm_headings:
                 self.re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
             else:
                 self.re_start_choices[typ] = rf"^\\begin{{{typ}}}"
             self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
 
     def gen_auto_prepend(self, block: str) -> str:
-        prepend = self.type_opts.get("display_name")
+        prepend = self.type_opts.get("thm_heading_name")
         if prepend is None:
             return ""
 
         re_start_match = re.match(self.re_start, block, re.MULTILINE)
         # override theorem heading with theorem name first if applicable
-        if self.use_math_thm_heading:
+        if self.use_thm_headings:
             if self.type_opts.get("overrides_heading") and re_start_match.group(1) is not None:
                 prepend = re_start_match.group(1)
         # fill in math counter by using my `counter` extension's syntax
-        if self.use_math_counter:
+        if self.use_thm_counter:
             counter = self.type_opts.get("counter")
             if counter is not None:
                 prepend += f" {{{{{counter}}}}}"
         # fill in math theorem heading by using my `thm_heading` extension's syntax
-        if self.use_math_thm_heading:
+        if self.use_thm_headings:
             prepend = "{[" + prepend + "]}"
             if not self.type_opts.get("overrides_heading") and re_start_match.group(1) is not None:
                 prepend += "[" + re_start_match.group(1) + "]"

@@ -41,7 +41,7 @@ class CitedBlockquote(BlockProcessor, HtmlClassMixin):
     RE_CITATION_START = r"^\\begin{citation}"
     RE_CITATION_END = r"^\\end{citation}"
 
-    def __init__(self, *args, html_class: str="", citation_html_class: str="", **kwargs):
+    def __init__(self, *args, html_class: str, citation_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
         self.citation_html_class = citation_html_class
@@ -114,12 +114,21 @@ class CitedBlockquote(BlockProcessor, HtmlClassMixin):
 
 
 class CitedBlockquoteExtension(Extension):
+    def __init__(self, **kwargs):
+        self.config = {
+            "html_class": [
+                "",
+                "HTML `class` attribute to add to cited blockquote (default: `\"\"`)."
+            ],
+            "citation_html_class": [
+                "",
+                "HTML `class` attribute to add to cited blockquote's citation (default: `\"\"`)."
+            ]
+        }
+        super().__init__(**kwargs)
+
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(
-                CitedBlockquote(
-                        md.parser, html_class="md-cited-blockquote",
-                        citation_html_class="md-cited-blockquote__citation"),
-                "cited_blockquote", 105)
+        md.parser.blockprocessors.register(CitedBlockquote(md.parser, **self.getConfigs()), "cited_blockquote", 105)
 
 
 def makeExtension(**kwargs):

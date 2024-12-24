@@ -5,6 +5,8 @@ from markdown.extensions import Extension
 from markdown.inlinepatterns import InlineProcessor
 from markdown.treeprocessors import Treeprocessor
 
+from .mixins import HtmlClassMixin
+
 # TODO: conditional import depending on user config (like if user config includes dropdown, import dropdown)?
 from .dropdown import Dropdown
 from .div import Div
@@ -13,8 +15,8 @@ from .div import Div
 # TODO: if releasing Counter, test with no adding html/varied params, also linking to counter via URL fragment
 
 # the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
-# which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before `toc`
-# (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while `toc` will duplicate unparsed
+# which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before the TOC extension
+# (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class Counter(Treeprocessor):
     # TODO: if publishing, verify example
@@ -57,7 +59,7 @@ class Counter(Treeprocessor):
 
     RE = r"{{([0-9,]+)}}"
 
-    def __init__(self, *args, add_html_elem=False, html_id_prefix="", html_class="", **kwargs):
+    def __init__(self, *args, add_html_elem: bool, html_id_prefix: str, html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_html_elem = add_html_elem
         self.html_id_prefix = html_id_prefix
@@ -105,7 +107,7 @@ class Counter(Treeprocessor):
             child.text = new_text
 
 
-class ThmHeading(InlineProcessor):
+class ThmHeading(InlineProcessor, HtmlClassMixin):
     """
     A theorem heading that allows you to add custom styling and can generate linkable HTML `id`s.
 
@@ -124,21 +126,28 @@ class ThmHeading(InlineProcessor):
           `<optional_theorem_name>` is provided.
     """
 
+    def __init__(self, *args, html_class: str, thm_type_html_class: str, **kwargs):
+        super.__init__(*args, **kwargs)
+        self.init_html_class(html_class)
+        self.thm_type_html_class = thm_type_html_class
+
     def handleMatch(self, m, current_text_block):
         def format_for_html(s: str) -> str:
             s = ("-".join(s.split())).lower() 
-            s = s[:-1].replace(".", "-") + s[-1] # replace periods except if trailing with hyphens (for thm counter)
-            s = re.sub(r"[^A-Za-z0-9-]", r"", s)
+            s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
+            s = re.sub(r"[^A-Za-z0-9-]", "", s)
             return s
 
         elem = etree.Element("span")
-        elem.set("class", "md-thm-heading")
-        elem_heading = etree.SubElement(elem, "span")
-        elem_heading.set("class", "md-thm-heading__heading")
-        elem_heading.text = f"{m.group(1)}"
+        elem.set("class", self.html_class)
+        elem_thm_type = etree.SubElement(elem, "span")
+        elem_thm_type.set("class", self.thm_type_html_class)
+        elem_thm_type.text = f"{m.group(1)}"
         if m.group(2) is not None:
-            elem_non_heading = etree.SubElement(elem, "span")
-            elem_non_heading.text = f" ({m.group(2)})"
+            # TODO
+            elem.text += f" ({m.group(2)})"
+            #elem_non_thm_type = etree.SubElement(elem, "span")
+            #elem_non_thm_type.text = f" ({m.group(2)})"
             elem.set("id", format_for_html(m.group(2)))
         elif m.group(3) is not None:
             elem.set("id", format_for_html(m.group(3)))
@@ -146,93 +155,99 @@ class ThmHeading(InlineProcessor):
 
 
 class ThmsExtension(Extension):
+    def __init__(self, **kwargs):
+        self.config = {
+            "div_html_class": [
+                "",
+                "HTML `class` attribute to add to div (default: `\"\"`)."
+            ],
+            "div_types": [
+                {},
+                "Types of div-based theorem environments to define (default: `{}`)."
+            ],
+            "dropdown_html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown (default: `\"\"`)."
+            ],
+            "dropdown_summary_html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown summary (default: `\"\"`)."
+            ],
+            "dropdown_content_html_class": [
+                "",
+                "HTML `class` attribute to add to dropdown content (default: `\"\"`)."
+            ],
+            "dropdown_types": [
+                {},
+                "Types of dropdown-based theorem environments to define (default: `{}`)."
+            ],
+            "counter_add_html_elem": [
+                False,
+                "Whether theorem counters are contained in their own HTML element (default: `False`)."
+            ],
+            "counter_html_id_prefix": [
+                "",
+                (
+                    "Text to prepend to HTML `id` attribute of theorem counters if `counter_add_html_elem` is `True` "
+                    "(default: `\"\"`)."
+                )
+            ],
+            "counter_html_class": [
+                "",
+                "HTML `class` attribute of theorem counters if `counter_add_html_elem` is `True` (default: `\"\"`)."
+            ],
+            "thm_heading_html_class": [
+                "",
+                "HTML `class` attribute of theorem heading (default: `\"\"`)."
+            ],
+            "thm_heading_thm_type_html_class": [
+                "",
+                "HTML `class` attribute of theorem type HTML element in theorem heading (default: `\"\"`)."
+            ]
+        }
+        super().__init__(**kwargs)
+
     def extendMarkdown(self, md):
-        # registering resets state between uses of `markdown.Markdown` object for things like `Counter`
+        # registering resets state between uses of `markdown.Markdown` object for things like the Counter extension
         md.registerExtension(self)
 
-        regex = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
-        md.inlinePatterns.register(ThmHeading(regex, md), "thm_heading", 105)
-        md.treeprocessors.register(Counter(md, add_html_elem=False), "counter", 999)
+        # TODO: check if lower priority means breaks toc again
+        # priority must be higher than TOC extension
+        md.treeprocessors.register(
+                Counter(md, add_html_elem=self.getConfig("counter_add_html_elem"),
+                        html_id_prefix=self.getConfig("counter_html_id_prefix"),
+                        counter_html_class=self.getConfig("counter_html_class")),
+                "counter", 999)
+        md.inlinePatterns.register(
+                ThmHeading(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
+                        html_class=self.getConfig("thm_heading_html_class"),
+                        thm_type_html_class=self.getConfig("thm_heading_thm_type_html_class")),
+                "thm_heading", 105)
 
-        # TODO: these need to be passed in via extension config
-        # TODO:: test without math counter/thm heading (set to False)
-        div_types = {
-            "coro": {
-                "display_name": "Corollary",
-                "html_class": "md-textbox md-textbox-coro last-child-no-mb",
-                "counter": "0,0,1"
-            },
-            "defn": {
-                "display_name": "Definition",
-                "html_class": "md-textbox md-textbox-defn last-child-no-mb",
-                "counter": "0,0,1"
-            },
-            r"defn\\\*": {
-                "display_name": "Definition",
-                "html_class": "md-textbox md-textbox-defn last-child-no-mb"
-            },
-            "ex": {
-                "display_name": "Example",
-                "html_class": "md-div-ex"
-            },
-            r"notat\\\*": {
-                "display_name": "Notation",
-                "html_class": "md-textbox md-textbox-notat last-child-no-mb"
-            },
-            "prop": {
-                "display_name": "Proposition",
-                "html_class": "md-textbox md-textbox-prop last-child-no-mb",
-                "counter": "0,0,1"
-            },
-            "thm": {
-                "display_name": "Theorem",
-                "html_class": "md-textbox md-textbox-thm last-child-no-mb",
-                "counter": "0,0,1"
-            },
-            r"thm\\\*": {
-                "display_name": "Theorem",
-                "html_class": "md-textbox md-textbox-thm last-child-no-mb"
-            }
-        }
-        dropdown_types = {
-            "exer": {
-                "display_name": "Exercise",
-                "html_class": "md-dropdown-exer",
-                "counter": "0,0,1",
-                "use_punct_if_nameless": False
-            },
-            "pf": {
-                "display_name": "Proof",
-                "html_class": "md-dropdown-pf",
-                "overrides_heading": True,
-                "use_punct_if_nameless": False
-            },
-            r"rmk\\\*": {
-                "display_name": "Remark",
-                "html_class": "md-dropdown-rmk",
-                "overrides_heading": True,
-                "use_punct_if_nameless": False
-            }
-        }
-        # set default values for dicts
-        for d in [dropdown_types, div_types]:
-            for type_opts in d.values():
-                type_opts.setdefault("display_name", "")
-                type_opts.setdefault("html_class", "")
-                type_opts.setdefault("counter", None)
-                type_opts.setdefault("overrides_heading", False)
-                type_opts.setdefault("punct", ".")
-                type_opts.setdefault("use_punct_if_nameless", True)
+        # TODO: test without math counter/thm heading (set to False)
+        # set default options for types
+        def apply_default_opts_for_types(d: dict):
+            for type, opts in d.items():
+                opts.setdefault("thm_heading_name", "")
+                opts.setdefault("html_class", "")
+                opts.setdefault("counter", None)
+                opts.setdefault("overrides_heading", False)
+                opts.setdefault("punct", ".")
+                opts.setdefault("use_punct_if_nameless", True)
+            return d
+        self.setConfig("div_types", apply_default_opts_for_types(self.getConfig("div_types")))
+        self.setConfig("dropdown_types", apply_default_opts_for_types(self.getConfig("dropdown_types")))
 
         md.parser.blockprocessors.register(
-                Div(md.parser, types=div_types, html_class="md-div", use_math_counter=True,
-                        use_math_thm_heading=True),
+                Div(md.parser, html_class=self.getConfig("div_html_class"), types=self.getConfig("div_types"),
+                        use_thm_counter=True, use_thm_headings=True),
                 "thms_div", 105)
         md.parser.blockprocessors.register(
-                Dropdown(md.parser, types=dropdown_types, html_class="md-dropdown",
-                        summary_html_class="md-dropdown__summary last-child-no-mb",
-                        content_html_class="md-dropdown__content last-child-no-mb",
-                        use_math_counter=True, use_math_thm_heading=True),
+                Dropdown(md.parser, html_class=self.getConfig("dropdown_html_class"),
+                        summary_html_class=self.getConfig("dropdown_summary_html_class"),
+                        content_html_class=self.getConfig("dropdown_content_html_class"),
+                        types=self.getConfig("dropdown_types"),
+                        use_thm_counter=True, use_thm_headings=True),
                 "thms_dropdown", 999)
 
 

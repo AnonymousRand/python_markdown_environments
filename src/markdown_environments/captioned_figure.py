@@ -40,7 +40,7 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
     RE_CAPTION_START = r"^\\begin{caption}"
     RE_CAPTION_END = r"^\\end{caption}"
 
-    def __init__(self, *args, html_class: str="", caption_html_class: str="", **kwargs):
+    def __init__(self, *args, html_class: str, caption_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
         self.caption_html_class = caption_html_class
@@ -116,12 +116,21 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
 
 
 class CaptionedFigureExtension(Extension):
+    def __init__(self, **kwargs):
+        self.config = {
+            "html_class": [
+                "",
+                "HTML `class` attribute to add to captioned figure (default: `\"\"`)."
+            ],
+            "caption_html_class": [
+                "",
+                "HTML `class` attribute to add to captioned figure's caption (default: `\"\"`)."
+            ]
+        }
+        super().__init__(**kwargs)
+
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(
-                CaptionedFigure(
-                        md.parser, html_class="md-captioned-figure",
-                        caption_html_class="md-captioned-figure__caption"),
-                "captioned_figure", 105)
+        md.parser.blockprocessors.register(CaptionedFigure(md.parser, **self.getConfigs()), "captioned_figure", 105)
 
 
 def makeExtension(**kwargs):
