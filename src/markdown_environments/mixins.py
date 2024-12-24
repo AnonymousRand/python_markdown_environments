@@ -28,7 +28,7 @@ class ThmMixin(ABC):
             self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
 
     def gen_auto_prepend(self, block: str) -> str:
-        prepend = self.type_opts.get("thm_heading_name")
+        prepend = self.type_opts.get("thm_heading_thm_type")
         if prepend is None:
             return ""
 
@@ -42,7 +42,7 @@ class ThmMixin(ABC):
             counter = self.type_opts.get("counter")
             if counter is not None:
                 prepend += f" {{{{{counter}}}}}"
-        # fill in math theorem heading by using my `thm_heading` extension's syntax
+        # fill in math theorem heading using `ThmHeading`'s syntax
         if self.use_thm_headings:
             prepend = "{[" + prepend + "]}"
             if not self.type_opts.get("overrides_heading") and re_start_match.group(1) is not None:
