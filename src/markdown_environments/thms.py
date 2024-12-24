@@ -37,7 +37,7 @@ class Counter(Treeprocessor):
             Lemma {{0,0,0,1}}
             Theorem {{0,0,1}} (the fourth counter section is reset here). Let \(s\) be a lorem ipsum.
             Reevaluating Life Choices {{0,0,0,3}}
-            I have no idea what this means {{1,2,0,3,9}} (first counter section resets next ones, and so on)
+            What even is this {{1,2,0,3,9}} (first counter section resets next ones, and so on)
             ```
         - Output:
             ```
@@ -46,7 +46,7 @@ class Counter(Treeprocessor):
             Lemma 1.1.0.1
             Theorem 1.1.1 (the fourth counter section is reset here). Let \(s\) be a lorem ipsum.
             Reevaluating Life Choices 1.1.1.3
-            I have no idea what this means 2.2.0.3.9 (first counter section resets next ones, and so on)
+            What even is this 2.2.0.3.9 (first counter section resets next ones, and so on)
             ```
     """
 
