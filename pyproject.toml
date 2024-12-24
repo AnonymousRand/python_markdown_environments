@@ -4,25 +4,60 @@ build-backend = "hatchling.build"
 
 [project]
 name = "markdown-environments"
-authors = [
-  {name="AnonymousRand"},
-]
-description = "Highly customizable extensions for Python-Markdown in the style of LaTeX environments"
+dynamic = ["version"]
+description = 'Highly customizable extensions for Python-Markdown in the style of LaTeX environments'
 readme = "README.md"
 requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+    {name = "AnonymousRand"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
 depedencies = [
     "markdown~=3.7"
 ]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/AnonymousRand/python-markdown-environments"
+Documentation = "https://github.com/AnonymousRand/python-markdown-environments#readme"
 Issues = "https://github.com/AnonymousRand/python-markdown-environments/issues"
+Source = "https://github.com/AnonymousRand/python-markdown-environments"
 
 [tool.hatch.version]
 path = "src/markdown_environments/__init__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+    "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/markdown_environments tests}"
+
+[tool.coverage.run]
+source_pkgs = ["markdown_environments", "tests"]
+branch = true
+parallel = true
+omit = []
+
+[tool.coverage.paths]
+markdown_environments = ["src/markdown_environments", "*/markdown-environments/src/markdown_environments"]
+tests = ["tests", "*/markdown-environments/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

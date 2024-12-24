@@ -79,11 +79,11 @@ class DivExtension(Extension):
             ],
             "use_thm_counter": [
                 False,
-                "Whether to add theorem counters to div contents (default: `False`)."
+                "Whether to add theorem counters to div contents; mostly for `ThmExtension` (default: `False`)."
             ],
             "use_thm_headings": [
                 False,
-                "Whether to add theorem headings to div contents (default: `False`)."
+                "Whether to add theorem headings to div contents; mostly for `ThmExtension` (default: `False`)."
             ]
         }
         super().__init__(**kwargs)

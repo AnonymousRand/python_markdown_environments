@@ -95,11 +95,11 @@ class Counter(Treeprocessor):
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
                 if self.add_html_elem:
-                    # TODO: convert to more etree-ic way if possible
-                    output_counter_text = \
-                            f"<span id=\"{self.html_id_prefix}{'-'.join(output_counter)}\" class=\"{self.html_class}\">" \
-                            + output_counter_text \
-                            + "</span>"
+                    elem = etree.Element("span")
+                    elem.set("id", self.html_id_prefix + '-'.join(output_counter))
+                    elem.set("class", self.html_class)
+                    elem.text = output_counter_text
+                    output_counter_text = etree.tostring(elem, encoding="unicode")
                 new_text += text[prev_match_end:m.start()] + output_counter_text
                 prev_match_end = m.end()
             # fill in the remaining text after last regex match!
@@ -144,10 +144,7 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
         elem_thm_type.set("class", self.thm_type_html_class)
         elem_thm_type.text = f"{m.group(1)}"
         if m.group(2) is not None:
-            # TODO
             elem_thm_type.tail = f" ({m.group(2)})"
-            #elem_non_thm_type = etree.SubElement(elem, "span")
-            #elem_non_thm_type.text = f" ({m.group(2)})"
             elem.set("id", format_for_html(m.group(2)))
         elif m.group(3) is not None:
             elem.set("id", format_for_html(m.group(3)))
