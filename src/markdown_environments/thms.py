@@ -140,6 +140,7 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
 
         elem = etree.Element("span")
         elem.set("class", self.html_class)
+        elem.text = ""
         elem_thm_type = etree.SubElement(elem, "span")
         elem_thm_type.set("class", self.thm_type_html_class)
         elem_thm_type.text = f"{m.group(1)}"
