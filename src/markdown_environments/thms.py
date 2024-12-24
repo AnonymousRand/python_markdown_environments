@@ -216,7 +216,7 @@ class ThmsExtension(Extension):
         md.treeprocessors.register(
                 Counter(md, add_html_elem=self.getConfig("counter_add_html_elem"),
                         html_id_prefix=self.getConfig("counter_html_id_prefix"),
-                        counter_html_class=self.getConfig("counter_html_class")),
+                        html_class=self.getConfig("counter_html_class")),
                 "counter", 999)
         md.inlinePatterns.register(
                 ThmHeading(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
