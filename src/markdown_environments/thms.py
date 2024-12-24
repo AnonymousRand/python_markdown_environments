@@ -140,13 +140,12 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
 
         elem = etree.Element("span")
         elem.set("class", self.html_class)
-        elem.text = ""
         elem_thm_type = etree.SubElement(elem, "span")
         elem_thm_type.set("class", self.thm_type_html_class)
         elem_thm_type.text = f"{m.group(1)}"
         if m.group(2) is not None:
             # TODO
-            elem.text += f" ({m.group(2)})"
+            elem_thm_type.tail = f" ({m.group(2)})"
             #elem_non_thm_type = etree.SubElement(elem, "span")
             #elem_non_thm_type.text = f" ({m.group(2)})"
             elem.set("id", format_for_html(m.group(2)))
