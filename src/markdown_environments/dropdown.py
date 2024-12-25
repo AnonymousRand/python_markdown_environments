@@ -54,12 +54,11 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
     def run(self, parent, blocks):
         org_blocks = list(blocks)
         # remove summary starting delim that must immediately follow dropdown's starting delim
-        # if no starting delim for summary and no default, restore and do nothing
-        if not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
-            if self.type_opts.get("thm_heading_name") is None:
-                blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
-                blocks.extend(org_blocks)
-                return False
+        # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
+        if not self.is_thm and not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
+            blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
+            blocks.extend(org_blocks)
+            return False
         blocks[1] = re.sub(self.RE_SUMMARY_START, "", blocks[1], flags=re.MULTILINE)
 
         # generate theorem heading to use as default summary text if applicable
@@ -68,7 +67,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove summary ending delim, and extract element
-        has_valid_summary = self.is_thm and summary_prepend != ""
+        has_valid_summary = self.is_thm
         for i, block in enumerate(blocks):
             # if we haven't found summary ending delim but have found the overall dropdown ending delim,
             # then don't keep going; maybe the summary was omitted since it could've been optional
@@ -83,6 +82,8 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
                 if self.summary_html_class != "":
                     elem_summary.set("class", self.summary_html_class)
                 self.parser.parseBlocks(elem_summary, blocks[:i + 1])
+                # add thm heading to summary if applicable
+                self.prepend_thm_heading(elem_summary, summary_prepend)
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
@@ -92,8 +93,6 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
             blocks.clear()
             blocks.extend(org_blocks)
             return False
-        # add thm heading to summary if applicable
-        self.prepend_thm_heading(elem_summary, summary_prepend)
 
         # find and remove dropdown ending delim, and extract element
         delim_found = False

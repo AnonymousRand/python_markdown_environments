@@ -59,10 +59,10 @@ class ThmMixin(ABC):
         first_p = target_elem.find("p")
         target_elem = first_p if first_p is not None else target_elem
         if target_elem.text is not None:
-            target_elem.text = f"{prepend}{self.type_opts.get('heading_punct')} {target_elem.text}"
+            target_elem.text = f"{prepend}{self.type_opts.get('thm_heading_punct')} {target_elem.text}"
         else:
             if self.type_opts.get("use_punct_if_no_thm_name"):
-                target_elem.text = f"{prepend}{self.type_opts.get('heading_punct')}"
+                target_elem.text = f"{prepend}{self.type_opts.get('thm_heading_punct')}"
             else:
                 target_elem.text = prepend
 
