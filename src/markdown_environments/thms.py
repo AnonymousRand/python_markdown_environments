@@ -40,17 +40,22 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
             s = re.sub(r"[^A-Za-z0-9-]", "", s)
             return s
 
+        # create theorem heading element
         elem = etree.Element("span")
         if self.html_class != "":
             elem.set("class", self.html_class)
+        # create and fill in theorem type subelement
         elem_thm_type = etree.SubElement(elem, "span")
         if self.thm_type_html_class != "":
             elem_thm_type.set("class", self.thm_type_html_class)
         elem_thm_type.text = f"{m.group(1)}"
+        # fill in the rest
         if m.group(2) is not None:
+            # add theorem name
             elem_thm_type.tail = f" ({m.group(2)})"
             elem.set("id", format_for_html(m.group(2)))
         elif m.group(3) is not None:
+            # add theorem `id` from hidden name
             elem.set("id", format_for_html(m.group(3)))
         return elem, m.start(0), m.end(0)
 
