@@ -1,0 +1,4 @@
+\begin{default}
+i am ham
+ham i am
+do you like green eggs and sam

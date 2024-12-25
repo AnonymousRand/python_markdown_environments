@@ -3,6 +3,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
+from . import util
 from .mixins import HtmlClassMixin
 
 
@@ -52,65 +53,71 @@ class CitedBlockquote(BlockProcessor, HtmlClassMixin):
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
-        # remove blockquote starting delimiter
+        # remove blockquote starting delim
         blocks[0] = re.sub(self.RE_BLOCKQUOTE_START, "", blocks[0], flags=re.MULTILINE)
 
-        # find and remove citation starting delimiter
+        # find and remove citation starting delim
+        delim_found = False
         citation_start_i = None
         for i, block in enumerate(blocks):
             if re.match(self.RE_CITATION_START, block, re.MULTILINE):
-                # remove ending delimiter and note which block citation started on
+                delim_found = True
+                # remove ending delim and note which block citation started on
                 # (as citation content itself is an unknown number of blocks)
                 citation_start_i = i
                 blocks[i] = re.sub(self.RE_CITATION_START, "", block, flags=re.MULTILINE)
                 break
-
-        # if no starting delimiter for citation, restore and do nothing
-        if citation_start_i is None:
+        # if no starting delim for citation, restore and do nothing
+        if not delim_found:
             blocks.clear()
             blocks.extend(org_blocks)
             return False
 
-        # find and remove citation ending delimiter, and extract element
-        elem_citation = None
+        # find and remove citation ending delim (starting search from the citation start delim), and extract element
+        delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
             if re.search(self.RE_CITATION_END, block, flags=re.MULTILINE):
-                # remove ending delimiter
+                delim_found = True
+                # remove ending delim
                 blocks[i] = re.sub(self.RE_CITATION_END, "", block, flags=re.MULTILINE)
                 # build HTML for citation
                 elem_citation = etree.Element("cite")
-                elem_citation.set("class", self.citation_html_class)
+                if self.citation_html_class != "":
+                    elem_citation.set("class", self.citation_html_class)
                 self.parser.parseBlocks(elem_citation, blocks[citation_start_i:i + 1])
                 # remove used blocks
                 for _ in range(citation_start_i, i + 1):
                     blocks.pop(citation_start_i)
                 break
-
-        # if no ending delimiter for citation, restore and do nothing
-        if elem_citation is None:
+        # if no ending delim for citation, restore and do nothing
+        if not delim_found:
             blocks.clear()
             blocks.extend(org_blocks)
             return False
 
-        # find and remove blockquote ending delimiter, and extract element
+        # find and remove blockquote ending delim, and extract element
+        delim_found = False
         for i, block in enumerate(blocks):
             if re.search(self.RE_BLOCKQUOTE_END, block, flags=re.MULTILINE):
-                # remove ending delimiter
+                delim_found = True
+                # remove ending delim
                 blocks[i] = re.sub(self.RE_BLOCKQUOTE_END, "", block, flags=re.MULTILINE)
                 # build HTML for blockquote
                 elem_blockquote = etree.SubElement(parent, "blockquote")
-                elem_blockquote.set("class", self.html_class)
+                if self.html_class != "":
+                    elem_blockquote.set("class", self.html_class)
                 self.parser.parseBlocks(elem_blockquote, blocks[:i + 1])
                 parent.append(elem_citation) # make sure citation comes after everything else
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
-                return True
-
-        # if no ending delimiter for blockquote, restore and do nothing
-        blocks.clear()
-        blocks.extend(org_blocks)
-        return False
+                break
+        # if no ending delim for blockquote, restore and do nothing
+        if not delim_found:
+            blocks.clear()
+            blocks.extend(org_blocks)
+            return False
+        return True
 
 
 class CitedBlockquoteExtension(Extension):
@@ -125,7 +132,7 @@ class CitedBlockquoteExtension(Extension):
                 "HTML `class` attribute to add to cited blockquote's citation (default: `\"\"`)."
             ]
         }
-        super().__init__(**kwargs)
+        util.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(CitedBlockquote(md.parser, **self.getConfigs()), "cited_blockquote", 105)

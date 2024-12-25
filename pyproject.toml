@@ -47,7 +47,7 @@ extra-dependencies = [
 check = "mypy --install-types --non-interactive {args:src/markdown_environments tests}"
 
 [tool.coverage.run]
-source_pkgs = ["markdown_environments", "tests"]
+source_pkgs = ["markdown_environments"]
 branch = true
 parallel = true
 omit = []

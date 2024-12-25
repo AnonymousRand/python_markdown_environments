@@ -3,6 +3,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
+from . import util
 from .mixins import HtmlClassMixin
 
 
@@ -51,20 +52,20 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
-        # remove figure starting delimiter
+        # remove figure starting delim
         blocks[0] = re.sub(self.RE_FIGURE_START, "", blocks[0], flags=re.MULTILINE)
 
-        # find and remove caption starting delimiter
+        # find and remove caption starting delim
         caption_start_i = None
         for i, block in enumerate(blocks):
             if re.match(self.RE_CAPTION_START, block, re.MULTILINE):
-                # remove ending delimiter and note which block captions started on
+                # remove ending delim and note which block captions started on
                 # (as caption content itself is an unknown number of blocks)
                 caption_start_i = i
                 blocks[i] = re.sub(self.RE_CAPTION_START, "", block, flags=re.MULTILINE)
                 break
 
-        # if no starting delimiter for caption, restore and do nothing
+        # if no starting delim for caption, restore and do nothing
         if caption_start_i is None:
             # `blocks = org_blocks` doesn't work since lists are passed by pointer in Python (value of reference)
             # so changing the address of `blocks` only updates the local copy of it (the pointer)
@@ -73,46 +74,51 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
             blocks.extend(org_blocks)
             return False
 
-        # find and remove caption ending delimiter, and extract element
-        elem_caption = None
+        # find and remove caption ending delim, and extract element
+        delim_found = False
         for i, block in enumerate(blocks[caption_start_i:], start=caption_start_i):
             if re.search(self.RE_CAPTION_END, block, flags=re.MULTILINE):
-                # remove ending delimiter
+                delim_found = True
+                # remove ending delim
                 blocks[i] = re.sub(self.RE_CAPTION_END, "", block, flags=re.MULTILINE)
                 # build HTML for caption
                 elem_caption = etree.Element("figcaption")
-                elem_caption.set("class", self.caption_html_class)
+                if self.caption_html_class != "":
+                    elem_caption.set("class", self.caption_html_class)
                 self.parser.parseBlocks(elem_caption, blocks[caption_start_i:i + 1])
                 # remove used blocks
                 for _ in range(caption_start_i, i + 1):
                     blocks.pop(caption_start_i)
                 break
-
-        # if no ending delimiter for caption, restore and do nothing
-        if elem_caption is None:
+        # if no ending delim for caption, restore and do nothing
+        if not delim_found:
             blocks.clear()
             blocks.extend(org_blocks)
             return False
 
-        # find and remove figure ending delimiter, and extract element
+        # find and remove figure ending delim, and extract element
+        delim_found = False
         for i, block in enumerate(blocks):
             if re.search(self.RE_FIGURE_END, block, flags=re.MULTILINE):
-                # remove ending delimiter
+                delim_found = True
+                # remove ending delim
                 blocks[i] = re.sub(self.RE_FIGURE_END, "", block, flags=re.MULTILINE)
                 # build HTML for figure
                 elem_figure = etree.SubElement(parent, "figure")
-                elem_figure.set("class", self.html_class)
+                if self.html_class != "":
+                    elem_figure.set("class", self.html_class)
                 self.parser.parseBlocks(elem_figure, blocks[:i + 1])
                 elem_figure.append(elem_caption) # make sure captions come after everything else
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
-                return True
-
-        # if no ending delimiter for figure, restore and do nothing
-        blocks.clear()
-        blocks.extend(org_blocks)
-        return False
+                break
+        # if no ending delim for figure, restore and do nothing
+        if not delim_found:
+            blocks.clear()
+            blocks.extend(org_blocks)
+            return False
+        return True
 
 
 class CaptionedFigureExtension(Extension):
@@ -127,7 +133,7 @@ class CaptionedFigureExtension(Extension):
                 "HTML `class` attribute to add to captioned figure's caption (default: `\"\"`)."
             ]
         }
-        super().__init__(**kwargs)
+        util.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(CaptionedFigure(md.parser, **self.getConfigs()), "captioned_figure", 105)

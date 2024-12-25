@@ -1,0 +1,12 @@
+lorem ipsum
+
+\begin{captioned_figure}
+amongus.png
+
+\begin{caption}
+-- an amongi in its natural habitat
+
+sus
+\end{caption}
+
+what if i put text here

@@ -9,10 +9,9 @@ class HtmlClassMixin(ABC):
 
 
 class ThmMixin(ABC):
-    def init_thm(self, types: dict, use_thm_counter: bool, use_thm_headings: bool):
+    def init_thm(self, types: dict, is_thm: bool):
         self.types = types
-        self.use_thm_counter = use_thm_counter
-        self.use_thm_headings = use_thm_headings
+        self.is_thm = is_thm
         self.type_opts = None
         self.re_start = None
         self.re_end = None
@@ -21,56 +20,56 @@ class ThmMixin(ABC):
         self.re_start_choices = {}
         self.re_end_choices = {}
         for typ in self.types:
-            if self.use_thm_headings:
+            if self.is_thm:
                 self.re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
             else:
                 self.re_start_choices[typ] = rf"^\\begin{{{typ}}}"
             self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
 
-    def gen_auto_prepend(self, block: str) -> str:
-        prepend = self.type_opts.get("thm_heading_thm_type")
-        if prepend is None:
+    def gen_thm_heading(self, block: str) -> str:
+        if not self.is_thm:
             return ""
 
         re_start_match = re.match(self.re_start, block, re.MULTILINE)
-        # override theorem heading with theorem name first if applicable
-        if self.use_thm_headings:
-            if self.type_opts.get("overrides_heading") and re_start_match.group(1) is not None:
+        prepend = ""
+        if self.type_opts.get("thm_name_overrides_heading"):
+            # override theorem heading with theorem name if applicable
+            if re_start_match.group(1) is not None:
                 prepend = re_start_match.group(1)
-        # fill in math counter by using my `counter` extension's syntax
-        if self.use_thm_counter:
-            counter = self.type_opts.get("counter")
-            if counter is not None:
-                prepend += f" {{{{{counter}}}}}"
-        # fill in math theorem heading using `ThmHeading`'s syntax
-        if self.use_thm_headings:
-            prepend = "{[" + prepend + "]}"
-            if not self.type_opts.get("overrides_heading") and re_start_match.group(1) is not None:
-                prepend += "[" + re_start_match.group(1) + "]"
-            if re_start_match.group(2) is not None:
-                prepend += "{" + re_start_match.group(2) + "}"
+        else:
+            prepend = self.type_opts.get("thm_type")
+            # fill in math counter by using my `counter` extension's syntax
+            thm_counter_incr = self.type_opts.get("thm_counter_incr")
+            if thm_counter_incr != "":
+                prepend += f" {{{{{thm_counter_incr}}}}}"
+
+        # put math theorem heading into `ThmHeading`'s syntax
+        prepend = "{[" + prepend + "]}"
+        if not self.type_opts.get("thm_name_overrides_heading") and re_start_match.group(1) is not None:
+            prepend += "[" + re_start_match.group(1) + "]"
+        if re_start_match.group(2) is not None:
+            prepend += "{" + re_start_match.group(2) + "}"
         return prepend
 
-    def do_auto_prepend(self, elem: etree.Element, prepend: str) -> None:
-        if not prepend:
+    def prepend_thm_heading(self, target_elem: etree.Element, prepend: str) -> None:
+        if not self.is_thm or prepend == "":
             return
 
-        # add to first paragraph child if it exists to let it be on the same line to minimize weird
-        # CSS `display: inline` or whatever chaos
-        elem_to_prepend_into = None
+        # add to first `<p>` child if possible to put it on the same line and minimize CSS `display: inline` chaos
+        target_elem = None
         first_p = elem.find("p")
         if first_p is not None:
-            elem_to_prepend_into = first_p
+            target_elem = first_p
         else:
-            elem_to_prepend_into = elem
+            target_elem = elem
 
-        if elem_to_prepend_into.text is not None:
-            elem_to_prepend_into.text = f"{prepend}{self.type_opts.get('punct')} {elem_to_prepend_into.text}"
+        if target_elem.text is not None:
+            target_elem.text = f"{prepend}{self.type_opts.get('heading_punct')} {target_elem.text}"
         else:
-            if self.type_opts.get("use_punct_if_nameless"):
-                elem_to_prepend_into.text = f"{prepend}{self.type_opts.get('punct')}"
+            if self.type_opts.get("use_punct_if_no_thm_name"):
+                target_elem.text = f"{prepend}{self.type_opts.get('heading_punct')}"
             else:
-                elem_to_prepend_into.text = prepend
+                target_elem.text = prepend
 
     # def not best practice to assume child class is a `BlockProcessor` implementing `test()`
     # but i'm addicted to code reuse

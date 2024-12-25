@@ -3,6 +3,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
+from . import util
 from .mixins import HtmlClassMixin, ThmMixin
 
 
@@ -40,10 +41,10 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
     RE_SUMMARY_END = r"^\\end{summary}"
 
     def __init__(self, *args, html_class: str, summary_html_class: str, content_html_class: str, types: dict,
-            use_thm_counter: bool, use_thm_headings: bool, **kwargs):
+            is_thm: bool, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
-        self.init_thm(types, use_thm_counter, use_thm_headings)
+        self.init_thm(types, is_thm)
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
 
@@ -52,8 +53,8 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
-        # remove summary starting delimiter that must immediately follow dropdown's starting delimiter
-        # if no starting delimiter for summary and no default, restore and do nothing
+        # remove summary starting delim that must immediately follow dropdown's starting delim
+        # if no starting delim for summary and no default, restore and do nothing
         if not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
             if self.type_opts.get("thm_heading_name") is None:
                 blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
@@ -61,60 +62,65 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
                 return False
         blocks[1] = re.sub(self.RE_SUMMARY_START, "", blocks[1], flags=re.MULTILINE)
 
-        # generate default prepended summary text if applicable
-        summary_prepend = self.gen_auto_prepend(blocks[0])
-        # remove dropdown starting delimiter (after generated prepended text from it, if applicable)
+        # generate theorem heading to use as default summary text if applicable
+        summary_prepend = self.gen_thm_heading(blocks[0])
+        # remove dropdown starting delim (after generating thm heading from it if applicable)
         blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
 
-        # find and remove summary ending delimiter, and extract element
-        elem_summary = etree.Element("summary")
-        elem_summary.set("class", self.summary_html_class)
-        has_valid_summary = self.type_opts.get("thm_heading_name") is not None
+        # find and remove summary ending delim, and extract element
+        has_valid_summary = self.is_thm and summary_prepend != ""
         for i, block in enumerate(blocks):
-            # if we haven't found summary ending delimiter but have found the overall dropdown ending delimiter,
+            # if we haven't found summary ending delim but have found the overall dropdown ending delim,
             # then don't keep going; maybe the summary was omitted since it could've been optional
             if re.search(self.re_end, block, flags=re.MULTILINE):
                 break
             if re.search(self.RE_SUMMARY_END, block, flags=re.MULTILINE):
                 has_valid_summary = True
-                # remove ending delimiter
+                # remove ending delim
                 blocks[i] = re.sub(self.RE_SUMMARY_END, "", block, flags=re.MULTILINE)
                 # build HTML for summary
+                elem_summary = etree.Element("summary")
+                if self.summary_html_class != "":
+                    elem_summary.set("class", self.summary_html_class)
                 self.parser.parseBlocks(elem_summary, blocks[:i + 1])
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
                 break
-        # if no valid summary (e.g. no ending delimiter with no default), restore and do nothing
+        # if no valid summary (e.g. no ending delim with no default), restore and do nothing
         if not has_valid_summary:
             blocks.clear()
             blocks.extend(org_blocks)
             return False
+        # add thm heading to summary if applicable
+        self.prepend_thm_heading(elem_summary, summary_prepend)
 
-        # add prepended text (add to first paragraph child if it exists to let it be on the same line
-        # to minimize weird CSS `display: inline` or whatever quirks)
-        self.do_auto_prepend(elem_summary, summary_prepend)
-
-        # find and remove dropdown ending delimiter, and extract element
+        # find and remove dropdown ending delim, and extract element
+        delim_found = False
         for i, block in enumerate(blocks):
             if re.search(self.re_end, block, flags=re.MULTILINE):
-                # remove ending delimiter
+                delim_found = True
+                # remove ending delim
                 blocks[i] = re.sub(self.re_end, "", block, flags=re.MULTILINE)
                 # build HTML for dropdown
                 elem_details = etree.SubElement(parent, "details")
-                elem_details.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
+                if self.html_class != "" or self.type_opts.get("html_class") != "":
+                    elem_details.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
                 elem_details.append(elem_summary)
                 elem_details_content = etree.SubElement(elem_details, "div")
-                elem_details_content.set("class", self.content_html_class)
+                if self.content_html_class != "":
+                    elem_details_content.set("class", self.content_html_class)
                 self.parser.parseBlocks(elem_details_content, blocks[0:i + 1])
                 # remove used blocks
                 for _ in range(0, i + 1):
                     blocks.pop(0)
-                return True
-        # if no ending delimiter for dropdown, restore and do nothing
-        blocks.clear()
-        blocks.extend(org_blocks)
-        return False
+                break
+        # if no ending delim for dropdown, restore and do nothing
+        if not delim_found:
+            blocks.clear()
+            blocks.extend(org_blocks)
+            return False
+        return True
 
 
 class DropdownExtension(Extension):
@@ -136,16 +142,16 @@ class DropdownExtension(Extension):
                 {},
                 "Types of dropdown environments to define (default: `{}`)."
             ],
-            "use_thm_counter": [
+            "is_thm": [
                 False,
-                "Whether to add theorem counters to div contents; mostly for `ThmExtension` (default: `False`)."
-            ],
-            "use_thm_headings": [
-                False,
-                "Whether to add theorem headings to div contents; mostly for `ThmExtension` (default: `False`)."
+                "Whether to use theorem logic (e.g. heading); used only by `ThmExtension` (default: `False`)."
             ]
         }
-        super().__init__(**kwargs)
+        util.init_extension_with_configs(self, **kwargs)
+
+        # set default options for individual types
+        for type, opts in self.getConfig("types").items():
+            opts.setdefault("html_class", "")
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(Dropdown(md.parser, **self.getConfigs()), "dropdown", 105)
