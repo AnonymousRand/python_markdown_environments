@@ -6,3 +6,6 @@ venv/
 
 # python
 __pycache__/
+
+# vim
+*.swp
