@@ -27,11 +27,11 @@ def test_thmheading():
         "test_thms.test_thmheading() failed (4)"
     )
     
-#    extension_test(
-#        ThmsExtension(thm_heading_html_class=""),
-#        "thms/thmheading/5",
-#        "test_thms.test_thmheading() failed (5)"
-#    )
+    extension_test(
+        ThmsExtension(thm_heading_html_class="bottom-text", thm_type_html_class="top-text"),
+        "thms/thmheading/5",
+        "test_thms.test_thmheading() failed (5)"
+    )
 
 
 def test_thmheading_fail():
