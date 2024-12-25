@@ -9,12 +9,9 @@ def read_file(filename: str) -> str:
         return file.read().rstrip("\n")
 
 
-def extension_test(
-    extension: markdown.extensions.Extension, fixture_filename: str,
-    expected_filename: str, error_msg: str
-):
-    fixture = read_file(fixture_filename)
-    expected = read_file(expected_filename)
+def extension_test(extension: markdown.extensions.Extension, filename_base: str, error_msg: str):
+    fixture = read_file(f"{filename_base}.txt")
+    expected = read_file(f"{filename_base}.html")
     actual = markdown.markdown(fixture, extensions=[extension])
     # print for debugging (hatch display stdout on test fail)
     print(actual)

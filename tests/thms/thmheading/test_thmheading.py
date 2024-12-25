@@ -5,33 +5,38 @@ from ...util import extension_test
 def test_thmheading():
     extension_test(
         ThmsExtension(),
-        "thms/thmheading/1.txt", "thms/thmheading/1.html",
+        "thms/thmheading/1",
         "test_thms.test_thmheading() failed (1)"
     )
 
     extension_test(
         ThmsExtension(),
-        "thms/thmheading/2.txt", "thms/thmheading/2.html",
+        "thms/thmheading/2",
         "test_thms.test_thmheading() failed (2)"
     )
 
     extension_test(
         ThmsExtension(),
-        "thms/thmheading/3.txt", "thms/thmheading/3.html",
+        "thms/thmheading/3",
         "test_thms.test_thmheading() failed (3)"
     )
 
     extension_test(
         ThmsExtension(),
-        "thms/thmheading/4.txt", "thms/thmheading/4.html",
+        "thms/thmheading/4",
         "test_thms.test_thmheading() failed (4)"
     )
-    # TODO: test with configs
+    
+#    extension_test(
+#        ThmsExtension(thm_heading_html_class=""),
+#        "thms/thmheading/5",
+#        "test_thms.test_thmheading() failed (5)"
+#    )
 
 
 def test_thmheading_fail():
     extension_test(
         ThmsExtension(),
-        "thms/thmheading/fail_1.txt", "thms/thmheading/fail_1.html",
+        "thms/thmheading/fail_1",
         "test_thms.test_thmheading_fail() failed (1)"
     )

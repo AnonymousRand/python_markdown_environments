@@ -31,19 +31,18 @@ class ThmMixin(ABC):
             return ""
 
         re_start_match = re.match(self.re_start, block, re.MULTILINE)
-        prepend = ""
+        prepend = self.type_opts.get("thm_type")
         if self.type_opts.get("thm_name_overrides_heading"):
             # override theorem heading with theorem name if applicable
             if re_start_match.group(1) is not None:
                 prepend = re_start_match.group(1)
         else:
-            prepend = self.type_opts.get("thm_type")
-            # fill in math counter by using my `counter` extension's syntax
+            # fill in theorem counter using `ThmCounter`'s syntax
             thm_counter_incr = self.type_opts.get("thm_counter_incr")
             if thm_counter_incr != "":
                 prepend += f" {{{{{thm_counter_incr}}}}}"
 
-        # put math theorem heading into `ThmHeading`'s syntax
+        # put theorem heading into `ThmHeading`'s syntax
         prepend = "{[" + prepend + "]}"
         if not self.type_opts.get("thm_name_overrides_heading") and re_start_match.group(1) is not None:
             prepend += "[" + re_start_match.group(1) + "]"
