@@ -56,13 +56,8 @@ class ThmMixin(ABC):
             return
 
         # add to first `<p>` child if possible to put it on the same line and minimize CSS `display: inline` chaos
-        target_elem = None
-        first_p = elem.find("p")
-        if first_p is not None:
-            target_elem = first_p
-        else:
-            target_elem = elem
-
+        first_p = target_elem.find("p")
+        target_elem = first_p if first_p is not None
         if target_elem.text is not None:
             target_elem.text = f"{prepend}{self.type_opts.get('heading_punct')} {target_elem.text}"
         else:

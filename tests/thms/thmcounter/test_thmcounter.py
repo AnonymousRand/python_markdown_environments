@@ -1,8 +1,8 @@
 from markdown_environments.thms import *
-from ..util import extension_test
+from ...util import extension_test
 
 
-def test_counter():
+def test_thmcounter():
     extension_test(
         ThmsExtension(),
         "thms/thmcounter/1.txt", "thms/thmcounter/1.html",
@@ -34,7 +34,7 @@ def test_counter():
     )
 
 
-def test_counter_fail():
+def test_thmcounter_fail():
     extension_test(
         ThmsExtension(),
         "thms/thmcounter/fail_1.txt", "thms/thmcounter/fail_1.html",
