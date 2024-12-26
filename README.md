@@ -170,6 +170,10 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 ### HTML render (example from my site):
 
+![example_render_closed_dropdowns](https://github.com/user-attachments/assets/6ed34a55-ba7f-48c0-9c82-10efd7cb53d2)
+
+![example_render_open_dropdowns](https://github.com/user-attachments/assets/92410977-a048-4e4d-b425-84b550d6699b)
+
 ## Further Reading
 
 Full documentation and detailed usage examples can be found [here](https://www.youtube.com/watch?v=xvFZjo5PgG0).
