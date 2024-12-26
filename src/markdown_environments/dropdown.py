@@ -61,9 +61,9 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
             return False
         blocks[1] = re.sub(self.RE_SUMMARY_START, "", blocks[1], flags=re.MULTILINE)
 
-        # generate theorem heading to use as default summary if applicable
-        summary_prepend = self.gen_thm_heading(blocks[0])
-        # remove dropdown starting delim (after generating thm heading from it if applicable)
+        # remove dropdown starting delim
+        # first generate theorem heading from it to use as default summary if applicable
+        thm_heading_md = self.gen_thm_heading_md(blocks[0])
         blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove summary ending delim, and extract element
@@ -94,7 +94,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
             blocks.extend(org_blocks)
             return False
         # add thm heading to summary if applicable
-        self.prepend_thm_heading(elem_summary, summary_prepend)
+        self.prepend_thm_heading_md(elem_summary, thm_heading_md)
 
         # find and remove dropdown ending delim, and extract element
         delim_found = False

@@ -206,19 +206,6 @@ class ThmsExtension(Extension):
         }
         util.init_extension_with_configs(self, **kwargs)
 
-        # set default options for individual types
-        def apply_default_opts_for_types(d: dict):
-            for type, opts in d.items():
-                opts.setdefault("thm_type", "")
-                opts.setdefault("html_class", "")
-                opts.setdefault("thm_counter_incr", "")
-                opts.setdefault("thm_name_overrides_heading", False)
-                opts.setdefault("thm_heading_punct", ".")
-                opts.setdefault("use_punct_if_no_thm_name", True)
-            return d
-        self.setConfig("div_types", apply_default_opts_for_types(self.getConfig("div_types")))
-        self.setConfig("dropdown_types", apply_default_opts_for_types(self.getConfig("dropdown_types")))
-
 
     def extendMarkdown(self, md):
         # registering resets state between uses of `markdown.Markdown` object for things like the `ThmCounter` extension

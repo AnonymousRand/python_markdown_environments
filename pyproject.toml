@@ -7,7 +7,7 @@ name = "markdown-environments"
 dynamic = ["version"]
 description = "Highly customizable extensions for Python-Markdown in the style of LaTeX environments"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = "~=3.10"
 license = "MIT"
 license-files = ["LICENSE.md"]
 keywords = []
@@ -19,8 +19,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -62,3 +60,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.10"]

@@ -1,5 +1,7 @@
+import pytest
+
 from markdown_environments.dropdown import *
-from ..util import extension_test
+from ..util import run_extension_test
 
 
 TYPES = {
@@ -10,52 +12,25 @@ TYPES = {
 }
 
 
-def test_dropdown():
-    extension_test(
-        DropdownExtension(types=TYPES),
-        "dropdown/1",
-        "test_dropdown.test_dropdown() failed (1)"
-    )
-
-    extension_test(
-        DropdownExtension(
-            html_class="phd-dropdown",
-            summary_html_class="md-dropdown__summary",
-            content_html_class="md-dropdown__content",
-            types=TYPES
+@pytest.mark.parametrize(
+    "extension, filename_base",
+    [
+        (DropdownExtension(types=TYPES), "dropdown/success_1"),
+        (
+            DropdownExtension(
+                html_class="phd-dropdown",
+                summary_html_class="md-dropdown__summary",
+                content_html_class="md-dropdown__content",
+                types=TYPES
+            ),
+            "dropdown/success_2"
         ),
-        "dropdown/2",
-        "test_dropdown.test_dropdown() failed (2)"
-    )
-
-
-def test_dropdown_fail():
-    extension_test(
-        DropdownExtension(),
-        "dropdown/fail_1",
-        "test_dropdown.test_dropdown_fail() failed (1)"
-    )
-
-    extension_test(
-        DropdownExtension(types=TYPES),
-        "dropdown/fail_2",
-        "test_dropdown.test_dropdown_fail() failed (2)"
-    )
-
-    extension_test(
-        DropdownExtension(types=TYPES),
-        "dropdown/fail_3",
-        "test_dropdown.test_dropdown_fail() failed (3)"
-    )
-
-    extension_test(
-        DropdownExtension(types=TYPES),
-        "dropdown/fail_4",
-        "test_dropdown.test_dropdown_fail() failed (4)"
-    )
-
-    extension_test(
-        DropdownExtension(types=TYPES),
-        "dropdown/fail_5",
-        "test_dropdown.test_dropdown_fail() failed (5)"
-    )
+        (DropdownExtension(), "dropdown/fail_1"),
+        (DropdownExtension(types=TYPES), "dropdown/fail_2"),
+        (DropdownExtension(types=TYPES), "dropdown/fail_3"),
+        (DropdownExtension(types=TYPES), "dropdown/fail_4"),
+        (DropdownExtension(types=TYPES), "dropdown/fail_5")
+    ]
+)
+def test_dropdown(extension, filename_base):
+    run_extension_test(extension, filename_base)

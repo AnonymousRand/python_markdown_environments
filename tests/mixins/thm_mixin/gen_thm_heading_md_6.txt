@@ -1,0 +1,1 @@
+\begin{thm\*}[title should override] sdadd

@@ -1,0 +1,7 @@
+\begin{lem}
+Ploopy
+\end{lem}
+
+\begin{lem}[Fermat's lemma]
+For every copy of Arithmetica by Diophantus, there exists a margin too small to write a proof in.
+\end{lem}

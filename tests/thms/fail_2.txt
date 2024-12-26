@@ -1,0 +1,22 @@
+\begin{thm
+According to all known laws of aviation, there is no way a bee should be able to fly.
+\end{thm}
+
+By all known laws of aviation.
+\end{pf}
+
+\begin{lem}[Pog]{Poggers}
+pog
+\end{lemma}
+
+\begin{exer}
+
+\begin{summary}
+Run a mile.
+\end{summary}
+
+Solution: touch grass
+
+\begin{thm\*}[defenestration
+defenestration.
+\begin{thm\*}

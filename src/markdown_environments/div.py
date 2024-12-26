@@ -38,7 +38,7 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
     def run(self, parent, blocks):
         org_block_start = blocks[0]
         # generate default thm heading if applicable
-        prepend = self.gen_thm_heading(blocks[0])
+        prepend = self.gen_thm_heading_md(blocks[0])
         # remove starting delim (after generating thm heading from it, if applicable)
         blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
 
@@ -64,7 +64,7 @@ class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
             return False
 
         # add thm heading if applicable
-        self.prepend_thm_heading(elem, prepend)
+        self.prepend_thm_heading_md(elem, prepend)
         return True
 
 

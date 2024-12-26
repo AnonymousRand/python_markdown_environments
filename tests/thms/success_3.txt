@@ -1,0 +1,11 @@
+\begin{thm\*}
+hi
+\end{thm\*}
+
+\begin{thm\*}[Insert theorem name here]
+hiiii
+\end{thm\*}
+
+\begin{thm\*}{The fundamental structure theorem and unique decomposition up to isomorphism by infinite and finite cyclic groups joined together by means of the direct product of abelian groups who possess generating sets of a finite cardinality}
+Every finitely-generated abelian group is finitely-generated.
+\end{thm\*}

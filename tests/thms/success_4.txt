@@ -1,0 +1,31 @@
+\begin{exer}
+Solution: trivial.
+\end{exer}
+
+\begin{exer}
+
+\begin{summary}
+Show that 2 + 2 = 5.
+\end{summary}
+
+Solution: not trivial.
+\end{exer}
+
+\begin{exer}[Classification of finite simple groups]
+
+\begin{summary}
+Prove the classification of finite simple groups.
+\end{summary}
+
+Solution: Assume by contradiction that the classification of finite simple groups does not hold. Then hundreds of mathmeticians would be lying to us and we know that can't possibly happen so QED.
+\end{exer}
+
+\begin{exer}[this should have no punctuation]
+\end{exer}
+
+\begin{exer}{as should this}
+
+\begin{summary}
+\end{summary}
+
+\end{exer}

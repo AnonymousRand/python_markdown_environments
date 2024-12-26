@@ -1,5 +1,7 @@
+import pytest
+
 from markdown_environments.div import *
-from ..util import extension_test
+from ..util import run_extension_test
 
 
 TYPES = {
@@ -10,35 +12,15 @@ TYPES = {
 }
 
 
-def test_div():
-    extension_test(
-        DivExtension(types=TYPES),
-        "div/1",
-        "test_div.test_div() failed (1)"
-    )
-
-    extension_test(
-        DivExtension(html_class="md-div", types=TYPES),
-        "div/2",
-        "test_div.test_div() failed (2)"
-    )
-
-
-def test_div_fail():
-    extension_test(
-        DivExtension(),
-        "div/fail_1",
-        "test_div.test_div_fail() failed (1)"
-    )
-
-    extension_test(
-        DivExtension(types=TYPES),
-        "div/fail_2",
-        "test_div.test_div_fail() failed (2)"
-    )
-
-    extension_test(
-        DivExtension(types=TYPES),
-        "div/fail_3",
-        "test_div.test_div_fail() failed (3)"
-    )
+@pytest.mark.parametrize(
+    "extension, filename_base",
+    [
+        (DivExtension(types=TYPES), "div/success_1"),
+        (DivExtension(html_class="md-div", types=TYPES), "div/success_2"),
+        (DivExtension(), "div/fail_1"),
+        (DivExtension(types=TYPES), "div/fail_2"),
+        (DivExtension(types=TYPES), "div/fail_3")
+    ]
+)
+def test_div(extension, filename_base):
+    run_extension_test(extension, filename_base)

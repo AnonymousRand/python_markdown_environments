@@ -1,0 +1,15 @@
+\begin{pf}
+Left as an exercise to the grader.
+\end{pf}
+
+\begin{pf}[this should override heading]
+\end{pf}
+
+\begin{pf}{picoCTF\{sp4n1sh_1nqu151t10n\}}
+i dont want a lot for christmas
+
+all i want for christmas is this proof
+\end{pf}
+
+\begin{pf}[this should still have puncutation]
+\end{pf}

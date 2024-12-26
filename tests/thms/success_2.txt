@@ -1,0 +1,9 @@
+\begin{thm}
+1 + 1 = 2.
+\end{thm}
+
+\begin{thm}[Euler's theorem]{this should be ignored}
+A square has four sides.
+
+A square does not have five sides.
+\end{thm}
