@@ -170,8 +170,8 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 ### HTML render (example from my site):
 
-<img src="https://github.com/user-attachments/assets/6ed34a55-ba7f-48c0-9c82-10efd7cb53d2" alt="example_render_closed_dropdowns" width=50% style="display: inline;">
-<img src="https://github.com/user-attachments/assets/92410977-a048-4e4d-b425-84b550d6699b" alt="example_render_open_dropdowns" width=50% style="display: inline;">
+<img src="https://github.com/user-attachments/assets/6ed34a55-ba7f-48c0-9c82-10efd7cb53d2" alt="example_render_closed_dropdowns" width=67% style="display: inline;">
+<img src="https://github.com/user-attachments/assets/92410977-a048-4e4d-b425-84b550d6699b" alt="example_render_open_dropdowns" width=67% style="display: inline;">
 
 ## Further Reading
 
