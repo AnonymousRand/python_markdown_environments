@@ -1,5 +1,7 @@
 # build
 dist/
+.pytest_cache/
+.coverage
 
 # package manager
 venv/
