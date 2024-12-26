@@ -8,8 +8,9 @@ from .mixins import HtmlClassMixin
 
 
 class CaptionedFigure(BlockProcessor, HtmlClassMixin):
-    """
-    A figure with a caption underneath. Useful for images, but the figure content doesn't have to be an image.
+    """A figure with a caption underneath.
+
+    Probably most useful for captioned images, but the figure can be anything, not just an image.
 
     Usage:
         ```

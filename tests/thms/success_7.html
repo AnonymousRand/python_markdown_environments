@@ -1,30 +1,43 @@
-<div class="divs md-textbox md-textbox-thm last-child-no-mb">
-<p><span class="heading"><span class="thm-type">Theorem <span id="counter-0-1" class="counter">0.1</span></span></span>. According to all known laws of aviation, there is no way a bee should be able to fly.
+<h1>Section 1: this is theorem counter syntax from ThmsExtension()</h1>
+<h2>Subsection 1.1: Bees</h2>
+<p>Here we begin our study of bees.</p>
+<div class="md-div md-thm">
+<p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__thm-type">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.
 </p>
 </div>
-<details class="dropdowns md-dropdown-pf">
-<summary class="dropdown-summaries"><span class="heading"><span class="thm-type">Proof <span id="counter-0-1-150" class="counter">0.1.150</span></span></span>.</summary>
-<div class="dropdown-content">
-<p>By all known laws of aviation.
+<details class="md-dropdown ">
+<summary class="md-dropdown__summary mb-0"><span class="md-thm-heading"><span class="md-thm-heading__thm-type">Proof 1.1.1.1</span></span>.</summary>
+<div>
+<p>Its wings are too small to get its fat little body off the ground.
 </p>
 </div>
 </details>
-<div class="divs md-textbox md-textbox-defn last-child-no-mb">
-<p><span class="heading" id="pog"><span class="thm-type">Lemma <span id="counter-0-1-151" class="counter">0.1.151</span></span> (Pog)</span>: pog
+<div class="md-div md-thm">
+<p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__thm-type">Theorem</span></span>. Bees, of course, fly anyways.
 </p>
 </div>
-<details class="dropdowns md-dropdown-exer">
-<summary class="dropdown-summaries">
-<p><span class="heading"><span class="thm-type">Exercise <span id="counter-0-1-152" class="counter">0.1.152</span></span></span> - Run a mile.
+<details class="md-dropdown ">
+<summary class="md-dropdown__summary mb-0"><span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading"><span class="md-thm-heading__thm-type">Proofs are configured to have titles override the heading</span></span>.</summary>
+<div>
+<p>Because bees don't care what humans think is impossible.
+</p>
+</div>
+</details>
+<details class="md-dropdown md-exer">
+<summary class="md-dropdown__summary mb-0">
+<p><span class="md-thm-heading"><span class="md-thm-heading__thm-type">Exercise 1.1.2</span></span>: Prove that this <code>summary</code> environment is common to all dropdown-based environments.
 </p>
 </summary>
-<div class="dropdown-content">
-<p>Solution: touch grass
+<div>
+<p>Solution: by reading the documentation, of course!
 </p>
 </div>
 </details>
-<div class="divs md-textbox md-textbox-thm last-child-no-mb">
-<p><span class="heading"><span class="thm-type">Theorem</span></span>. [defenestration
-defenestration.
+<details class="md-dropdown md-exer">
+<summary class="md-dropdown__summary mb-0"><span class="md-thm-heading"><span class="md-thm-heading__thm-type">Exercise 1.1.3</span></span></summary>
+<div>
+<p>All dropdowns initialized in <code>ThmsExtension()</code> have a default <code>summary</code> value of <code>thm_type</code>, so using dropdowns like <code>pf</code> and <code>exer</code> here without a <code>summary</code> block is also fine.</p>
+<p>Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation (the colon; default punctuation is a period) since we set <code>"use_punct_if_nothing_after": False</code>.
 </p>
 </div>
+</details>

@@ -51,11 +51,36 @@ DROPDOWN_TYPES = {
         (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/success_6"),
         (
             ThmsExtension(
-                div_html_class="divs", div_types=DIV_TYPES,
-                dropdown_html_class="dropdowns", dropdown_summary_html_class="dropdown-summaries",
-                dropdown_content_html_class="dropdown-content", dropdown_types=DROPDOWN_TYPES,
-                thm_counter_add_html_elem=True, thm_counter_html_id_prefix="counter-", thm_counter_html_class="counter",
-                thm_heading_html_class="heading", thm_type_html_class="thm-type"
+                div_html_class="md-div",
+                div_types={
+                    "thm": {
+                        "thm_type": "Theorem",
+                        "html_class": "md-thm",
+                        "thm_counter_incr": "0,0,1"
+                    },
+                    r"thm\\\*": {
+                        "thm_type": "Theorem",
+                        "html_class": "md-thm"
+                    }
+                },
+                dropdown_html_class="md-dropdown",
+                dropdown_summary_html_class="md-dropdown__summary mb-0",
+                dropdown_types={
+                    "exer": {
+                        "thm_type": "Exercise",
+                        "html_class": "md-exer",
+                        "thm_counter_incr": "0,0,1",
+                        "thm_heading_punct": ":",
+                        "use_punct_if_nothing_after": False
+                    },
+                    "pf": {
+                        "thm_type": "Proof",
+                        "thm_counter_incr": "0,0,0,1",
+                        "thm_name_overrides_thm_heading": True
+                    }
+                },
+                thm_heading_html_class="md-thm-heading",
+                thm_type_html_class="md-thm-heading__thm-type"
             ),
             "thms/success_7"
         ),
