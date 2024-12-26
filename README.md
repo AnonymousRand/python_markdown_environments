@@ -31,7 +31,7 @@ pip install markdown-environments
 
 ### Backend:
 
-```
+```py
 import markdown
 from markdown_environments.thms import ThmsExtension
 
@@ -74,7 +74,7 @@ output_text = markdown.markdown(input_text, extensions=[
 
 ### Markdown input:
 
-```
+```md
 # Section {{1}}: this is theorem counter syntax from ThmsExtension()
 
 ## Subsection {{0,1}}: Bees
@@ -115,7 +115,7 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 ### HTML output (prettified):
 
-```
+```html
 <h1>Section 1: this is theorem counter syntax from ThmsExtension()</h1>
 
 <h2>Subsection 1.1: Bees</h2>
