@@ -29,7 +29,8 @@ TYPES = {
         (DropdownExtension(types=TYPES), "dropdown/fail_2"),
         (DropdownExtension(types=TYPES), "dropdown/fail_3"),
         (DropdownExtension(types=TYPES), "dropdown/fail_4"),
-        (DropdownExtension(types=TYPES), "dropdown/fail_5")
+        (DropdownExtension(types=TYPES), "dropdown/fail_5"),
+        (DropdownExtension(types=TYPES), "dropdown/fail_6")
     ]
 )
 def test_dropdown(extension, filename_base):

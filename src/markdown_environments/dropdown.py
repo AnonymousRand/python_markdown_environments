@@ -56,7 +56,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         # remove summary starting delim that must immediately follow dropdown's starting delim
         # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
         if not self.is_thm and not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
-            blocks.clear() # `blocks = org_blocks` doesn't work because that just reassigns function-scoped `blocks`
+            blocks.clear() # `blocks = org_blocks` doesn't work; must mutate `blocks` instead of reassigning it
             blocks.extend(org_blocks)
             return False
         blocks[1] = re.sub(self.RE_SUMMARY_START, "", blocks[1], flags=re.MULTILINE)
@@ -67,8 +67,7 @@ class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
         blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove summary ending delim, and extract element
-        # `elem_summary` initialized outside loop since here we aren't guaranteed to return
-        # if loop doesn't initialize `elem_summary`
+        # `elem_summary` initialized outside loop since the loop isn't guaranteed here to find & initialize it
         elem_summary = etree.Element("summary")
         if self.summary_html_class != "":
             elem_summary.set("class", self.summary_html_class)

@@ -1,0 +1,9 @@
+\begin{default}
+
+summary not at start
+
+\begin{summary}
+hi!
+\end{summary}
+
+\end{default}

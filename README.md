@@ -117,7 +117,6 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 ```html
 <h1>Section 1: this is theorem counter syntax from ThmsExtension()</h1>
-
 <h2>Subsection 1.1: Bees</h2>
 
 <p>Here we begin our study of bees.</p>
@@ -126,7 +125,7 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
   <p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__thm-type">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.</p>
 </div>
 
-<details class="md-dropdown ">
+<details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
     <span class="md-thm-heading"><span class="md-thm-heading__thm-type">Proof 1.1.1.1</span></span>.
   </summary>
@@ -139,7 +138,7 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
   <p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__thm-type">Theorem</span></span>. Bees, of course, fly anyways.</p>
 </div>
 
-<details class="md-dropdown ">
+<details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
     <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading"><span class="md-thm-heading__thm-type">Proofs are configured to have titles override the heading</span></span>.
   </summary>

@@ -49,6 +49,7 @@ DROPDOWN_TYPES = {
         (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/success_4"),
         (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/success_5"),
         (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/success_6"),
+        # readme example
         (
             ThmsExtension(
                 div_html_class="md-div",
@@ -85,8 +86,8 @@ DROPDOWN_TYPES = {
             "thms/success_7"
         ),
         (ThmsExtension(), "thms/fail_1"),
-        (ThmsExtension(), "thms/fail_2"),
-        (ThmsExtension(), "thms/fail_3")
+        (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/fail_2"),
+        (ThmsExtension(div_types=DIV_TYPES, dropdown_types=DROPDOWN_TYPES), "thms/fail_3")
     ]
 )
 def test_thms(extension, filename_base):
