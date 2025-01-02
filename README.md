@@ -31,10 +31,6 @@ pip install markdown-environments
 
 Full documentation and detailed usage examples can be found [here](https://www.youtube.com/watch?v=xvFZjo5PgG0).
 
-### Generating documentation
-
-Install 
-
 <!-- example usage -->
 
 # Example Usage
