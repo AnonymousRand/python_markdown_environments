@@ -7,7 +7,7 @@ from . import util
 from .mixins import HtmlClassMixin, ThmMixin
 
 
-class Dropdown(BlockProcessor, HtmlClassMixin, ThmMixin):
+class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
     """
     A dropdown that can be toggled open or closed, with only a summary (preview) portion shown when closed.
 
@@ -154,7 +154,7 @@ class DropdownExtension(Extension):
             opts.setdefault("html_class", "")
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(Dropdown(md.parser, **self.getConfigs()), "dropdown", 105)
+        md.parser.blockprocessors.register(DropdownProcessor(md.parser, **self.getConfigs()), "dropdown", 105)
 
 
 def makeExtension(**kwargs):

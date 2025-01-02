@@ -7,35 +7,8 @@ from . import util
 from .mixins import HtmlClassMixin
 
 
-class CaptionedFigure(BlockProcessor, HtmlClassMixin):
-    """A figure with a caption underneath.
-
-    Probably most useful for captioned images, but the figure can be anything, not just an image.
-
-    Usage:
-        ```
-
-        \begin{captioned_figure}
-        <figure content>
-
-        \begin{caption}
-        <caption>
-        \end{caption}
-
-        \end{captioned_figure}
-
-        ```
-        - HTML output:
-            ```
-            <figure class="[html_class]">
-              [figure content]
-              <figcaption class="[caption_html_class]">
-                [caption]
-              </figcaption>
-            </figure>
-            ```
-        - Note that the `caption` block can be placed anywhere within the `captioned_figure` block
-    """
+class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
+    """:meta private:"""
 
     RE_FIGURE_START = r"^\\begin{captioned_figure}"
     RE_FIGURE_END = r"^\\end{captioned_figure}"
@@ -123,7 +96,42 @@ class CaptionedFigure(BlockProcessor, HtmlClassMixin):
 
 
 class CaptionedFigureExtension(Extension):
+    """A caption underneath any chunk of content, such as an image."""
+
     def __init__(self, **kwargs):
+        """Initialize captioned figure extension with passed-in config options.
+
+        Configuration args:
+            html_class (str): HTML `class` attribute to add to captioned figure (default: `""`).
+            caption_html_class (str): HTML `class` attribute to add to captioned figure's caption (default: `""`).
+
+        Markdown usage:
+            ```
+
+            \begin{captioned_figure}
+            <figure content>
+
+            \begin{caption}
+            <caption>
+            \end{caption}
+
+            \end{captioned_figure}
+
+            ```
+            All blocks must be surrounded by blank lines. Note that the `caption` block can be placed anywhere within
+            the `captioned_figure` block.
+        
+        HTML output:
+            ```
+            <figure class="[html_class]">
+              [figure content]
+              <figcaption class="[caption_html_class]">
+                [caption]
+              </figcaption>
+            </figure>
+            ```
+        """
+
         self.config = {
             "html_class": [
                 "",
@@ -137,8 +145,9 @@ class CaptionedFigureExtension(Extension):
         util.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CaptionedFigure(md.parser, **self.getConfigs()), "captioned_figure", 105)
+        md.parser.blockprocessors.register(CaptionedFigureProcessor(md.parser, **self.getConfigs()), "captioned_figure", 105)
 
 
 def makeExtension(**kwargs):
+    """:meta private:"""
     return CaptionedFigureExtension(**kwargs)

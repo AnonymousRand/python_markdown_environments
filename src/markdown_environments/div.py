@@ -7,7 +7,7 @@ from . import util
 from .mixins import HtmlClassMixin, ThmMixin
 
 
-class Div(BlockProcessor, HtmlClassMixin, ThmMixin):
+class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
     """
     A general-purpose `<div>`.
 
@@ -91,7 +91,7 @@ class DivExtension(Extension):
             opts.setdefault("html_class", "")
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(Div(md.parser, **self.getConfigs()), "div", 105)
+        md.parser.blockprocessors.register(DivProcessor(md.parser, **self.getConfigs()), "div", 105)
 
 
 def makeExtension(**kwargs):

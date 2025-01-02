@@ -1,11 +1,8 @@
-__version__ = "0.16.0"
+from .captioned_figure import CaptionedFigureExtension
+from .cited_blockquote import CitedBlockquoteExtension
+from .div import DivExtension
+from .dropdown import DropdownExtension
+from .thms import ThmsExtension
 
-__all__ = [
-    "captioned_figure",
-    "cited_blockquote",
-    "dropdown",
-    "div",
-    "mixins",
-    "thms",
-    "util"
-]
+
+__version__ = "0.17.0"

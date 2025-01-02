@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_environments.cited_blockquote import *
+from markdown_environments import CitedBlockquoteExtension
 from ..util import run_extension_test
 
 

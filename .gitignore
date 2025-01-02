@@ -1,13 +1,18 @@
 # build
 dist/
-.pytest_cache/
-.coverage
+
+# docs
+docs/_build/
 
 # package manager
 venv/
 
 # python
 __pycache__/
+
+# testing
+.pytest_cache/
+.coverage
 
 # vim
 *.swp

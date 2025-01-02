@@ -7,7 +7,7 @@ from . import util
 from .mixins import HtmlClassMixin
 
 
-class CitedBlockquote(BlockProcessor, HtmlClassMixin):
+class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
     """
     A blockquote with a citation underneath. Note that the citation goes in a line below the blockquote, so this is
     not designed for formal in-text citations.
@@ -135,7 +135,7 @@ class CitedBlockquoteExtension(Extension):
         util.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CitedBlockquote(md.parser, **self.getConfigs()), "cited_blockquote", 105)
+        md.parser.blockprocessors.register(CitedBlockquoteProcessor(md.parser, **self.getConfigs()), "cited_blockquote", 105)
 
 
 def makeExtension(**kwargs):

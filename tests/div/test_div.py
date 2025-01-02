@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_environments.div import *
+from markdown_environments import DivExtension
 from ..util import run_extension_test
 
 

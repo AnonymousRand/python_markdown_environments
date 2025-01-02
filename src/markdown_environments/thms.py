@@ -1,6 +1,5 @@
 import re
 import xml.etree.ElementTree as etree
-from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 from markdown.inlinepatterns import InlineProcessor
 from markdown.treeprocessors import Treeprocessor
@@ -9,7 +8,7 @@ from . import util
 from .mixins import HtmlClassMixin
 
 
-class ThmHeading(InlineProcessor, HtmlClassMixin):
+class ThmHeadingProcessor(InlineProcessor, HtmlClassMixin):
     """
     A theorem heading that allows you to add custom styling and can generate linkable HTML `id`s.
 
@@ -64,7 +63,7 @@ class ThmHeading(InlineProcessor, HtmlClassMixin):
 # which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before the TOC extension
 # (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
-class ThmCounter(Treeprocessor):
+class ThmCounterProcessor(Treeprocessor):
     """
     A counter that is intended to reproduce LaTeX theorem counter functionality by allowing you to specify increments
     for each "counter segment".
@@ -213,26 +212,26 @@ class ThmsExtension(Extension):
 
         # remember `ThmCounter`'s priority must be higher than TOC extension
         md.treeprocessors.register(
-                ThmCounter(md, add_html_elem=self.getConfig("thm_counter_add_html_elem"),
+                ThmCounterProcessor(md, add_html_elem=self.getConfig("thm_counter_add_html_elem"),
                         html_id_prefix=self.getConfig("thm_counter_html_id_prefix"),
                         html_class=self.getConfig("thm_counter_html_class")),
                 "thm_counter", 999)
         md.inlinePatterns.register(
-                ThmHeading(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
+                ThmHeadingProcessor(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
                         html_class=self.getConfig("thm_heading_html_class"),
                         thm_type_html_class=self.getConfig("thm_type_html_class")),
                 "thm_heading", 105)
 
         if len(self.getConfig("div_types")) > 0:
-            from .div import Div
+            from .div import DivProcessor
             md.parser.blockprocessors.register(
-                    Div(md.parser, html_class=self.getConfig("div_html_class"),
+                    DivProcessor(md.parser, html_class=self.getConfig("div_html_class"),
                             types=self.getConfig("div_types"), is_thm=True),
                     "thms_div", 105)
         if len(self.getConfig("dropdown_types")) > 0:
-            from .dropdown import Dropdown
+            from .dropdown import DropdownProcessor
             md.parser.blockprocessors.register(
-                    Dropdown(md.parser, html_class=self.getConfig("dropdown_html_class"),
+                    DropdownProcessor(md.parser, html_class=self.getConfig("dropdown_html_class"),
                             summary_html_class=self.getConfig("dropdown_summary_html_class"),
                             content_html_class=self.getConfig("dropdown_content_html_class"),
                             types=self.getConfig("dropdown_types"), is_thm=True),

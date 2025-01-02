@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_environments.captioned_figure import *
+from markdown_environments import CaptionedFigureExtension
 from ..util import run_extension_test
 
 

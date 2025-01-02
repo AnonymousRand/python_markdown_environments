@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_environments.thms import *
+from markdown_environments import ThmsExtension
 from ..util import run_extension_test
 
 

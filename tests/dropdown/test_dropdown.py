@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_environments.dropdown import *
+from markdown_environments import DropdownExtension
 from ..util import run_extension_test
 
 
