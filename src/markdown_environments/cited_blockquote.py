@@ -8,34 +8,6 @@ from .mixins import HtmlClassMixin
 
 
 class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
-    """
-    A blockquote with a citation underneath. Note that the citation goes in a line below the blockquote, so this is
-    not designed for formal in-text citations.
-
-    Usage:
-        ```
-        
-        \begin{cited_blockquote}
-        <quote>
-
-        \begin{citation}
-        <citation>
-        \end{citation}
-
-        \end{cited_blockquote}
-
-        ```
-        - HTML output:
-            ```
-            <blockquote class="[html_class]">
-              <quote>
-            </blockquote>
-            <cite class="[citation_html_class]">
-              <citation>
-            </cite>
-            ```
-        - Note that the `citation` block can be placed anywhere within the `cited_blockquote` block
-    """
 
     RE_BLOCKQUOTE_START = r"^\\begin{cited_blockquote}"
     RE_BLOCKQUOTE_END = r"^\\end{cited_blockquote}"
@@ -121,15 +93,62 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
 
 
 class CitedBlockquoteExtension(Extension):
+    r"""
+    A blockquote with a citation/quote attribution underneath.
+
+    Example:
+        .. code-block:: py
+
+            import markdown
+            from markdown_environments import CitedBlockquoteExtension
+
+            input_text = ...
+            output_text = markdown.markdown(input_text, extensions=[
+                CitedBlockquoteExtension(html_class="give", citation_html_class="you")
+            ])
+
+    Markdown usage:
+        .. code-block:: md
+
+            \begin{cited_blockquote}
+            <quote>
+
+            \begin{citation}
+            <citation>
+            \end{citation}
+
+            \end{cited_blockquote}
+
+        becomes…
+
+        .. code-block:: html
+
+            <blockquote class="[html_class]">
+              [quote]
+            </blockquote>
+            <cite class="[citation_html_class]">
+              [citation]
+            </cite>
+
+        Note that the `citation` block can be placed anywhere within the `cited_blockquote` block.
+    """
+
     def __init__(self, **kwargs):
+        """
+        Initialize cited blockquote extension, with configuration options passed as the following keyword arguments:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to blockquote. Defaults to `""`.
+            - **citation_html_class** (*str*) – HTML `class` attribute to add caption. Defaults to `""`.
+        """
+
         self.config = {
             "html_class": [
                 "",
-                "HTML `class` attribute to add to cited blockquote (default: `\"\"`)."
+                "HTML `class` attribute to add to cited blockquote. Defaults to `\"\"`."
             ],
             "citation_html_class": [
                 "",
-                "HTML `class` attribute to add to cited blockquote's citation (default: `\"\"`)."
+                "HTML `class` attribute to add to cited blockquote's citation. Defaults to `\"\"`."
             ]
         }
         util.init_extension_with_configs(self, **kwargs)

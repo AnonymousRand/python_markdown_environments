@@ -128,23 +128,23 @@ class DropdownExtension(Extension):
         self.config = {
             "html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown. Defaults to `\"\"`."
             ],
             "summary_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown summary (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown summary. Defaults to `\"\"`."
             ],
             "content_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown content (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown content. Defaults to `\"\"`."
             ],
             "types": [
                 {},
-                "Types of dropdown environments to define (default: `{}`)."
+                "Types of dropdown environments to define. Defaults to `{}`."
             ],
             "is_thm": [
                 False,
-                "Whether to use theorem logic (e.g. heading); used only by `ThmExtension` (default: `False`)."
+                "Whether to use theorem logic (e.g. heading); used only by `ThmExtension`. Defaults to `False`."
             ]
         }
         util.init_extension_with_configs(self, **kwargs)

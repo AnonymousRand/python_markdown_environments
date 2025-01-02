@@ -8,24 +8,6 @@ from .mixins import HtmlClassMixin, ThmMixin
 
 
 class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
-    """
-    A general-purpose `<div>`.
-
-    Usage:
-        ```
-
-        \begin{<type>}
-        <content>
-        \end{<type>}
-
-        ```
-        - HTML output:
-            ```
-            <div class="[html_class] [types[type]['html_class']]">
-              [content]
-            </div>
-            ```
-    """
 
     def __init__(self, *args, html_class: str, types: dict, is_thm: bool, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,19 +51,70 @@ class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
 
 
 class DivExtension(Extension):
+    r"""
+    A general-purpose `<div>` that you can tack on HTML `class`es to.
+
+    Example:
+        .. code-block:: py
+
+            import markdown
+            from markdown_environments import DivExtension
+
+            input_text = ...
+            output_text = markdown.markdown(input_text, extensions=[
+                DivExtension(html_class="up", types={
+                    type1: {},
+                    type2: {"html_class": "never"}
+                })
+            ])
+
+    Markdown usage:
+        .. code-block:: md
+
+            \begin{<type>}
+            <content>
+            \end{<type>}
+
+        becomes…
+
+        .. code-block:: html
+
+            <div class="[html_class] [type's html_class]">
+              [content]
+            </div>
+    """
+
     def __init__(self, **kwargs):
+        r"""
+        Initialize div extension, with configuration options passed as the following keyword arguments:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to div. Defaults to `""`.
+            - **types** (*dict*) – Types of div environments to define. Defaults to `{}`.
+            - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
+              Defaults to `False`.
+
+        The key for each div type defined in `types` is inserted directly into the regex patterns that search for
+        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
+        type's value is a dictionary with the following possible options:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to divs of that type. Defaults to `""`.
+        """
+
         self.config = {
             "html_class": [
                 "",
-                "HTML `class` attribute to add to div (default: `\"\"`)."
+                "HTML `class` attribute to add to div. Defaults to `\"\"`."
             ],
             "types": [
                 {},
-                "Types of div environments to define (default: `{}`)."
+                "Types of div environments to define. Defaults to `{}`."
             ],
             "is_thm": [
                 False,
-                "Whether to use theorem logic (e.g. heading); used only by `ThmExtension` (default: `False`)."
+                (
+                    "Whether to use theorem logic (e.g. heading); you shouldn't have to set this value."
+                    "Defaults to `False`."
+                )
             ]
         }
         util.init_extension_with_configs(self, **kwargs)

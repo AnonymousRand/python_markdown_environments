@@ -1,4 +1,4 @@
-# Python-Markdown-Environments
+# Markdown-Environments
 
 Replicating `amsthm` features and syntax in Markdown so you can publish mathematical papers in HTML—because what mathematician *hasn't* tried to publish to the very reputable journal called *Their Janky Flask Personal Site That No One Will Ever See*?
 
@@ -27,13 +27,23 @@ pip install markdown-environments
     - Heading punctuation
     - Linkable `id`s by theorem name
 
-## Example Usage
+## Further Reading
 
-### Backend:
+Full documentation and detailed usage examples can be found [here](https://www.youtube.com/watch?v=xvFZjo5PgG0).
+
+### Generating documentation
+
+Install 
+
+<!-- example usage -->
+
+# Example Usage
+
+## Backend:
 
 ```py
 import markdown
-from markdown_environments.thms import ThmsExtension
+from markdown_environments import ThmsExtension
 
 input_text = ...
 output_text = markdown.markdown(input_text, extensions=[
@@ -72,7 +82,7 @@ output_text = markdown.markdown(input_text, extensions=[
 ])
 ```
 
-### Markdown input:
+## Markdown input:
 
 ```md
 # Section {{1}}: this is theorem counter syntax from ThmsExtension()
@@ -80,6 +90,8 @@ output_text = markdown.markdown(input_text, extensions=[
 ## Subsection {{0,1}}: Bees
 
 Here we begin our study of bees.
+
+
 
 \begin{thm}[the bee theorem]
 According to all known laws of aviation, there is no way that a bee should be able to fly.
@@ -89,6 +101,8 @@ According to all known laws of aviation, there is no way that a bee should be ab
 Its wings are too small to get its fat little body off the ground.
 \end{pf}
 
+
+
 \begin{thm\*}{hidden thm name used as `id`; not real LaTeX syntax}
 Bees, of course, fly anyways.
 \end{thm\*}
@@ -96,6 +110,8 @@ Bees, of course, fly anyways.
 \begin{pf}[Proofs are configured to have titles override the heading]{hidden names are useless when there's already a name}
 Because bees don't care what humans think is impossible.
 \end{pf}
+
+
 
 \begin{exer}
 
@@ -106,6 +122,8 @@ Prove that this `summary` environment is common to all dropdown-based environmen
 Solution: by reading the documentation, of course!
 \end{exer}
 
+
+
 \begin{exer}
 All dropdowns initialized in `ThmsExtension()` have a default `summary` value of `thm_type`, so using dropdowns like `pf` and `exer` here without a `summary` block is also fine.
 
@@ -113,13 +131,15 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 \end{exer}
 ```
 
-### HTML output (prettified):
+## HTML output (prettified):
 
 ```html
 <h1>Section 1: this is theorem counter syntax from ThmsExtension()</h1>
 <h2>Subsection 1.1: Bees</h2>
 
 <p>Here we begin our study of bees.</p>
+
+
 
 <div class="md-div md-thm">
   <p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__thm-type">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.</p>
@@ -134,6 +154,8 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
   </div>
 </details>
 
+
+
 <div class="md-div md-thm">
   <p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__thm-type">Theorem</span></span>. Bees, of course, fly anyways.</p>
 </div>
@@ -147,6 +169,8 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
   </div>
 </details>
 
+
+
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
     <p><span class="md-thm-heading"><span class="md-thm-heading__thm-type">Exercise 1.1.2</span></span>: Prove that this <code>summary</code> environment is common to all dropdown-based environments.</p>
@@ -155,6 +179,8 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
     <p>Solution: by reading the documentation, of course!</p>
   </div>
 </details>
+
+
 
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
@@ -167,20 +193,12 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 </details>
 ```
 
-### HTML render (example from my site):
+## HTML example render:
 
-#### Closed dropdowns:
+### Closed dropdowns:
 
 ![example render (closed dropdowns)](https://github.com/user-attachments/assets/6ed34a55-ba7f-48c0-9c82-10efd7cb53d2)
 
-#### Open dropdowns:
+### Open dropdowns:
 
 ![example render (open dropdowns)](https://github.com/user-attachments/assets/92410977-a048-4e4d-b425-84b550d6699b)
-
-## Further Reading
-
-Full documentation and detailed usage examples can be found [here](https://www.youtube.com/watch?v=xvFZjo5PgG0).
-
-## Contributing
-
-I don't expect this project to be huge, so feel free to drop an issue or pull request on [GitHub](https://github.com/AnonymousRand/python-markdown-environments) to report bugs or suggest features.

@@ -8,7 +8,6 @@ from .mixins import HtmlClassMixin
 
 
 class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
-    """:meta private:"""
 
     RE_FIGURE_START = r"^\\begin{captioned_figure}"
     RE_FIGURE_END = r"^\\end{captioned_figure}"
@@ -96,17 +95,22 @@ class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
 
 
 class CaptionedFigureExtension(Extension):
-    """A caption underneath any chunk of content, such as an image."""
+    r"""
+    Any chunk of content, such as an image, with a caption underneath.
 
-    def __init__(self, **kwargs):
-        """Initialize captioned figure extension with passed-in config options.
+    Example:
+        .. code-block:: py
 
-        Configuration args:
-            html_class (str): HTML `class` attribute to add to captioned figure (default: `""`).
-            caption_html_class (str): HTML `class` attribute to add to captioned figure's caption (default: `""`).
+            import markdown
+            from markdown_environments import CaptionedFigureExtension
 
-        Markdown usage:
-            ```
+            input_text = ...
+            output_text = markdown.markdown(input_text, extensions=[
+                CaptionedFigureExtension(html_class="never", caption_html_class="gonna")
+            ])
+
+    Markdown usage:
+        .. code-block:: md
 
             \begin{captioned_figure}
             <figure content>
@@ -117,19 +121,27 @@ class CaptionedFigureExtension(Extension):
 
             \end{captioned_figure}
 
-            ```
-            All blocks must be surrounded by blank lines. Note that the `caption` block can be placed anywhere within
-            the `captioned_figure` block.
-        
-        HTML output:
-            ```
+        becomes…
+
+        .. code-block:: html
+
             <figure class="[html_class]">
               [figure content]
               <figcaption class="[caption_html_class]">
                 [caption]
               </figcaption>
             </figure>
-            ```
+
+        Note that the `caption` block can be placed anywhere within the `captioned_figure` block, as long as, of course,
+        there are blank lines before and after the `caption` block.
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Initialize captioned figure extension, with configuration options passed as the following keyword arguments:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to figure (default: `""`).
+            - **caption_html_class** (*str*) – HTML `class` attribute to add to caption (default: `""`).
         """
 
         self.config = {
@@ -149,5 +161,4 @@ class CaptionedFigureExtension(Extension):
 
 
 def makeExtension(**kwargs):
-    """:meta private:"""
     return CaptionedFigureExtension(**kwargs)

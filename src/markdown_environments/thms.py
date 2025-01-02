@@ -157,31 +157,31 @@ class ThmsExtension(Extension):
         self.config = {
             "div_html_class": [
                 "",
-                "HTML `class` attribute to add to div (default: `\"\"`)."
+                "HTML `class` attribute to add to div. Defaults to `\"\"`."
             ],
             "div_types": [
                 {},
-                "Types of div-based theorem environments to define (default: `{}`)."
+                "Types of div-based theorem environments to define. Defaults to `{}`."
             ],
             "dropdown_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown. Defaults to `\"\"`."
             ],
             "dropdown_summary_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown summary (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown summary. Defaults to `\"\"`."
             ],
             "dropdown_content_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown content (default: `\"\"`)."
+                "HTML `class` attribute to add to dropdown content. Defaults to `\"\"`."
             ],
             "dropdown_types": [
                 {},
-                "Types of dropdown-based theorem environments to define (default: `{}`)."
+                "Types of dropdown-based theorem environments to define. Defaults to `{}`."
             ],
             "thm_counter_add_html_elem": [
                 False,
-                "Whether theorem counters are contained in their own HTML element (default: `False`)."
+                "Whether theorem counters are contained in their own HTML element. Defaults to `False`."
             ],
             "thm_counter_html_id_prefix": [
                 "",
@@ -192,15 +192,15 @@ class ThmsExtension(Extension):
             ],
             "thm_counter_html_class": [
                 "",
-                "HTML `class` attribute of theorem counters if `counter_add_html_elem` is `True` (default: `\"\"`)."
+                "HTML `class` attribute of theorem counters if `counter_add_html_elem` is `True`. Defaults to `\"\"`."
             ],
             "thm_heading_html_class": [
                 "",
-                "HTML `class` attribute of theorem heading (default: `\"\"`)."
+                "HTML `class` attribute of theorem heading. Defaults to `\"\"`."
             ],
             "thm_type_html_class": [
                 "",
-                "HTML `class` attribute of theorem type HTML element in theorem heading (default: `\"\"`)."
+                "HTML `class` attribute of theorem type HTML element in theorem heading. Defaults to `\"\"`."
             ]
         }
         util.init_extension_with_configs(self, **kwargs)

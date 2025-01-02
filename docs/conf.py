@@ -8,19 +8,15 @@ copyright = "2025, AnonymousRand"
 author = "AnonymousRand"
 
 extensions = [
-    #"autoapi.extension",
     "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode"
 ]
-#autoapi_dirs = ["../src/"]  # location to parse for API reference
-#autoapi_options = [
-#    "imported-members",
-#    "members",
-#    "show-inheritance",
-#    "show-module-summary",
-#    "special-members"
-#]
+
+default_role = "code"           # single backticks render as inline code instead of needing double backticks
 html_theme = "sphinx_rtd_theme"
-source_suffix = [".md", ".rst"]
+napoleon_custom_sections = [    # custom recognized sections in docstrings
+    ("Markdown usage", "Example")
+]
+source_suffix = [".md", ".rst"] # allows inclusion of `.md` files from project root
