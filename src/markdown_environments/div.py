@@ -52,7 +52,7 @@ class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
 
 class DivExtension(Extension):
     r"""
-    A general-purpose `<div>` that you can tack on HTML `class`es to.
+    A general-purpose `<div>` that you can tack on HTML `class` es to.
 
     Example:
         .. code-block:: py
@@ -93,7 +93,7 @@ class DivExtension(Extension):
             - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
               Defaults to `False`.
 
-        The key for each div type defined in `types` is inserted directly into the regex patterns that search for
+        The key for each type defined in `types` is inserted directly into the regex patterns that search for
         `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
         type's value is a dictionary with the following possible options:
 

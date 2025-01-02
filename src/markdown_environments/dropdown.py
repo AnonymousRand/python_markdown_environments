@@ -8,34 +8,6 @@ from .mixins import HtmlClassMixin, ThmMixin
 
 
 class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
-    """
-    A dropdown that can be toggled open or closed, with only a summary (preview) portion shown when closed.
-
-    Usage:
-        ```
-
-        \begin{<type>}
-
-        \begin{summary}
-        <summary>
-        \end{summary}
-
-        <collapsible content>
-        \end{<type>}
-
-        ```
-        - HTML output:
-            ```
-            <details class="[html_class] [types[type][html_class]]">
-              <summary class="[summary_html_class]">
-                [summary]
-              </summary>
-              <div class="[content_html_class]">
-                [collapsible content]
-              </div>
-            </details>
-            ```
-    """
 
     RE_SUMMARY_START = r"^\\begin{summary}"
     RE_SUMMARY_END = r"^\\end{summary}"
@@ -124,7 +96,71 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
 
 
 class DropdownExtension(Extension):
+    r"""
+    A dropdown that can be toggled open or closed, with only a preview portion (`<summary>`) shown when closed.
+
+    Example:
+        .. code-block:: py
+
+            import markdown
+            from markdown_environments import DropdownExtension
+
+            input_text = ...
+            output_text = markdown.markdown(input_text, extensions=[
+                DropdownExtension(
+                    html_class="gonna", summary_html_class="let", content_html_class="you",
+                    types={
+                        type1: {"html_class": "down"},
+                        type2: {}
+                    }
+                )
+            ])
+
+    Markdown usage:
+        .. code-block:: md
+
+            \begin{<type>}
+
+            \begin{summary}
+            <summary>
+            \end{summary}
+
+            <collapsible content>
+            \end{<type>}
+
+        becomes…
+
+        .. code-block:: html
+
+            <details class="[html_class] [type's html_class]">
+              <summary class="[summary_html_class]">
+                [summary]
+              </summary>
+
+              <div class="[content_html_class]">
+                [collapsible content]
+              </div>
+            </details>
+    """
+
     def __init__(self, **kwargs):
+        r"""
+        Initialize dropdown extension, with configuration options passed as the following keyword arguments:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to dropdown. Defaults to `""`.
+            - **summary_html_class** (*str*) – HTML `class` attribute to add to dropdown summary. Defaults to `""`.
+            - **content_html_class** (*str*) – HTML `class` attribute to add to dropdown content. Defaults to `""`.
+            - **types** (*dict*) – Types of dropdown environments to define. Defaults to `{}`.
+            - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
+              Defaults to `False`.
+
+        The key for each type defined in `types` is inserted directly into the regex patterns that search for
+        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
+        type's value is a dictionary with the following possible options:
+
+            - **html_class** (*str*) – HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
+        """
+
         self.config = {
             "html_class": [
                 "",
