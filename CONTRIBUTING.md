@@ -18,6 +18,6 @@ Run `hatch test` in the project's root directory. Tests are located in `tests/`;
 
 ## Generating Documentation
 
-Module, class, and function documentation are generated automatically from docstrings by `sphinx.ext.autodoc`. To update the documentation, simply update the docstrings and Read the Docs will automatically run Sphinx to generate the documentation when your changes are merged. Alternatively, to generate documentation manually for testing, run `make html` in the `docs/` directory and then open `docs/_build/html/index.html` in a browser.
+Module, class, and function documentation are generated automatically from docstrings by `sphinx.ext.autodoc`. To update the documentation, simply update the docstrings and Read the Docs will automatically run Sphinx to generate the documentation when I create a new release. Alternatively, to generate documentation manually for testing, run `make html` in the `docs/` directory and then open `docs/_build/html/index.html` in a browser.
 
 Docstrings use Google style, although a sprinkle of reStructuredText/Sphinx is used for things like controlling syntax highlighting on code blocks.
