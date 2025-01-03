@@ -10,7 +10,7 @@ venv/
 # python
 __pycache__/
 
-# testing
+# tests
 .pytest_cache/
 .coverage
 
