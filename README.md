@@ -105,7 +105,7 @@ Its wings are too small to get its fat little body off the ground.
 
 
 
-\begin{thm\*}{hidden thm name used as id; not real LaTeX syntax}
+\begin{thm\*}{hidden thm name used as `id`; not real LaTeX syntax}
 Bees, of course, fly anyways.
 \end{thm\*}
 

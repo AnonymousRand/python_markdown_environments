@@ -1,5 +1,6 @@
 import re
 import xml.etree.ElementTree as etree
+from bs4 import BeautifulSoup
 from markdown.extensions import Extension
 from markdown.postprocessors import Postprocessor
 from markdown.treeprocessors import Treeprocessor
@@ -78,6 +79,8 @@ class ThmHeadingProcessor(Postprocessor, HtmlClassMixin):
 
     def run(self, text):
         def format_for_html(s: str) -> str:
+            soup = BeautifulSoup(s, "lxml")      # remove any HTML tags
+            s = soup.get_text()
             s = ("-".join(s.split())).lower() 
             s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
             s = re.sub(r"[^A-Za-z0-9-]", "", s)
@@ -390,29 +393,41 @@ class ThmsExtension(Extension):
         thm_heading_config = self.getConfig("thm_heading_config")
         # remember `ThmCounter`'s priority must be higher than TOC extension
         md.treeprocessors.register(
-                ThmCounterProcessor(md, add_html_elem=thm_counter_config.get("add_html_elem"),
-                        html_id_prefix=thm_counter_config.get("html_id_prefix"),
-                        html_class=thm_counter_config.get("html_class")),
-                "thm_counter", 999)
+            ThmCounterProcessor(
+                md, add_html_elem=thm_counter_config.get("add_html_elem"),
+                html_id_prefix=thm_counter_config.get("html_id_prefix"),
+                html_class=thm_counter_config.get("html_class")
+            ),
+            "thm_counter", 999
+        )
         md.postprocessors.register(
-                ThmHeadingProcessor(md, html_class=thm_heading_config.get("html_class"),
-                        emph_html_class=thm_heading_config.get("emph_html_class")),
-                "thm_heading", 105)
+            ThmHeadingProcessor(
+                md, html_class=thm_heading_config.get("html_class"),
+                emph_html_class=thm_heading_config.get("emph_html_class")
+            ),
+            "thm_heading", 105
+        )
 
         if len(div_config.get("types", {})) > 0:
             from .div import DivProcessor
             md.parser.blockprocessors.register(
-                    DivProcessor(md.parser, types=div_config.get("types"),
-                            html_class=div_config.get("html_class"), is_thm=True),
-                    "thms_div", 105)
+                DivProcessor(
+                    md.parser, types=div_config.get("types"), html_class=div_config.get("html_class"),
+                    is_thm=True
+                ),
+                "thms_div", 105
+            )
         if len(dropdown_config.get("types", {})) > 0:
             from .dropdown import DropdownProcessor
             md.parser.blockprocessors.register(
-                    DropdownProcessor(md.parser, types=dropdown_config.get("types"), 
-                            html_class=dropdown_config.get("html_class"),
-                            summary_html_class=dropdown_config.get("summary_html_class"),
-                            content_html_class=dropdown_config.get("content_html_class"), is_thm=True),
-                    "thms_dropdown", 999)
+                DropdownProcessor(
+                    md.parser, types=dropdown_config.get("types"), 
+                    html_class=dropdown_config.get("html_class"),
+                    summary_html_class=dropdown_config.get("summary_html_class"),
+                    content_html_class=dropdown_config.get("content_html_class"), is_thm=True
+                ),
+                "thms_dropdown", 999
+            )
 
 
 def makeExtension(**kwargs):

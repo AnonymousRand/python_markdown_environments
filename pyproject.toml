@@ -26,6 +26,8 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy"
 ]
 dependencies = [
+    "beautifulsoup4~=4.12.3",
+    "lxml~=5.3.0",
     "markdown~=3.7"
 ]
 
