@@ -2,7 +2,7 @@
 
 Replicating amsthm features and syntax in Markdown so you can publish mathematical papers in HTML—because what mathematician *hasn't* tried to publish to the very reputable journal called *Their Janky Flask Personal Site That No One Will Ever See*?
 
-This Python-Markdown extension uses LaTeX-like syntax
+This [Python-Markdown](https://github.com/Python-Markdown/markdown) extension uses LaTeX-like syntax
 ```
 \begin{...}
 ...
