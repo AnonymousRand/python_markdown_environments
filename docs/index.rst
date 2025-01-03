@@ -1,6 +1,6 @@
 .. include:: ../README.md
     :parser: myst
-    :end-before: <!-- example usage -->
+    :end-before: ## Further Reading
 
 .. toctree::
     :hidden:
