@@ -16,7 +16,7 @@ TYPES = {
     "extension, filename_base",
     [
         (DivExtension(types=TYPES), "div/success_1"),
-        (DivExtension(html_class="md-div", types=TYPES), "div/success_2"),
+        (DivExtension(types=TYPES, html_class="md-div"), "div/success_2"),
         (DivExtension(), "div/fail_1"),
         (DivExtension(types=TYPES), "div/fail_2"),
         (DivExtension(types=TYPES), "div/fail_3")

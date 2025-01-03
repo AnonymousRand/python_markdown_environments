@@ -9,10 +9,10 @@ from .mixins import HtmlClassMixin, ThmMixin
 
 class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
 
-    def __init__(self, *args, html_class: str, types: dict, is_thm: bool, **kwargs):
+    def __init__(self, *args, types: dict, html_class: str, is_thm: bool, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_html_class(html_class)
         self.init_thm(types, is_thm)
+        self.init_html_class(html_class)
 
     def test(self, parent, block):
         return ThmMixin.test(self, parent, block)
@@ -88,26 +88,24 @@ class DivExtension(Extension):
         r"""
         Initialize div extension, with configuration options passed as the following keyword arguments:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to div. Defaults to `""`.
-            - **types** (*dict*) – Types of div environments to define. Defaults to `{}`.
-            - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
-              Defaults to `False`.
+            - **types** (*dict*) -- Types of div environments to define. Defaults to `{}`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to divs. Defaults to `""`.
 
         The key for each type defined in `types` is inserted directly into the regex patterns that search for
         `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
-        type's value is a dictionary with the following possible options:
+        type's value is itself a dictionary with the following possible options:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to divs of that type. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to divs of that type. Defaults to `""`.
         """
 
         self.config = {
-            "html_class": [
-                "",
-                "HTML `class` attribute to add to div. Defaults to `\"\"`."
-            ],
             "types": [
                 {},
                 "Types of div environments to define. Defaults to `{}`."
+            ],
+            "html_class": [
+                "",
+                "HTML `class` attribute to add to div. Defaults to `\"\"`."
             ],
             "is_thm": [
                 False,

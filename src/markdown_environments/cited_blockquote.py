@@ -137,8 +137,8 @@ class CitedBlockquoteExtension(Extension):
         """
         Initialize cited blockquote extension, with configuration options passed as the following keyword arguments:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to blockquote. Defaults to `""`.
-            - **citation_html_class** (*str*) – HTML `class` attribute to add caption. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to blockquotes. Defaults to `""`.
+            - **citation_html_class** (*str*) -- HTML `class` attribute to add to captions. Defaults to `""`.
         """
 
         self.config = {

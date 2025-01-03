@@ -140,8 +140,8 @@ class CaptionedFigureExtension(Extension):
         """
         Initialize captioned figure extension, with configuration options passed as the following keyword arguments:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to figure (default: `""`).
-            - **caption_html_class** (*str*) – HTML `class` attribute to add to caption (default: `""`).
+            - **html_class** (*str*) -- HTML `class` attribute to add to figures (default: `""`).
+            - **caption_html_class** (*str*) -- HTML `class` attribute to add to captions (default: `""`).
         """
 
         self.config = {

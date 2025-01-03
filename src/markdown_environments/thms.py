@@ -8,57 +8,6 @@ from . import util
 from .mixins import HtmlClassMixin
 
 
-class ThmHeadingProcessor(InlineProcessor, HtmlClassMixin):
-    """
-    A theorem heading that allows you to add custom styling and can generate linkable HTML `id`s.
-
-    Usage:
-        ```
-        {[<theorem_heading>]}[<optional_theorem_name>][[<optional_hidden_theorem_name>]]
-        ```
-        - HTML output:
-            ```
-            <span id="[optional_theorem_name/optional_hidden_theorem_name]" class="md-thm-heading">
-              [theorem_heading]
-            </span>
-            [optional_theorem_name]
-            ```
-        - `<optional_hidden_theorem_name>` only adds an HTML `id`, and is not displayed. It is ignored if
-          `<optional_theorem_name>` is provided.
-    """
-
-    def __init__(self, *args, html_class: str, thm_type_html_class: str, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.init_html_class(html_class)
-        self.thm_type_html_class = thm_type_html_class
-
-    def handleMatch(self, m, current_text_block):
-        def format_for_html(s: str) -> str:
-            s = ("-".join(s.split())).lower() 
-            s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
-            s = re.sub(r"[^A-Za-z0-9-]", "", s)
-            return s
-
-        # create theorem heading element
-        elem = etree.Element("span")
-        if self.html_class != "":
-            elem.set("class", self.html_class)
-        # create and fill in theorem type subelement
-        elem_thm_type = etree.SubElement(elem, "span")
-        if self.thm_type_html_class != "":
-            elem_thm_type.set("class", self.thm_type_html_class)
-        elem_thm_type.text = f"{m.group(1)}"
-        # fill in the rest
-        if m.group(2) is not None:
-            # add theorem name
-            elem_thm_type.tail = f" ({m.group(2)})"
-            elem.set("id", format_for_html(m.group(2)))
-        elif m.group(3) is not None:
-            # add theorem `id` from hidden name
-            elem.set("id", format_for_html(m.group(3)))
-        return elem, m.start(0), m.end(0)
-
-
 # the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
 # which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before the TOC extension
 # (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
@@ -152,9 +101,118 @@ class ThmCounterProcessor(Treeprocessor):
             child.text = new_text
 
 
+class ThmHeadingProcessor(InlineProcessor, HtmlClassMixin):
+    """
+    A theorem heading that allows you to add custom styling and can generate linkable HTML `id`s.
+
+    Usage:
+        ```
+        {[<theorem_heading>]}[<optional_theorem_name>][[<optional_hidden_theorem_name>]]
+        ```
+        - HTML output:
+            ```
+            <span id="[optional_theorem_name/optional_hidden_theorem_name]" class="md-thm-heading">
+              [theorem_heading]
+            </span>
+            [optional_theorem_name]
+            ```
+        - `<optional_hidden_theorem_name>` only adds an HTML `id`, and is not displayed. It is ignored if
+          `<optional_theorem_name>` is provided.
+    """
+
+    def __init__(self, *args, html_class: str, emph_html_class: str, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.init_html_class(html_class)
+        self.emph_html_class = emph_html_class
+
+    def handleMatch(self, m, current_text_block):
+        def format_for_html(s: str) -> str:
+            s = ("-".join(s.split())).lower() 
+            s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
+            s = re.sub(r"[^A-Za-z0-9-]", "", s)
+            return s
+
+        # create theorem heading element
+        elem = etree.Element("span")
+        if self.html_class != "":
+            elem.set("class", self.html_class)
+        # create and fill in theorem type subelement
+        elem_thm_type = etree.SubElement(elem, "span")
+        if self.emph_html_class != "":
+            elem_thm_type.set("class", self.emph_html_class)
+        elem_thm_type.text = f"{m.group(1)}"
+        # fill in the rest
+        if m.group(2) is not None:
+            # add theorem name
+            elem_thm_type.tail = f" ({m.group(2)})"
+            elem.set("id", format_for_html(m.group(2)))
+        elif m.group(3) is not None:
+            # add theorem `id` from hidden name
+            elem.set("id", format_for_html(m.group(3)))
+        return elem, m.start(0), m.end(0)
+
+
 class ThmsExtension(Extension):
     r"""
-    A dropdown that can be toggled open or closed, with only a preview portion (`<summary>`) shown when closed.
+    A wrapper around divs and dropdowns that provides more configurable options to mimic the theorem capabilities of
+    LaTeX.
+
+    In particular, this extension introduces theorem headings and theorem counters, which can be used in theorem
+    environments or with their standalone Markdown syntax as described below.
+
+    Theorem headings:
+        The terminology I use for the parts of a theorem heading is as follows:
+            
+           .. code-block:: text
+
+               Lemma 2.1.3 (Euler's theorem).
+                 ^     ^           ^        ^
+                thm   thm         thm      thm
+               type counter       name    punct
+
+        Markdown usage:
+            .. code-block:: md
+
+                {[<thm type><thm counter>]}[<optional thm name>]{<optional hidden thm name>}
+
+            becomes…
+
+            .. code-block:: html
+
+                <span id="[optional thm name/optional hidden thm name]">
+                  <span>[thm type][thm counter]</span>
+                </span>
+                [optional thm name]
+
+            `<optional hidden thm name>` only adds an HTML `id`, and is not displayed. It is ignored if
+            `<optional thm name>` is provided.
+
+    Theorem counters:
+        Theorem counters are not typed manually, but rather specified as a (positive) offset from the previous theorem
+        counter, similar to how `\\newtheorem` in LaTeX lets you define the counter (but hopefully in a slightly less
+        janky way). Offsets are specified per segment, and incrementing a segment resets all following segments to 0. In
+        addition, each counter will display only as many segments as provided in its Markdown.
+
+        Markdown usage:
+            .. code-block:: md
+
+                Section {{1}}
+                Subsection {{0,1,0}} (displays as many segments as given)
+                Lemma {{0,0,0,1}}
+                Theorem {{0,0,1}} (the fourth counter segment is reset here). Let x be a lorem ipsum.
+                Reevaluating Life Choices {{0,0,0,3}}
+                What even is this {{1,2,0,3,9}} (first counter segment resets next ones, and so on)
+
+            becomes…
+
+            .. code-block:: html
+
+                <p>Section 1</p>
+                <p>Subsection 1.1.0 (displays as many segments as given)</p>
+                <p>Lemma 1.1.0.1</p>
+                <p>Theorem 1.1.1 (the fourth counter segment is reset here). Let x be a lorem ipsum.</p>
+                <p>Reevaluating Life Choices 1.1.1.3</p>
+                <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
 
     Example:
         .. code-block:: py
@@ -204,101 +262,123 @@ class ThmsExtension(Extension):
         r"""
         Initialize dropdown extension, with configuration options passed as the following keyword arguments:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to dropdown. Defaults to `""`.
-            - **summary_html_class** (*str*) – HTML `class` attribute to add to dropdown summary. Defaults to `""`.
-            - **content_html_class** (*str*) – HTML `class` attribute to add to dropdown content. Defaults to `""`.
-            - **types** (*dict*) – Types of dropdown environments to define. Defaults to `{}`.
-            - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
-              Defaults to `False`.
+            - **div_config** (*dict*) -- configs for divs. Possible config keys are:
 
-        The key for each type defined in `types` is inserted directly into the regex patterns that search for
-        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
-        type's value is a dictionary with the following possible options:
+                - **types** (*dict*) -- Types of div-based theorem environments to define. Defaults to `{}`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to div-based theorem environments.
+                  Defaults to `""`.
 
-            - **html_class** (*str*) – HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
+            - **dropdown_config** (*dict*) -- configs for dropdowns. Possible config keys are:
+
+                - **types** (*dict*) -- Types of dropdown-based theorem environments to define. Defaults to `{}`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to dropdown-based theorem environments.
+                  Defaults to `""`.
+                - **summary_html_class** (*str*) -- HTML `class` attribute to add to dropdown summaries.
+                  Defaults to `""`.
+                - **content_html_class** (*str*) -- HTML `class` attribute to add to dropdown contents.
+                  Defaults to `""`.
+
+            - **thm_counter_config** (*dict*) -- configs for theorem counter. Possible config keys are:
+
+                - **add_html_elem** (*bool*) -- Whether theorem counters are contained in their own HTML element.
+                  Defaults to `False`.
+                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem counters if
+                  `add_html_elem` is `True`. Defaults to `""`.
+                - **html_class** (*str*) -- HTML `class` attribute of theorem counters if `add_html_elem` is `True`.
+                  Defaults to `""`.
+
+            - **thm_heading_config** (*dict*) -- configs for theorem headings. Possible config keys are:
+
+                - **html_class** (*str*) -- HTML `class` attribute to add to theorem headings. Defaults to `""`.
+                - **emph_html_class** (*str*) -- HTML `class` attribute to add to theorem types in theorem headings.
+                  Defaults to `""`.
+
+        The key for each type defined in both div and dropdown `types` is inserted directly into the regex patterns that
+        search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In
+        addition, each type's value is itself a dictionary with the following possible options:
+
+            - **thm_type** (*str*) -- Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
+            - **thm_counter_incr** (*str*) -- Defaults to `""`.
+            - **thm_name_overrides_thm_heading** (*bool*) -- Defaults to `False`.
+            - **thm_heading_punct** (*str*) -- Defaults to `"."`.
+            - **use_punct_if_nothing_after** (*bool*) -- Defaults to `True`.
         """
 
         self.config = {
-            "div_html_class": [
-                "",
-                "HTML `class` attribute to add to div. Defaults to `\"\"`."
-            ],
-            "div_types": [
+            "div_config": [
                 {},
-                "Types of div-based theorem environments to define. Defaults to `{}`."
+                "Config for div"
             ],
-            "dropdown_html_class": [
-                "",
-                "HTML `class` attribute to add to dropdown. Defaults to `\"\"`."
-            ],
-            "dropdown_summary_html_class": [
-                "",
-                "HTML `class` attribute to add to dropdown summary. Defaults to `\"\"`."
-            ],
-            "dropdown_content_html_class": [
-                "",
-                "HTML `class` attribute to add to dropdown content. Defaults to `\"\"`."
-            ],
-            "dropdown_types": [
+            "dropdown_config": [
                 {},
-                "Types of dropdown-based theorem environments to define. Defaults to `{}`."
+                "Config for dropdown"
             ],
-            "thm_counter_add_html_elem": [
-                False,
-                "Whether theorem counters are contained in their own HTML element. Defaults to `False`."
+            "thm_counter_config": [
+                {},
+                "Config for theorem counter"
             ],
-            "thm_counter_html_id_prefix": [
-                "",
-                (
-                    "Text to prepend to HTML `id` attribute of theorem counters if `counter_add_html_elem` is `True` "
-                    "(default: `\"\"`)."
-                )
-            ],
-            "thm_counter_html_class": [
-                "",
-                "HTML `class` attribute of theorem counters if `counter_add_html_elem` is `True`. Defaults to `\"\"`."
-            ],
-            "thm_heading_html_class": [
-                "",
-                "HTML `class` attribute of theorem heading. Defaults to `\"\"`."
-            ],
-            "thm_type_html_class": [
-                "",
-                "HTML `class` attribute of theorem type HTML element in theorem heading. Defaults to `\"\"`."
+            "thm_heading_config": [
+                {},
+                "Config for theorem heading"
             ]
         }
         util.init_extension_with_configs(self, **kwargs)
 
+        # set default configs for each extension, since we no longer have the top-level `self.config` functionality
+        # to set defaults for us
+        div_config = self.getConfig("div_config")
+        div_config.setdefault("types", {})
+        div_config.setdefault("html_class", "")
+
+        dropdown_config = self.getConfig("dropdown_config")
+        dropdown_config.setdefault("types", {})
+        dropdown_config.setdefault("html_class", "")
+        dropdown_config.setdefault("summary_html_class", "")
+        dropdown_config.setdefault("content_html_class", "")
+
+        thm_counter_config = self.getConfig("thm_counter_config")
+        thm_counter_config.setdefault("add_html_elem", False)
+        thm_counter_config.setdefault("html_id_prefix", "")
+        thm_counter_config.setdefault("html_class", "")
+
+        thm_heading_config = self.getConfig("thm_heading_config")
+        thm_heading_config.setdefault("html_class", "")
+        thm_heading_config.setdefault("emph_html_class", "")
 
     def extendMarkdown(self, md):
         # registering resets state between uses of `markdown.Markdown` object for things like the `ThmCounter` extension
         md.registerExtension(self)
 
+        div_config = self.getConfig("div_config")
+        dropdown_config = self.getConfig("dropdown_config")
+        thm_counter_config = self.getConfig("thm_counter_config")
+        thm_heading_config = self.getConfig("thm_heading_config")
         # remember `ThmCounter`'s priority must be higher than TOC extension
         md.treeprocessors.register(
-                ThmCounterProcessor(md, add_html_elem=self.getConfig("thm_counter_add_html_elem"),
-                        html_id_prefix=self.getConfig("thm_counter_html_id_prefix"),
-                        html_class=self.getConfig("thm_counter_html_class")),
+                ThmCounterProcessor(md, add_html_elem=thm_counter_config.get("add_html_elem"),
+                        html_id_prefix=thm_counter_config.get("html_id_prefix"),
+                        html_class=thm_counter_config.get("html_class")),
                 "thm_counter", 999)
         md.inlinePatterns.register(
                 ThmHeadingProcessor(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
-                        html_class=self.getConfig("thm_heading_html_class"),
-                        thm_type_html_class=self.getConfig("thm_type_html_class")),
+                        html_class=thm_heading_config.get("html_class"),
+                        emph_html_class=thm_heading_config.get("emph_html_class")),
                 "thm_heading", 105)
 
-        if len(self.getConfig("div_types")) > 0:
+        if len(div_config.get("types", {})) > 0:
             from .div import DivProcessor
             md.parser.blockprocessors.register(
-                    DivProcessor(md.parser, html_class=self.getConfig("div_html_class"),
-                            types=self.getConfig("div_types"), is_thm=True),
+                    DivProcessor(md.parser, types=div_config.get("types"),
+                            html_class=div_config.get("html_class"), is_thm=True),
                     "thms_div", 105)
-        if len(self.getConfig("dropdown_types")) > 0:
+        if len(dropdown_config.get("types", {})) > 0:
             from .dropdown import DropdownProcessor
             md.parser.blockprocessors.register(
-                    DropdownProcessor(md.parser, html_class=self.getConfig("dropdown_html_class"),
-                            summary_html_class=self.getConfig("dropdown_summary_html_class"),
-                            content_html_class=self.getConfig("dropdown_content_html_class"),
-                            types=self.getConfig("dropdown_types"), is_thm=True),
+                    DropdownProcessor(md.parser, types=dropdown_config.get("types"), 
+                            html_class=dropdown_config.get("html_class"),
+                            summary_html_class=dropdown_config.get("summary_html_class"),
+                            content_html_class=dropdown_config.get("content_html_class"), is_thm=True),
                     "thms_dropdown", 999)
 
 

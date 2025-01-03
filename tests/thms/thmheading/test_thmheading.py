@@ -12,7 +12,7 @@ from ...util import run_extension_test
         (ThmsExtension(), "thms/thmheading/success_3"),
         (ThmsExtension(), "thms/thmheading/success_4"),
         (
-            ThmsExtension(thm_heading_html_class="bottom-text", thm_type_html_class="top-text"),
+            ThmsExtension(thm_heading_config={"html_class": "bottom-text", "emph_html_class": "top-text"}),
             "thms/thmheading/success_5"
         ),
         (ThmsExtension(), "thms/thmheading/fail_1")

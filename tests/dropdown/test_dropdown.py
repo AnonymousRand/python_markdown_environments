@@ -18,10 +18,10 @@ TYPES = {
         (DropdownExtension(types=TYPES), "dropdown/success_1"),
         (
             DropdownExtension(
+                types=TYPES,
                 html_class="phd-dropdown",
                 summary_html_class="md-dropdown__summary",
-                content_html_class="md-dropdown__content",
-                types=TYPES
+                content_html_class="md-dropdown__content"
             ),
             "dropdown/success_2"
         ),

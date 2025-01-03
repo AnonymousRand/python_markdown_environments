@@ -12,11 +12,11 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
     RE_SUMMARY_START = r"^\\begin{summary}"
     RE_SUMMARY_END = r"^\\end{summary}"
 
-    def __init__(self, *args, html_class: str, summary_html_class: str, content_html_class: str, types: dict,
+    def __init__(self, *args, types: dict, html_class: str, summary_html_class: str, content_html_class: str,
             is_thm: bool, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_html_class(html_class)
         self.init_thm(types, is_thm)
+        self.init_html_class(html_class)
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
 
@@ -147,21 +147,23 @@ class DropdownExtension(Extension):
         r"""
         Initialize dropdown extension, with configuration options passed as the following keyword arguments:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to dropdown. Defaults to `""`.
-            - **summary_html_class** (*str*) – HTML `class` attribute to add to dropdown summary. Defaults to `""`.
-            - **content_html_class** (*str*) – HTML `class` attribute to add to dropdown content. Defaults to `""`.
-            - **types** (*dict*) – Types of dropdown environments to define. Defaults to `{}`.
-            - **is_thm** (*bool*) – Whether to use theorem logic (e.g. heading); you shouldn't have to set this value.
-              Defaults to `False`.
+            - **types** (*dict*) -- Types of dropdown environments to define. Defaults to `{}`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns. Defaults to `""`.
+            - **summary_html_class** (*str*) -- HTML `class` attribute to add to dropdown summaries. Defaults to `""`.
+            - **content_html_class** (*str*) -- HTML `class` attribute to add to dropdown contents. Defaults to `""`.
 
         The key for each type defined in `types` is inserted directly into the regex patterns that search for
         `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
-        type's value is a dictionary with the following possible options:
+        type's value is itself a dictionary with the following possible options:
 
-            - **html_class** (*str*) – HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
         """
 
         self.config = {
+            "types": [
+                {},
+                "Types of dropdown environments to define. Defaults to `{}`."
+            ],
             "html_class": [
                 "",
                 "HTML `class` attribute to add to dropdown. Defaults to `\"\"`."
@@ -173,10 +175,6 @@ class DropdownExtension(Extension):
             "content_html_class": [
                 "",
                 "HTML `class` attribute to add to dropdown content. Defaults to `\"\"`."
-            ],
-            "types": [
-                {},
-                "Types of dropdown environments to define. Defaults to `{}`."
             ],
             "is_thm": [
                 False,

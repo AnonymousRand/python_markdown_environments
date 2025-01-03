@@ -15,4 +15,4 @@ from .dropdown import DropdownExtension
 from .thms import ThmsExtension
 
 
-__version__ = "0.17.0"
+__version__ = "0.18.0"
