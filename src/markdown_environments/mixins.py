@@ -25,7 +25,7 @@ class ThmMixin(ABC):
             opts.setdefault("html_class", "")
             opts.setdefault("thm_counter_incr", "")
             opts.setdefault("thm_name_overrides_thm_heading", False)
-            opts.setdefault("thm_heading_punct", ".")
+            opts.setdefault("thm_punct", ".")
             opts.setdefault("use_punct_if_nothing_after", True)
             # add type to regex choices
             if self.is_thm:
@@ -68,10 +68,10 @@ class ThmMixin(ABC):
         first_p = target_elem.find("p")
         target_elem = first_p if first_p is not None else target_elem
         if target_elem.text is not None:
-            target_elem.text = f"{thm_heading_md}{self.type_opts.get('thm_heading_punct')} {target_elem.text}"
+            target_elem.text = f"{thm_heading_md}{self.type_opts.get('thm_punct')} {target_elem.text}"
         else:
             if self.type_opts.get("use_punct_if_nothing_after"):
-                target_elem.text = f"{thm_heading_md}{self.type_opts.get('thm_heading_punct')}"
+                target_elem.text = f"{thm_heading_md}{self.type_opts.get('thm_punct')}"
             else:
                 target_elem.text = thm_heading_md
 

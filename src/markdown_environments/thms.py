@@ -157,11 +157,11 @@ class ThmsExtension(Extension):
     A wrapper around divs and dropdowns that provides more configurable options to mimic the theorem capabilities of
     LaTeX.
 
-    In particular, this extension introduces theorem headings and theorem counters, which can be used in theorem
-    environments or with their standalone Markdown syntax as described below.
+    In particular, this extension introduces theorem headings and theorem counters, which are used in theorem
+    environments but can also be used standalone as described below.
 
     Theorem headings:
-        The terminology I use for the parts of a theorem heading is as follows:
+        The terminology I use for the parts of a theorem heading throughout the documentation is as follows:
             
            .. code-block:: text
 
@@ -184,20 +184,20 @@ class ThmsExtension(Extension):
                 </span>
                 [optional thm name]
 
-            `<optional hidden thm name>` only adds an HTML `id`, and is not displayed. It is ignored if
-            `<optional thm name>` is provided.
+            `<optional hidden thm name>` is only used for the HTML `id`, and it is ignored if `<optional thm name>` is
+            provided.
 
     Theorem counters:
-        Theorem counters are not typed manually, but rather specified as a (positive) offset from the previous theorem
-        counter, similar to how `\\newtheorem` in LaTeX lets you define the counter (but hopefully in a slightly less
-        janky way). Offsets are specified per segment, and incrementing a segment resets all following segments to 0. In
-        addition, each counter will display only as many segments as provided in its Markdown.
+        Theorem counters are specified as a (positive) offset from the previous theorem counter, similar to how
+        `\\newtheorem` in LaTeX lets you define the counter (but hopefully in a slightly less janky way). Offsets are
+        specified per segment, and incrementing a segment resets all following segments to 0. In addition, each counter
+        will display only as many segments as provided in its Markdown.
 
         Markdown usage:
             .. code-block:: md
 
                 Section {{1}}
-                Subsection {{0,1,0}} (displays as many segments as given)
+                Subsection {{0,1,0,0,0,0,0}} (displays as many segments as given)
                 Lemma {{0,0,0,1}}
                 Theorem {{0,0,1}} (the fourth counter segment is reset here). Let x be a lorem ipsum.
                 Reevaluating Life Choices {{0,0,0,3}}
@@ -208,7 +208,7 @@ class ThmsExtension(Extension):
             .. code-block:: html
 
                 <p>Section 1</p>
-                <p>Subsection 1.1.0 (displays as many segments as given)</p>
+                <p>Subsection 1.1.0.0.0.0.0 (displays as many segments as given)</p>
                 <p>Lemma 1.1.0.1</p>
                 <p>Theorem 1.1.1 (the fourth counter segment is reset here). Let x be a lorem ipsum.</p>
                 <p>Reevaluating Life Choices 1.1.1.3</p>
@@ -218,44 +218,68 @@ class ThmsExtension(Extension):
         .. code-block:: py
 
             import markdown
-            from markdown_environments import DropdownExtension
+            from markdown_environments import ThmsExtension
 
             input_text = ...
             output_text = markdown.markdown(input_text, extensions=[
-                DropdownExtension(
-                    html_class="gonna", summary_html_class="let", content_html_class="you",
-                    types={
-                        type1: {"html_class": "down"},
-                        type2: {}
+                ThmsExtension(
+                    div_config={
+                        "types": {
+                            "thm": {
+                                "thm_type": "Theorem",
+                                "html_class": "md-thm",
+                                "thm_counter_incr": "0,0,1"
+                            }
+                        },
+                        "html_class": "md-div"
+                    },
+                    dropdown_config={
+                        "types": {
+                            "exer": {
+                                "thm_type": "Exercise",
+                                "html_class": "md-exer",
+                                "thm_counter_incr": "0,0,1",
+                            }
+                        },
+                        "html_class": "md-dropdown",
+                        "content_html_class": "md-dropdown__content"
+                    },
+                    thm_counter_config={
+                        "add_html_elem": True,
+                        "html_id_prefix": "spanish-inquisition"
+                    },
+                    thm_heading_config={
+                        "html_class": "md-thm-heading",
                     }
                 )
             ])
 
-    Markdown usage:
+    Markdown usage (div-based):
+        .. code-block:: md
+
+            \begin{<type>}[<optional thm name>]{<optional hidden thm name>}
+            <content>
+            \end{<type>}
+
+        becomes, with theorem heading and counter syntax…
+
         .. code-block:: md
 
             \begin{<type>}
-
-            \begin{summary}
-            <summary>
-            \end{summary}
-
-            <collapsible content>
+            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<optional thm name>]{<optional hidden thm name>}
+            <content>
             \end{<type>}
 
         becomes…
 
         .. code-block:: html
 
-            <details class="[html_class] [type's html_class]">
-              <summary class="[summary_html_class]">
-                [summary]
-              </summary>
-
-              <div class="[content_html_class]">
-                [collapsible content]
-              </div>
-            </details>
+            <div class="[html_class] [type's html_class]">
+              <span id="[optional thm name/optional hidden thm name]">
+                <span>[thm type][thm counter]</span>
+              </span>
+              [optional thm name][type's thm_punct] [content]
+            </div>
     """
 
     def __init__(self, **kwargs):
@@ -301,7 +325,7 @@ class ThmsExtension(Extension):
             - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
             - **thm_counter_incr** (*str*) -- Defaults to `""`.
             - **thm_name_overrides_thm_heading** (*bool*) -- Defaults to `False`.
-            - **thm_heading_punct** (*str*) -- Defaults to `"."`.
+            - **thm_punct** (*str*) -- Defaults to `"."`.
             - **use_punct_if_nothing_after** (*bool*) -- Defaults to `True`.
         """
 

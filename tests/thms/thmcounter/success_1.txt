@@ -1,6 +1,6 @@
 Section {{1}}
 
-Subsection {{0,1,0}} (displays as many segments as given)
+Subsection {{0,1,0,0,0,0,0}} (displays as many segments as given)
 
 Lemma {{0,0,0,1}}
 

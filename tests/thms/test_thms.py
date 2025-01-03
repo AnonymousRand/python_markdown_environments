@@ -9,7 +9,7 @@ DIV_TYPES = {
         "thm_type": "Lemma",
         "html_class": "md-textbox md-textbox-defn last-child-no-mb",
         "thm_counter_incr": "0,0,1",
-        "thm_heading_punct": ":"
+        "thm_punct": ":"
     },
     "thm": {
         "thm_type": "Theorem",
@@ -28,7 +28,7 @@ DROPDOWN_TYPES = {
         "thm_type": "Exercise",
         "html_class": "md-dropdown-exer",
         "thm_counter_incr": "0,0,1",
-        "thm_heading_punct": " -",
+        "thm_punct": " -",
         "use_punct_if_nothing_after": False
     },
     "pf": {
@@ -72,7 +72,7 @@ DROPDOWN_TYPES = {
                             "thm_type": "Exercise",
                             "html_class": "md-exer",
                             "thm_counter_incr": "0,0,1",
-                            "thm_heading_punct": ":",
+                            "thm_punct": ":",
                             "use_punct_if_nothing_after": False
                         },
                         "pf": {

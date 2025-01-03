@@ -44,36 +44,42 @@ from markdown_environments import ThmsExtension
 input_text = ...
 output_text = markdown.markdown(input_text, extensions=[
     ThmsExtension(
-        div_html_class="md-div",
-        div_types={
-            "thm": {
-                "thm_type": "Theorem",
-                "html_class": "md-thm",
-                "thm_counter_incr": "0,0,1"
+        div_config={
+            "types": {
+                "thm": {
+                    "thm_type": "Theorem",
+                    "html_class": "md-thm",
+                    "thm_counter_incr": "0,0,1"
+                },
+                r"thm\\\*": {
+                    "thm_type": "Theorem",
+                    "html_class": "md-thm"
+                }
             },
-            r"thm\\\*": {
-                "thm_type": "Theorem",
-                "html_class": "md-thm"
-            }
+            "html_class": "md-div"
         },
-        dropdown_html_class="md-dropdown",
-        dropdown_summary_html_class="md-dropdown__summary mb-0",
-        dropdown_types={
-            "exer": {
-                "thm_type": "Exercise",
-                "html_class": "md-exer",
-                "thm_counter_incr": "0,0,1",
-                "thm_heading_punct": ":",
-                "use_punct_if_nothing_after": False
+        dropdown_config={
+            "types": {
+                "exer": {
+                    "thm_type": "Exercise",
+                    "html_class": "md-exer",
+                    "thm_counter_incr": "0,0,1",
+                    "thm_punct": ":",
+                    "use_punct_if_nothing_after": False
+                },
+                "pf": {
+                    "thm_type": "Proof",
+                    "thm_counter_incr": "0,0,0,1",
+                    "thm_name_overrides_thm_heading": True
+                }
             },
-            "pf": {
-                "thm_type": "Proof",
-                "thm_counter_incr": "0,0,0,1",
-                "thm_name_overrides_thm_heading": True
-            }
+            "html_class": "md-dropdown",
+            "summary_html_class": "md-dropdown__summary mb-0"
         },
-        thm_heading_html_class="md-thm-heading",
-        thm_type_html_class="md-thm-heading__thm-type"
+        thm_heading_config={
+            "html_class": "md-thm-heading",
+            "emph_html_class": "md-thm-heading__emph"
+        }
     )
 ])
 ```
@@ -138,12 +144,12 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 
 <div class="md-div md-thm">
-  <p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__thm-type">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.</p>
+  <p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__emph">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.</p>
 </div>
 
 <details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading"><span class="md-thm-heading__thm-type">Proof 1.1.1.1</span></span>.
+    <span class="md-thm-heading"><span class="md-thm-heading__emph">Proof 1.1.1.1</span></span>.
   </summary>
   <div>
     <p>Its wings are too small to get its fat little body off the ground.</p>
@@ -153,12 +159,12 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 
 <div class="md-div md-thm">
-  <p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__thm-type">Theorem</span></span>. Bees, of course, fly anyways.</p>
+  <p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__emph">Theorem</span></span>. Bees, of course, fly anyways.</p>
 </div>
 
 <details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading"><span class="md-thm-heading__thm-type">Proofs are configured to have titles override the heading</span></span>.
+    <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading"><span class="md-thm-heading__emph">Proofs are configured to have titles override the heading</span></span>.
   </summary>
   <div>
     <p>Because bees don't care what humans think is impossible.</p>
@@ -169,7 +175,7 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
-    <p><span class="md-thm-heading"><span class="md-thm-heading__thm-type">Exercise 1.1.2</span></span>: Prove that this <code>summary</code> environment is common to all dropdown-based environments.</p>
+    <p><span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.2</span></span>: Prove that this <code>summary</code> environment is common to all dropdown-based environments.</p>
   </summary>
   <div>
     <p>Solution: by reading the documentation, of course!</p>
@@ -180,7 +186,7 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading"><span class="md-thm-heading__thm-type">Exercise 1.1.3</span></span>
+    <span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.3</span></span>
   </summary>
   <div>
     <p>All dropdowns initialized in <code>ThmsExtension()</code> have a default <code>summary</code> value of <code>thm_type</code>, so using dropdowns like <code>pf</code> and <code>exer</code> here without a <code>summary</code> block is also fine.</p>

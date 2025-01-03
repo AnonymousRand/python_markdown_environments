@@ -10,7 +10,7 @@ TYPES = {
         "thm_type": "Lemma",
         "html_class": "md-textbox md-textbox-defn last-child-no-mb",
         "thm_counter_incr": "0,0,1",
-        "thm_heading_punct": ":",
+        "thm_punct": ":",
         "use_punct_if_nothing_after": False
     },
     "thm": {
