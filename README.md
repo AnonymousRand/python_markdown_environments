@@ -27,9 +27,9 @@ pip install markdown-environments
     - Heading punctuation
     - Linkable `id`s by theorem name
 
-## Further Reading
+## Documentation
 
-Full documentation and detailed usage examples can be found [here](https://python-markdown-environments.readthedocs.io).
+Full documentation/API reference can be found [here](https://python-markdown-environments.readthedocs.io).
 
 <!-- example usage -->
 
