@@ -8,7 +8,7 @@ This Python-Markdown extension uses LaTeX-like syntax
 ...
 \end{...}
 ```
-to create enviroments such as captioned figures, general-purpose `<div>`s, dropdowns, and user-defined LaTeX-style theorems that can be styled with attached HTML `class`es.
+to create environments such as captioned figures, general-purpose `<div>`s, dropdowns, and user-defined LaTeX-style theorems that can be styled with attached HTML `class`es.
 
 ## Installation
 
