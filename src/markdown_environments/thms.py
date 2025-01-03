@@ -1,6 +1,7 @@
 import re
 import xml.etree.ElementTree as etree
 from bs4 import BeautifulSoup
+
 from markdown.extensions import Extension
 from markdown.postprocessors import Postprocessor
 from markdown.treeprocessors import Treeprocessor
