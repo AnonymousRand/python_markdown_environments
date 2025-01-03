@@ -33,7 +33,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/AnonymousRand/python-markdown-environments"
-Documentation = "https://github.com/AnonymousRand/python-markdown-environments#readme"
+Documentation = "https://python-markdown-environments.readthedocs.io"
 Issues = "https://github.com/AnonymousRand/python-markdown-environments/issues"
 
 [tool.hatch.version]
