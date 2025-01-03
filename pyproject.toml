@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "markdown-environments"
 dynamic = ["version"]
-description = "Highly customizable extensions for Python-Markdown in the style of LaTeX environments"
+description = "Highly customizable extensions for Python-Markdown in the style of LaTeX environments/theorems"
 readme = "README.md"
 requires-python = "~=3.10"
 license = "MIT"
