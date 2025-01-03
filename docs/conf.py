@@ -15,8 +15,13 @@ extensions = [
 ]
 
 default_role = "code"           # single backticks render as inline code instead of needing double backticks
-html_theme = "sphinx_rtd_theme"
 napoleon_custom_sections = [    # custom recognized sections in docstrings
     "Markdown usage"
 ]
 source_suffix = [".md", ".rst"] # allows inclusion of `.md` files from project root
+
+html_static_path = ["_static/"]
+html_css_files = [
+    "css/custom.css",
+]
+html_theme = "sphinx_rtd_theme"

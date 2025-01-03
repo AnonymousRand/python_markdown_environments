@@ -24,8 +24,8 @@ class ThmMixin(ABC):
             opts.setdefault("thm_type", "")
             opts.setdefault("html_class", "")
             opts.setdefault("thm_counter_incr", "")
-            opts.setdefault("thm_name_overrides_thm_heading", False)
             opts.setdefault("thm_punct", ".")
+            opts.setdefault("thm_name_overrides_thm_heading", False)
             opts.setdefault("use_punct_if_nothing_after", True)
             # add type to regex choices
             if self.is_thm:

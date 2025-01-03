@@ -35,7 +35,7 @@ DROPDOWN_TYPES = {
         "thm_type": "Proof",
         "html_class": "md-dropdown-pf",
         "thm_counter_incr": "0,0,150",
-        "thm_name_overrides_heading": True
+        "thm_name_overrides_thm_heading": True
     }
 }
 

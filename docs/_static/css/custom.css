@@ -1,0 +1,17 @@
+h1 {
+    font-size: 2.25em;
+}
+
+h2 {
+    font-size: 1.75em;
+}
+
+.rst-content p.rubric,
+.rst-content dl dt {
+    margin-bottom: 12px !important;
+    border-left: 3px solid #ccc !important;
+    background: #f0f0f0;
+    padding: 0.25em;
+    color: #404040 !important;
+    font-size: 1.15em;
+}

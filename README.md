@@ -105,7 +105,7 @@ Its wings are too small to get its fat little body off the ground.
 
 
 
-\begin{thm\*}{hidden thm name used as `id`; not real LaTeX syntax}
+\begin{thm\*}{hidden thm name used as id; not real LaTeX syntax}
 Bees, of course, fly anyways.
 \end{thm\*}
 
@@ -127,9 +127,11 @@ Solution: by reading the documentation, of course!
 
 
 \begin{exer}
-All dropdowns initialized in `ThmsExtension()` have a default `summary` value of `thm_type`, so using dropdowns like `pf` and `exer` here without a `summary` block is also fine.
+All dropdowns initialized in `ThmsExtension()` have a default `summary` value of `thm_type`,
+so using dropdowns like `pf` and `exer` here without a `summary` block is also fine.
 
-Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation (the colon; default punctuation is a period) since we set `"use_punct_if_nothing_after": False`.
+Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation
+(the colon; default punctuation is a period) since we set `"use_punct_if_nothing_after": False`.
 \end{exer}
 ```
 
@@ -144,7 +146,10 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 
 <div class="md-div md-thm">
-  <p><span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__emph">Theorem 1.1.1</span> (the bee theorem)</span>. According to all known laws of aviation, there is no way that a bee should be able to fly.</p>
+  <p>
+    <span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__emph">Theorem 1.1.1</span> (the bee theorem)</span>.
+    According to all known laws of aviation, there is no way that a bee should be able to fly.
+  </p>
 </div>
 
 <details class="md-dropdown">
@@ -159,12 +164,19 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 
 <div class="md-div md-thm">
-  <p><span class="md-thm-heading" id="hidden-thm-name-used-as-klzzwxh0011-not-real-latex-syntax"><span class="md-thm-heading__emph">Theorem</span></span>. Bees, of course, fly anyways.</p>
+  <p>
+    <span class="md-thm-heading" id="hidden-thm-name-used-as-id-not-real-latex-syntax">
+      <span class="md-thm-heading__emph">Theorem</span>
+    </span>.
+    Bees, of course, fly anyways.
+  </p>
 </div>
 
 <details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading"><span class="md-thm-heading__emph">Proofs are configured to have titles override the heading</span></span>.
+    <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading">
+      <span class="md-thm-heading__emph">Proofs are configured to have titles override the heading</span>
+    </span>.
   </summary>
   <div>
     <p>Because bees don't care what humans think is impossible.</p>
@@ -175,7 +187,10 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
-    <p><span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.2</span></span>: Prove that this <code>summary</code> environment is common to all dropdown-based environments.</p>
+    <p>
+      <span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.2</span></span>:
+      Prove that this <code>summary</code> environment is common to all dropdown-based environments.
+    </p>
   </summary>
   <div>
     <p>Solution: by reading the documentation, of course!</p>
@@ -189,8 +204,14 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
     <span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.3</span></span>
   </summary>
   <div>
-    <p>All dropdowns initialized in <code>ThmsExtension()</code> have a default <code>summary</code> value of <code>thm_type</code>, so using dropdowns like <code>pf</code> and <code>exer</code> here without a <code>summary</code> block is also fine.</p>
-    <p>Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation (the colon; default punctuation is a period) since we set <code>"use_punct_if_nothing_after": False</code>.</p>
+    <p>
+      All dropdowns initialized in <code>ThmsExtension()</code> have a default <code>summary</code> value of <code>thm_type</code>,
+      so using dropdowns like <code>pf</code> and <code>exer</code> here without a <code>summary</code> block is also fine.
+    </p>
+    <p>
+      Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation
+      (the colon; default punctuation is a period) since we set <code>"use_punct_if_nothing_after": False</code>.
+    </p>
   </div>
 </details>
 ```

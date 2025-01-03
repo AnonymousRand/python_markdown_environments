@@ -1,7 +1,7 @@
 import re
 import xml.etree.ElementTree as etree
 from markdown.extensions import Extension
-from markdown.inlinepatterns import InlineProcessor
+from markdown.postprocessors import Postprocessor
 from markdown.treeprocessors import Treeprocessor
 
 from . import util
@@ -13,42 +13,6 @@ from .mixins import HtmlClassMixin
 # (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class ThmCounterProcessor(Treeprocessor):
-    """
-    A counter that is intended to reproduce LaTeX theorem counter functionality by allowing you to specify increments
-    for each "counter segment".
-        - "Counter segments" are the typically period-separated numbers in theorem counters. For example, in
-          `Theorem 1.2.4`, the three counter segments are 1, 2, and 4.
-
-    Functionality:
-        - Increments each counter segment by specified amount
-        - Resets all child counters segment to 0 after incrementing a counter
-        - Displays only as many counter segments as provided in the Markdown
-
-    Usage:
-        ```
-        {{<segment 1 change>,<segment 2 change>,<...>}}
-        ```
-
-    Example usage:
-        - Markdown:
-            ```
-            Section {{1}}
-            Subsection {{0,1,0}} (displays as many segments as given)
-            Lemma {{0,0,0,1}}
-            Theorem {{0,0,1}} (the fourth counter segment is reset here). Let x be a lorem ipsum.
-            Reevaluating Life Choices {{0,0,0,3}}
-            What even is this {{1,2,0,3,9}} (first counter segment resets next ones, and so on)
-            ```
-        - Output:
-            ```
-            Section 1
-            Subsection 1.1.0 (displays as many segments as given)
-            Lemma 1.1.0.1
-            Theorem 1.1.1 (the fourth counter segment is reset here). Let x be a lorem ipsum.
-            Reevaluating Life Choices 1.1.1.3
-            What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)
-            ```
-    """
 
     RE = r"{{([0-9,]+)}}"
 
@@ -94,62 +58,56 @@ class ThmCounterProcessor(Treeprocessor):
                         elem.set("class", self.html_class)
                     elem.text = output_counter_text
                     output_counter_text = etree.tostring(elem, encoding="unicode")
+
+                # put changes into final output text
                 new_text += text[prev_match_end:m.start()] + output_counter_text
                 prev_match_end = m.end()
-            # fill in the remaining text after last regex match!
-            new_text += text[prev_match_end:]
+            new_text += text[prev_match_end:] # fill in remaining text after last regex match
             child.text = new_text
 
 
-class ThmHeadingProcessor(InlineProcessor, HtmlClassMixin):
-    """
-    A theorem heading that allows you to add custom styling and can generate linkable HTML `id`s.
+# `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
+class ThmHeadingProcessor(Postprocessor, HtmlClassMixin):
 
-    Usage:
-        ```
-        {[<theorem_heading>]}[<optional_theorem_name>][[<optional_hidden_theorem_name>]]
-        ```
-        - HTML output:
-            ```
-            <span id="[optional_theorem_name/optional_hidden_theorem_name]" class="md-thm-heading">
-              [theorem_heading]
-            </span>
-            [optional_theorem_name]
-            ```
-        - `<optional_hidden_theorem_name>` only adds an HTML `id`, and is not displayed. It is ignored if
-          `<optional_theorem_name>` is provided.
-    """
+    RE = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
 
     def __init__(self, *args, html_class: str, emph_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_html_class(html_class)
         self.emph_html_class = emph_html_class
 
-    def handleMatch(self, m, current_text_block):
+    def run(self, text):
         def format_for_html(s: str) -> str:
             s = ("-".join(s.split())).lower() 
             s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
             s = re.sub(r"[^A-Za-z0-9-]", "", s)
             return s
 
-        # create theorem heading element
-        elem = etree.Element("span")
-        if self.html_class != "":
-            elem.set("class", self.html_class)
-        # create and fill in theorem type subelement
-        elem_thm_type = etree.SubElement(elem, "span")
-        if self.emph_html_class != "":
-            elem_thm_type.set("class", self.emph_html_class)
-        elem_thm_type.text = f"{m.group(1)}"
-        # fill in the rest
-        if m.group(2) is not None:
-            # add theorem name
-            elem_thm_type.tail = f" ({m.group(2)})"
-            elem.set("id", format_for_html(m.group(2)))
-        elif m.group(3) is not None:
-            # add theorem `id` from hidden name
-            elem.set("id", format_for_html(m.group(3)))
-        return elem, m.start(0), m.end(0)
+        new_text = ""
+        prev_match_end = 0
+        for m in re.finditer(self.RE, text):
+            # create theorem heading element
+            elem = etree.Element("span")
+            if self.html_class != "":
+                elem.set("class", self.html_class)
+            # create and fill in theorem type subelement
+            elem_emph = etree.SubElement(elem, "span")
+            if self.emph_html_class != "":
+                elem_emph.set("class", self.emph_html_class)
+            elem_emph.text = f"{m.group(1)}"
+            # fill in the rest
+            if m.group(2) is not None:
+                # add theorem name
+                elem_emph.tail = f" ({m.group(2)})"
+                elem.set("id", format_for_html(m.group(2)))
+            elif m.group(3) is not None:
+                # add theorem `id` from hidden name
+                elem.set("id", format_for_html(m.group(3)))
+            # put changes into final output text
+            new_text += text[prev_match_end:m.start()] + etree.tostring(elem, encoding="unicode")
+            prev_match_end = m.end()
+        new_text += text[prev_match_end:] # fill in remaining text after last regex match
+        return new_text
 
 
 class ThmsExtension(Extension):
@@ -280,6 +238,53 @@ class ThmsExtension(Extension):
               </span>
               [optional thm name][type's thm_punct] [content]
             </div>
+
+    Markdown usage (dropdown-based):
+        .. code-block:: md
+
+            \begin{<type>}[<optional thm name>]{<optional hidden thm name>}
+            
+            \begin{summary}
+            <summary>
+            \end{summary}
+
+            <collapsible content>
+            \end{<type>}
+
+        becomes, with theorem heading and counter syntax…
+
+        .. code-block:: md
+
+            \begin{<type>}
+            
+            \begin{summary}
+            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<optional thm name>]{<optional hidden thm name>}
+            <summary>
+            \end{summary}
+
+            <collapsible content>
+            \end{<type>}
+
+        becomes…
+
+        .. code-block:: html
+
+            <details class="[html_class] [type's html_class]">
+              <summary class="[summary_html_class]">
+                <span id="[optional thm name/optional hidden thm name]">
+                  <span>[thm type][thm counter]</span>
+                </span>
+                [optional thm name][type's thm_punct] [summary]
+              </summary>
+
+              <div class="[content_html_class]">
+                [collapsible content]
+              </div>
+            </details>
+
+        Notice that in this case, the theorem heading is prepended to the summary of the dropdown. In addition, the
+        `\\begin{summary}` block is optional with theorems; if omitted, the summary will only include the theorem
+        heading.
     """
 
     def __init__(self, **kwargs):
@@ -307,7 +312,7 @@ class ThmsExtension(Extension):
                 - **add_html_elem** (*bool*) -- Whether theorem counters are contained in their own HTML element.
                   Defaults to `False`.
                 - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem counters if
-                  `add_html_elem` is `True`. Defaults to `""`.
+                  `add_html_elem` is `True`; usually useful for linking. Defaults to `""`.
                 - **html_class** (*str*) -- HTML `class` attribute of theorem counters if `add_html_elem` is `True`.
                   Defaults to `""`.
 
@@ -317,16 +322,21 @@ class ThmsExtension(Extension):
                 - **emph_html_class** (*str*) -- HTML `class` attribute to add to theorem types in theorem headings.
                   Defaults to `""`.
 
-        The key for each type defined in both div and dropdown `types` is inserted directly into the regex patterns that
-        search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In
-        addition, each type's value is itself a dictionary with the following possible options:
+        The key for each type defined in both `div_config`'s and `dropdown_config`'s `types` is inserted directly into
+        the regex patterns that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
+        interpreted as regex. In addition, each type's value is itself a dictionary with the following possible options:
 
-            - **thm_type** (*str*) -- Defaults to `""`.
-            - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
-            - **thm_counter_incr** (*str*) -- Defaults to `""`.
-            - **thm_name_overrides_thm_heading** (*bool*) -- Defaults to `False`.
-            - **thm_punct** (*str*) -- Defaults to `"."`.
-            - **use_punct_if_nothing_after** (*bool*) -- Defaults to `True`.
+            - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to theorems of that type. Defaults to `""`.
+            - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings. Defaults to `""`; leave
+              default to not have a counter.
+            - **thm_punct** (*str*) -- Theorem punctuation inserted at the end of theorem headings. Defaults to `"."`.
+            - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading should just be theorem
+              name if a theorem name is provided, like the default behavior of `\\begin{proof}` environments in LaTeX.
+              Defaults to `False`.
+            - **use_punct_if_nothing_after** (*bool*) -- Whether theorem punctuation should still be put if no content
+              after the theorem heading, or if no more content in the summary in the case of dropdown-based theorems.
+              Defaults to `True`.
         """
 
         self.config = {
@@ -384,9 +394,8 @@ class ThmsExtension(Extension):
                         html_id_prefix=thm_counter_config.get("html_id_prefix"),
                         html_class=thm_counter_config.get("html_class")),
                 "thm_counter", 999)
-        md.inlinePatterns.register(
-                ThmHeadingProcessor(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", md,
-                        html_class=thm_heading_config.get("html_class"),
+        md.postprocessors.register(
+                ThmHeadingProcessor(md, html_class=thm_heading_config.get("html_class"),
                         emph_html_class=thm_heading_config.get("emph_html_class")),
                 "thm_heading", 105)
 
