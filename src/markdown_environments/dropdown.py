@@ -37,7 +37,7 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
         # remove dropdown starting delim
         # first generate theorem heading from it to use as default summary if applicable
         thm_heading_md = self.gen_thm_heading_md(blocks[0])
-        blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.start_re, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove summary ending delim, and extract element
         # `elem_summary` initialized outside loop since the loop isn't guaranteed here to find & initialize it
@@ -48,7 +48,7 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
         for i, block in enumerate(blocks):
             # if we haven't found summary ending delim but have found the overall dropdown ending delim,
             # then don't keep going; maybe the summary was omitted as it was optional for theorems
-            if re.search(self.re_end, block, flags=re.MULTILINE):
+            if re.search(self.end_re, block, flags=re.MULTILINE):
                 break
             if re.search(self.RE_SUMMARY_END, block, flags=re.MULTILINE):
                 has_valid_summary = True
@@ -71,10 +71,10 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
         # find and remove dropdown ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.re_end, block, flags=re.MULTILINE):
+            if re.search(self.end_re, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.re_end, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.end_re, "", block, flags=re.MULTILINE)
                 # build HTML for dropdown
                 elem_details = etree.SubElement(parent, "details")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":

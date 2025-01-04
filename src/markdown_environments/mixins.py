@@ -13,12 +13,12 @@ class ThmMixin(ABC):
         self.types = types
         self.is_thm = is_thm
         self.type_opts = None
-        self.re_start = None
-        self.re_end = None
+        self.start_re = None
+        self.end_re = None
 
         # init regex patterns
-        self.re_start_choices = {}
-        self.re_end_choices = {}
+        self.start_re_choices = {}
+        self.end_re_choices = {}
         for typ, opts in self.types.items():
             # set default options for individual types
             opts.setdefault("thm_type", "")
@@ -29,24 +29,24 @@ class ThmMixin(ABC):
             opts.setdefault("use_punct_if_nothing_after", True)
             # add type to regex choices
             if self.is_thm:
-                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
+                self.start_re_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
             else:
-                self.re_start_choices[typ] = rf"^\\begin{{{typ}}}"
-            self.re_end_choices[typ] = rf"^\\end{{{typ}}}"
+                self.start_re_choices[typ] = rf"^\\begin{{{typ}}}"
+            self.end_re_choices[typ] = rf"^\\end{{{typ}}}"
 
     def gen_thm_heading_md(self, block: str) -> str:
         if not self.is_thm:
             return ""
 
         # override theorem heading with theorem name if applicable
-        re_start_match = re.match(self.re_start, block, re.MULTILINE)
-        thm_name = re_start_match.group(1)
+        start_re_match = re.match(self.start_re, block, re.MULTILINE)
+        thm_name = start_re_match.group(1)
         if self.type_opts.get("thm_name_overrides_thm_heading") and thm_name is not None:
             return "{[" + thm_name + "]}{" + thm_name + "}"
 
         # else find rest of theorem heading's pieces using regex
         thm_type = self.type_opts.get("thm_type")
-        thm_hidden_name = re_start_match.group(2)
+        thm_hidden_name = start_re_match.group(2)
         # fill in theorem counter using `ThmCounter`'s syntax
         thm_counter_incr = self.type_opts.get("thm_counter_incr")
         if thm_counter_incr != "":
@@ -78,10 +78,10 @@ class ThmMixin(ABC):
     # def not best practice to assume child class is a `BlockProcessor` implementing `test()`
     # but i'm addicted to code reuse
     def test(self, parent, block) -> bool:
-        for typ, regex in self.re_start_choices.items():
+        for typ, regex in self.start_re_choices.items():
             if re.match(regex, block, re.MULTILINE):
                 self.type_opts = self.types[typ]
-                self.re_start = regex
-                self.re_end = self.re_end_choices[typ]
+                self.start_re = regex
+                self.end_re = self.end_re_choices[typ]
                 return True
         return False

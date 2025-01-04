@@ -10,10 +10,10 @@ from .mixins import HtmlClassMixin
 
 class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
 
-    RE_FIGURE_START = r"^\\begin{captioned_figure}"
-    RE_FIGURE_END = r"^\\end{captioned_figure}"
-    RE_CAPTION_START = r"^\\begin{caption}"
-    RE_CAPTION_END = r"^\\end{caption}"
+    START_RE = r"^\\begin{captioned_figure}"
+    END_RE = r"^\\end{captioned_figure}"
+    CAPTION_START_RE = r"^\\begin{caption}"
+    CAPTION_END_RE = r"^\\end{caption}"
 
     def __init__(self, *args, html_class: str, caption_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,22 +21,22 @@ class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
         self.caption_html_class = caption_html_class
 
     def test(self, parent, block):
-        return re.match(self.RE_FIGURE_START, block, re.MULTILINE)
+        return re.match(self.START_RE, block, re.MULTILINE)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove figure starting delim
-        blocks[0] = re.sub(self.RE_FIGURE_START, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.START_RE, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove caption starting delim
         caption_start_i = None
         for i, block in enumerate(blocks):
-            if re.match(self.RE_CAPTION_START, block, re.MULTILINE):
+            if re.match(self.CAPTION_START_RE, block, re.MULTILINE):
                 # remove ending delim and note which block captions started on
                 # (as caption content itself is an unknown number of blocks)
                 caption_start_i = i
-                blocks[i] = re.sub(self.RE_CAPTION_START, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CAPTION_START_RE, "", block, flags=re.MULTILINE)
                 break
 
         # if no starting delim for caption, restore and do nothing
@@ -51,10 +51,10 @@ class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove caption ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks[caption_start_i:], start=caption_start_i):
-            if re.search(self.RE_CAPTION_END, block, flags=re.MULTILINE):
+            if re.search(self.CAPTION_END_RE, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_CAPTION_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CAPTION_END_RE, "", block, flags=re.MULTILINE)
                 # build HTML for caption
                 elem_caption = etree.Element("figcaption")
                 if self.caption_html_class != "":
@@ -73,10 +73,10 @@ class CaptionedFigureProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove figure ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.RE_FIGURE_END, block, flags=re.MULTILINE):
+            if re.search(self.END_RE, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_FIGURE_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.END_RE, "", block, flags=re.MULTILINE)
                 # build HTML for figure
                 elem_figure = etree.SubElement(parent, "figure")
                 if self.html_class != "":

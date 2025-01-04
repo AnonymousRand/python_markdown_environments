@@ -10,10 +10,10 @@ from .mixins import HtmlClassMixin
 
 class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
 
-    RE_BLOCKQUOTE_START = r"^\\begin{cited_blockquote}"
-    RE_BLOCKQUOTE_END = r"^\\end{cited_blockquote}"
-    RE_CITATION_START = r"^\\begin{citation}"
-    RE_CITATION_END = r"^\\end{citation}"
+    RE_START = r"^\\begin{cited_blockquote}"
+    RE_END = r"^\\end{cited_blockquote}"
+    CITATION_START_RE = r"^\\begin{citation}"
+    CITATION_END_RE = r"^\\end{citation}"
 
     def __init__(self, *args, html_class: str, citation_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,24 +21,24 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
         self.citation_html_class = citation_html_class
 
     def test(self, parent, block):
-        return re.match(self.RE_BLOCKQUOTE_START, block, re.MULTILINE)
+        return re.match(self.RE_START, block, re.MULTILINE)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove blockquote starting delim
-        blocks[0] = re.sub(self.RE_BLOCKQUOTE_START, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.RE_START, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove citation starting delim
         delim_found = False
         citation_start_i = None
         for i, block in enumerate(blocks):
-            if re.match(self.RE_CITATION_START, block, re.MULTILINE):
+            if re.match(self.CITATION_START_RE, block, re.MULTILINE):
                 delim_found = True
                 # remove ending delim and note which block citation started on
                 # (as citation content itself is an unknown number of blocks)
                 citation_start_i = i
-                blocks[i] = re.sub(self.RE_CITATION_START, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CITATION_START_RE, "", block, flags=re.MULTILINE)
                 break
         # if no starting delim for citation, restore and do nothing
         if not delim_found:
@@ -49,10 +49,10 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove citation ending delim (starting search from the citation start delim), and extract element
         delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
-            if re.search(self.RE_CITATION_END, block, flags=re.MULTILINE):
+            if re.search(self.CITATION_END_RE, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_CITATION_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CITATION_END_RE, "", block, flags=re.MULTILINE)
                 # build HTML for citation
                 elem_citation = etree.Element("cite")
                 if self.citation_html_class != "":
@@ -71,10 +71,10 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove blockquote ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.RE_BLOCKQUOTE_END, block, flags=re.MULTILINE):
+            if re.search(self.RE_END, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_BLOCKQUOTE_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.RE_END, "", block, flags=re.MULTILINE)
                 # build HTML for blockquote
                 elem_blockquote = etree.SubElement(parent, "blockquote")
                 if self.html_class != "":

@@ -37,39 +37,39 @@ class ThmMixinImpl(ThmMixin):
     def get_type_opts(self):
         return self.type_opts
 
-    def get_re_start(self):
-        return self.re_start
+    def get_start_re(self):
+        return self.start_re
 
-    def get_re_end(self):
-        return self.re_end
+    def get_end_re(self):
+        return self.end_re
 
-    def get_re_start_choices(self):
-        return self.re_start_choices
+    def get_start_re_choices(self):
+        return self.start_re_choices
 
-    def get_re_end_choices(self):
-        return self.re_end_choices
+    def get_end_re_choices(self):
+        return self.end_re_choices
 
 
 @pytest.mark.parametrize("is_thm", [False, True])
 def test_init_thm(is_thm):
     thm_mixin_impl = ThmMixinImpl()
-    expected_re_start_choices = {}
-    expected_re_end_choices = {}
+    expected_start_re_choices = {}
+    expected_end_re_choices = {}
     for typ in TYPES:
         if is_thm:
-            expected_re_start_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
+            expected_start_re_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
         else:
-            expected_re_start_choices[typ] = rf"^\\begin{{{typ}}}"
-        expected_re_end_choices[typ] = rf"^\\end{{{typ}}}"
+            expected_start_re_choices[typ] = rf"^\\begin{{{typ}}}"
+        expected_end_re_choices[typ] = rf"^\\end{{{typ}}}"
 
     thm_mixin_impl.init_thm(types=TYPES, is_thm=is_thm)
     assert thm_mixin_impl.get_types() == TYPES
     assert thm_mixin_impl.get_is_thm() == is_thm
     assert thm_mixin_impl.get_type_opts() is None
-    assert thm_mixin_impl.get_re_start() is None
-    assert thm_mixin_impl.get_re_end() is None
-    assert thm_mixin_impl.get_re_start_choices() == expected_re_start_choices
-    assert thm_mixin_impl.get_re_end_choices() == expected_re_end_choices
+    assert thm_mixin_impl.get_start_re() is None
+    assert thm_mixin_impl.get_end_re() is None
+    assert thm_mixin_impl.get_start_re_choices() == expected_start_re_choices
+    assert thm_mixin_impl.get_end_re_choices() == expected_end_re_choices
 
 
 def set_up_functionality_tests(is_thm, input_filename) -> tuple[ThmMixinImpl, etree.Element, str, bool]:
@@ -97,8 +97,8 @@ def test_test(input_filename, expected_type, expected_test_res):
     assert test_res == expected_test_res
     if expected_test_res:
         assert thm_mixin_impl.get_type_opts() == TYPES[expected_type]
-        assert thm_mixin_impl.get_re_start() == thm_mixin_impl.get_re_start_choices()[expected_type]
-        assert thm_mixin_impl.get_re_end() == thm_mixin_impl.get_re_end_choices()[expected_type]
+        assert thm_mixin_impl.get_start_re() == thm_mixin_impl.get_start_re_choices()[expected_type]
+        assert thm_mixin_impl.get_end_re() == thm_mixin_impl.get_end_re_choices()[expected_type]
 
 
 @pytest.mark.parametrize(

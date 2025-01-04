@@ -23,15 +23,15 @@ class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
         # generate default thm heading if applicable
         prepend = self.gen_thm_heading_md(blocks[0])
         # remove starting delim (after generating thm heading from it, if applicable)
-        blocks[0] = re.sub(self.re_start, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.start_re, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.re_end, block, flags=re.MULTILINE):
+            if re.search(self.end_re, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.re_end, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.end_re, "", block, flags=re.MULTILINE)
                 # build HTML
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
