@@ -176,6 +176,8 @@ class ThmsExtension(Extension):
                 <p>Reevaluating Life Choices 1.1.1.3</p>
                 <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
 
+            There cannot be spaces within the Markdown `{{}}` syntax.
+
     Example:
         .. code-block:: py
 
