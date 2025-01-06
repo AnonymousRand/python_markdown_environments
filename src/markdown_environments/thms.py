@@ -289,7 +289,7 @@ class ThmsExtension(Extension):
             <details class="[html_class] [type's html_class]">
               <summary class="[summary_html_class]">
                 <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
-                  <span class="[thm_heading_config's emph_html_class]>[thm type][thm counter]</span>
+                  <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
                   [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
                 </span>
                 [summary]
