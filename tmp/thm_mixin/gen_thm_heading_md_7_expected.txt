@@ -1,1 +1,0 @@
-{[Theorem]}{hidden title should not override}

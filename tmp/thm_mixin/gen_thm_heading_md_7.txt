@@ -1,1 +1,0 @@
-\begin{thm\*}{hidden title should not override} sdadd
