@@ -64,7 +64,7 @@ class DivExtension(Extension):
     r"""
     A general-purpose `<div>` that you can tack on HTML `class` es to.
 
-    Example:
+    Usage:
         .. code-block:: py
 
             import markdown

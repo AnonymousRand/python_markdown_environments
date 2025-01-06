@@ -125,8 +125,7 @@ class ThmHeadingProcessor(Postprocessor):
 
 class ThmsExtension(Extension):
     r"""
-    A wrapper around divs and dropdowns that provides more configurable options to mimic the theorem capabilities of
-    LaTeX.
+    A wrapper around divs and dropdowns that provides more options to mimic the theorem capabilities of LaTeX.
 
     In particular, this extension introduces theorem headings and theorem counters, which are used in theorem
     environments but can also be used standalone as described below.
@@ -150,11 +149,12 @@ class ThmsExtension(Extension):
 
             .. code-block:: html
 
-                <span id="[optional thm name/optional hidden thm name]">
-                  <span>[thm type][thm counter]</span>
+                <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
+                  <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
+                  [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
                 </span>
-                [optional thm name]
 
+        Note:
             `<optional hidden thm name>` is only used for the HTML `id`, and it is ignored if `<optional thm name>` is
             provided.
 
@@ -164,7 +164,7 @@ class ThmsExtension(Extension):
         specified per segment, and incrementing a segment resets all following segments to 0. In addition, each counter
         will display only as many segments as provided in its Markdown.
 
-        Markdown usage:
+        Usage:
             .. code-block:: md
 
                 Section {{1}}
@@ -185,9 +185,10 @@ class ThmsExtension(Extension):
                 <p>Reevaluating Life Choices 1.1.1.3</p>
                 <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
 
-            There cannot be spaces within the Markdown `{{}}` syntax.
+    Important:
+        There cannot be spaces within the Markdown `{{}}` syntax for theorem counters.
 
-    Example:
+    Usage:
         .. code-block:: py
 
             import markdown
@@ -239,7 +240,7 @@ class ThmsExtension(Extension):
         .. code-block:: md
 
             \begin{<type>}
-            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<optional thm name>]{<optional hidden thm name>}
+            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
             <content>
             \end{<type>}
 
@@ -248,10 +249,11 @@ class ThmsExtension(Extension):
         .. code-block:: html
 
             <div class="[html_class] [type's html_class]">
-              <span id="[optional thm name/optional hidden thm name]">
-                <span>[thm type][thm counter]</span>
+              <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
+                <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
+                [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
               </span>
-              [optional thm name]. [content]
+              [content]
             </div>
 
     Markdown usage (dropdown-based):
@@ -273,7 +275,7 @@ class ThmsExtension(Extension):
             \begin{<type>}
             
             \begin{summary}
-            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<optional thm name>]{<optional hidden thm name>}
+            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
             <summary>
             \end{summary}
 
@@ -286,10 +288,11 @@ class ThmsExtension(Extension):
 
             <details class="[html_class] [type's html_class]">
               <summary class="[summary_html_class]">
-                <span id="[optional thm name/optional hidden thm name]">
-                  <span>[thm type][thm counter]</span>
+                <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
+                  <span class="[thm_heading_config's emph_html_class]>[thm type][thm counter]</span>
+                  [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
                 </span>
-                [optional thm name]. [summary]
+                [summary]
               </summary>
 
               <div class="[content_html_class]">
@@ -297,7 +300,7 @@ class ThmsExtension(Extension):
               </div>
             </details>
 
-        Notice that in this case, the theorem heading is prepended to the summary of the dropdown. In addition, the
+        Notice that with dropdowns, the theorem heading is prepended to the summary of the dropdown. In addition, the
         `\\begin{summary}` block is optional with theorems; if omitted, the summary will only include the theorem
         heading.
     """
@@ -343,8 +346,8 @@ class ThmsExtension(Extension):
 
             - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.
             - **html_class** (*str*) -- HTML `class` attribute to add to theorems of that type. Defaults to `""`.
-            - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings. Defaults to `""`; leave
-              default to not have a counter.
+            - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings (again, no spaces!).
+              Defaults to `""`; leave default produce an unnumbered theorem type.
             - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading besides the theorem
               punct should just be theorem name if a theorem name is provided, like the default behavior of
               `\\begin{proof}` environments in LaTeX.  Defaults to `False`.

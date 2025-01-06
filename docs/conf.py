@@ -15,9 +15,9 @@ extensions = [
 ]
 
 default_role = "code"           # single backticks render as inline code instead of needing double backticks
-napoleon_custom_sections = [    # custom recognized sections in docstrings
-    "Markdown usage"
-]
+#napoleon_custom_sections = [    # custom recognized sections in docstrings
+#    "Markdown usage"
+#]
 source_suffix = [".md", ".rst"] # allows inclusion of `.md` files from project root
 
 html_static_path = ["_static/"]

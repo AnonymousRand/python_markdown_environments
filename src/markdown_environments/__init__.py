@@ -5,7 +5,7 @@ The base Markdown syntax defined by this extension is::
     ...
     \end{...}
 
-Note:
+Important:
     - There must be a blank line before each `\\begin{}` and after each `\\end{}`
     - Nesting environments is currently an undefined behavior; it may work with environments of different types but will
       likely not work with environments of the same type

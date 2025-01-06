@@ -112,7 +112,7 @@ class DropdownExtension(Extension):
     r"""
     A dropdown that can be toggled open or closed, with only a preview portion (`<summary>`) shown when closed.
 
-    Example:
+    Usage:
         .. code-block:: py
 
             import markdown
@@ -154,6 +154,10 @@ class DropdownExtension(Extension):
                 [collapsible content]
               </div>
             </details>
+
+    Important:
+        The `summary` block *must be placed at the start* of the `dropdown` block, of course with blank lines before and
+        after the `summary` block.
     """
 
     def __init__(self, **kwargs):

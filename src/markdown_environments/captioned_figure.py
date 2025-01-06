@@ -48,6 +48,7 @@ class CaptionedFigureProcessor(BlockProcessor):
             return False
 
         # find and remove caption ending delim, and extract element
+        # start search at caption starting delim; caption is at end so this is a good optimization
         delim_found = False
         for i, block in enumerate(blocks[caption_start_i:], start=caption_start_i):
             if re.search(self.CAPTION_END_REGEX, block, flags=re.MULTILINE):
@@ -81,7 +82,7 @@ class CaptionedFigureProcessor(BlockProcessor):
                 if self.html_class != "":
                     figure_elem.set("class", self.html_class)
                 self.parser.parseBlocks(figure_elem, blocks[:i + 1])
-                figure_elem.append(caption_elem) # make sure captions come after everything else
+                figure_elem.append(caption_elem) # make sure caption comes at the end, and inside `figure_elem`
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
@@ -98,7 +99,7 @@ class CaptionedFigureExtension(Extension):
     r"""
     Any chunk of content, such as an image, with a caption underneath.
 
-    Example:
+    Usage:
         .. code-block:: py
 
             import markdown
@@ -132,8 +133,9 @@ class CaptionedFigureExtension(Extension):
               </figcaption>
             </figure>
 
-        Note that the `caption` block can be placed anywhere within the `captioned_figure` block, as long as, of course,
-        there are blank lines before and after the `caption` block.
+    Note:
+        The `caption` block can be placed anywhere within the `captioned_figure` block, as long as, of course, there are
+        blank lines before and after the `caption` block.
     """
 
     def __init__(self, **kwargs):

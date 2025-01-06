@@ -45,7 +45,8 @@ class CitedBlockquoteProcessor(BlockProcessor):
             blocks.extend(org_blocks)
             return False
 
-        # find and remove citation ending delim (starting search from the citation start delim), and extract element
+        # find and remove citation ending delim, and extract element
+        # start search at citation starting delim; citation is at end so this is a good optimization
         delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
             if re.search(self.CITATION_END_REGEX, block, flags=re.MULTILINE):
@@ -79,7 +80,7 @@ class CitedBlockquoteProcessor(BlockProcessor):
                 if self.html_class != "":
                     blockquote_elem.set("class", self.html_class)
                 self.parser.parseBlocks(blockquote_elem, blocks[:i + 1])
-                parent.append(citation_elem) # make sure citation comes after everything else
+                parent.append(citation_elem) # make sure citation comes at the end
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
@@ -96,7 +97,7 @@ class CitedBlockquoteExtension(Extension):
     r"""
     A blockquote with a citation/quote attribution underneath.
 
-    Example:
+    Usage:
         .. code-block:: py
 
             import markdown
@@ -130,7 +131,9 @@ class CitedBlockquoteExtension(Extension):
               [citation]
             </cite>
 
-        Note that the `citation` block can be placed anywhere within the `cited_blockquote` block.
+    Note:
+        The `citation` block can be placed anywhere within the `cited_blockquote` block, as long as, of course, there are
+        blank lines before and after the `citation` block.
     """
 
     def __init__(self, **kwargs):
