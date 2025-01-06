@@ -5,33 +5,43 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
 from . import util
-from .mixins import HtmlClassMixin, ThmMixin
 
 
-class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
+class DivProcessor(BlockProcessor):
 
     def __init__(self, *args, types: dict, html_class: str, is_thm: bool, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_thm(types, is_thm)
-        self.init_html_class(html_class)
+        self.html_class = html_class
+        self.is_thm = is_thm
+        self.types, self.start_regex_choices, self.end_regex_choices = util.init_env_types(types, self.is_thm)
+        self.start_regex = None
+        self.end_regex = None
 
     def test(self, parent, block):
-        return ThmMixin.test(self, parent, block)
+        typ = util.test_for_env_types(self.start_regex_choices, parent, block)
+        if typ is None:
+            return False
+        self.type_opts = self.types[typ]
+        self.start_regex = self.start_regex_choices[typ]
+        self.end_regex = self.end_regex_choices[typ]
+        return True
 
     def run(self, parent, blocks):
         org_block_start = blocks[0]
         # generate default thm heading if applicable
-        prepend = self.gen_thm_heading_md(blocks[0])
+        thm_heading_md = ""
+        if self.is_thm:
+            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_regex, blocks[0])
         # remove starting delim (after generating thm heading from it, if applicable)
-        blocks[0] = re.sub(self.start_re, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.start_regex, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.end_re, block, flags=re.MULTILINE):
+            if re.search(self.end_regex, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.end_re, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.end_regex, "", block, flags=re.MULTILINE)
                 # build HTML
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
@@ -40,14 +50,13 @@ class DivProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
                 # remove used blocks
                 for _ in range(0, i + 1):
                     blocks.pop(0)
+                # add thm heading if applicable
+                util.prepend_thm_heading_md(self.type_opts, elem, thm_heading_md)
                 break
         # if no ending delim, restore and do nothing
         if not delim_found:
             blocks[0] = org_block_start
             return False
-
-        # add thm heading if applicable
-        self.prepend_thm_heading_md(elem, prepend)
         return True
 
 

@@ -5,40 +5,39 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
 from . import util
-from .mixins import HtmlClassMixin
 
 
-class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
+class CitedBlockquoteProcessor(BlockProcessor):
 
-    RE_START = r"^\\begin{cited_blockquote}"
-    RE_END = r"^\\end{cited_blockquote}"
-    CITATION_START_RE = r"^\\begin{citation}"
-    CITATION_END_RE = r"^\\end{citation}"
+    START_REGEX = r"^\\begin{cited_blockquote}"
+    END_REGEX = r"^\\end{cited_blockquote}"
+    CITATION_START_REGEX = r"^\\begin{citation}"
+    CITATION_END_REGEX = r"^\\end{citation}"
 
     def __init__(self, *args, html_class: str, citation_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_html_class(html_class)
+        self.html_class = html_class
         self.citation_html_class = citation_html_class
 
     def test(self, parent, block):
-        return re.match(self.RE_START, block, re.MULTILINE)
+        return re.match(self.START_REGEX, block, re.MULTILINE)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove blockquote starting delim
-        blocks[0] = re.sub(self.RE_START, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = re.sub(self.START_REGEX, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove citation starting delim
         delim_found = False
         citation_start_i = None
         for i, block in enumerate(blocks):
-            if re.match(self.CITATION_START_RE, block, re.MULTILINE):
+            if re.match(self.CITATION_START_REGEX, block, re.MULTILINE):
                 delim_found = True
                 # remove ending delim and note which block citation started on
                 # (as citation content itself is an unknown number of blocks)
                 citation_start_i = i
-                blocks[i] = re.sub(self.CITATION_START_RE, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CITATION_START_REGEX, "", block, flags=re.MULTILINE)
                 break
         # if no starting delim for citation, restore and do nothing
         if not delim_found:
@@ -49,15 +48,15 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove citation ending delim (starting search from the citation start delim), and extract element
         delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
-            if re.search(self.CITATION_END_RE, block, flags=re.MULTILINE):
+            if re.search(self.CITATION_END_REGEX, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.CITATION_END_RE, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.CITATION_END_REGEX, "", block, flags=re.MULTILINE)
                 # build HTML for citation
-                elem_citation = etree.Element("cite")
+                citation_elem = etree.Element("cite")
                 if self.citation_html_class != "":
-                    elem_citation.set("class", self.citation_html_class)
-                self.parser.parseBlocks(elem_citation, blocks[citation_start_i:i + 1])
+                    citation_elem.set("class", self.citation_html_class)
+                self.parser.parseBlocks(citation_elem, blocks[citation_start_i:i + 1])
                 # remove used blocks
                 for _ in range(citation_start_i, i + 1):
                     blocks.pop(citation_start_i)
@@ -71,16 +70,16 @@ class CitedBlockquoteProcessor(BlockProcessor, HtmlClassMixin):
         # find and remove blockquote ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.RE_END, block, flags=re.MULTILINE):
+            if re.search(self.END_REGEX, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.END_REGEX, "", block, flags=re.MULTILINE)
                 # build HTML for blockquote
-                elem_blockquote = etree.SubElement(parent, "blockquote")
+                blockquote_elem = etree.SubElement(parent, "blockquote")
                 if self.html_class != "":
-                    elem_blockquote.set("class", self.html_class)
-                self.parser.parseBlocks(elem_blockquote, blocks[:i + 1])
-                parent.append(elem_citation) # make sure citation comes after everything else
+                    blockquote_elem.set("class", self.html_class)
+                self.parser.parseBlocks(blockquote_elem, blocks[:i + 1])
+                parent.append(citation_elem) # make sure citation comes after everything else
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)

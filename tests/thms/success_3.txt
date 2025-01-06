@@ -1,11 +1,31 @@
-\begin{thm\*}
-hi
-\end{thm\*}
+\begin{exer}
+Solution: trivial.
+\end{exer}
 
-\begin{thm\*}[Insert theorem name here]
-hiiii
-\end{thm\*}
+\begin{exer}
 
-\begin{thm\*}{The fundamental structure theorem and unique decomposition up to isomorphism by infinite and finite cyclic groups joined together by means of the direct product of abelian groups who possess generating sets of a finite cardinality}
-Every finitely-generated abelian group is finitely-generated.
-\end{thm\*}
+\begin{summary}
+Show that 2 + 2 = 5.
+\end{summary}
+
+Solution: not trivial.
+\end{exer}
+
+\begin{exer}[Classification of finite simple groups]
+
+\begin{summary}
+Prove the classification of finite simple groups.
+\end{summary}
+
+Solution: Assume by contradiction that the classification of finite simple groups does not hold. Then hundreds of mathmeticians would be lying to us and we know that can't possibly happen so QED.
+\end{exer}
+
+\begin{exer}[Classification of infinite simple groups]{This should be ignored}
+\end{exer}
+
+\begin{exer}{This should NOT be ignored}
+
+\begin{summary}
+\end{summary}
+
+\end{exer}

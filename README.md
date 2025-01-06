@@ -63,9 +63,7 @@ output_text = markdown.markdown(input_text, extensions=[
                 "exer": {
                     "thm_type": "Exercise",
                     "html_class": "md-exer",
-                    "thm_counter_incr": "0,0,1",
-                    "thm_punct": ":",
-                    "use_punct_if_nothing_after": False
+                    "thm_counter_incr": "0,0,1"
                 },
                 "pf": {
                     "thm_type": "Proof",
@@ -129,9 +127,6 @@ Solution: by reading the documentation, of course!
 \begin{exer}
 All dropdowns initialized in `ThmsExtension()` have a default `summary` value of `thm_type`,
 so using dropdowns like `pf` and `exer` here without a `summary` block is also fine.
-
-Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation
-(the colon; default punctuation is a period) since we set `"use_punct_if_nothing_after": False`.
 \end{exer}
 ```
 
@@ -140,22 +135,26 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 ```html
 <h1>Section 1: this is theorem counter syntax from ThmsExtension()</h1>
 <h2>Subsection 1.1: Bees</h2>
-
 <p>Here we begin our study of bees.</p>
 
 
 
 <div class="md-div md-thm">
   <p>
-    <span class="md-thm-heading" id="the-bee-theorem"><span class="md-thm-heading__emph">Theorem 1.1.1</span> (the bee theorem)</span>.
+    <span class="md-thm-heading" id="the-bee-theorem">
+      <span class="md-thm-heading__emph">Theorem 1.1.1</span> (the bee theorem)<span class="md-thm-heading__emph">.</span>
+    </span>
     According to all known laws of aviation, there is no way that a bee should be able to fly.
   </p>
 </div>
 
 <details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading"><span class="md-thm-heading__emph">Proof 1.1.1.1</span></span>.
+    <span class="md-thm-heading">
+      <span class="md-thm-heading__emph">Proof 1.1.1.1</span><span class="md-thm-heading__emph">.</span>
+    </span>
   </summary>
+
   <div>
     <p>Its wings are too small to get its fat little body off the ground.</p>
   </div>
@@ -166,8 +165,8 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 <div class="md-div md-thm">
   <p>
     <span class="md-thm-heading" id="hidden-thm-name-used-as-id-not-real-latex-syntax">
-      <span class="md-thm-heading__emph">Theorem</span>
-    </span>.
+      <span class="md-thm-heading__emph">Theorem</span><span class="md-thm-heading__emph">.</span>
+    </span>
     Bees, of course, fly anyways.
   </p>
 </div>
@@ -175,9 +174,10 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 <details class="md-dropdown">
   <summary class="md-dropdown__summary mb-0">
     <span class="md-thm-heading" id="proofs-are-configured-to-have-titles-override-the-heading">
-      <span class="md-thm-heading__emph">Proofs are configured to have titles override the heading</span>
-    </span>.
+      <span class="md-thm-heading__emph">Proofs are configured to have titles override the heading</span><span class="md-thm-heading__emph">.</span>
+    </span>
   </summary>
+
   <div>
     <p>Because bees don't care what humans think is impossible.</p>
   </div>
@@ -188,10 +188,13 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
     <p>
-      <span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.2</span></span>:
+      <span class="md-thm-heading">
+        <span class="md-thm-heading__emph">Exercise 1.1.2</span><span class="md-thm-heading__emph">.</span>
+      </span>
       Prove that this <code>summary</code> environment is common to all dropdown-based environments.
     </p>
   </summary>
+
   <div>
     <p>Solution: by reading the documentation, of course!</p>
   </div>
@@ -201,16 +204,15 @@ Also, since there's no extra summary after the theorem heading of "Exercise", th
 
 <details class="md-dropdown md-exer">
   <summary class="md-dropdown__summary mb-0">
-    <span class="md-thm-heading"><span class="md-thm-heading__emph">Exercise 1.1.3</span></span>
+    <span class="md-thm-heading">
+      <span class="md-thm-heading__emph">Exercise 1.1.3</span><span class="md-thm-heading__emph">.</span>
+    </span>
   </summary>
+
   <div>
     <p>
       All dropdowns initialized in <code>ThmsExtension()</code> have a default <code>summary</code> value of <code>thm_type</code>,
       so using dropdowns like <code>pf</code> and <code>exer</code> here without a <code>summary</code> block is also fine.
-    </p>
-    <p>
-      Also, since there's no extra summary after the theorem heading of "Exercise", there is no punctuation
-      (the colon; default punctuation is a period) since we set <code>"use_punct_if_nothing_after": False</code>.
     </p>
   </div>
 </details>

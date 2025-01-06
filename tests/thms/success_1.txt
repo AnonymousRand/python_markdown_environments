@@ -1,7 +1,17 @@
-\begin{lem}
+\begin{thm}
 Ploopy
-\end{lem}
+\end{thm}
 
-\begin{lem}[Fermat's lemma]
+\begin{thm}[Fermat's lemma]
 For every copy of Arithmetica by Diophantus, there exists a margin too small to write a proof in.
-\end{lem}
+\end{thm}
+
+\begin{thm}[Euler's theorem]{this should be ignored}
+A square has four sides.
+
+A square does not have five sides.
+\end{thm}
+
+\begin{thm}{this should NOT be ignored}
+chungus
+\end{thm}

@@ -1,1 +1,1 @@
-{[Corollary]}[Euler's lemma]{this should be ignored}. Apple.
+{[Corollary]}[Euler's lemma]{this should be ignored} Apple.

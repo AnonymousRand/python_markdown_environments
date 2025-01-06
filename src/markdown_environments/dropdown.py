@@ -5,57 +5,69 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
 from . import util
-from .mixins import HtmlClassMixin, ThmMixin
 
 
-class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
+class DropdownProcessor(BlockProcessor):
 
-    RE_SUMMARY_START = r"^\\begin{summary}"
-    RE_SUMMARY_END = r"^\\end{summary}"
+    SUMMARY_START_REGEX = r"^\\begin{summary}"
+    SUMMARY_END_REGEX = r"^\\end{summary}"
 
-    def __init__(self, *args, types: dict, html_class: str, summary_html_class: str, content_html_class: str,
-            is_thm: bool, **kwargs):
+    def __init__(
+        self, *args, types: dict, html_class: str, summary_html_class: str, content_html_class: str,
+        is_thm: bool, **kwargs
+    ):
         super().__init__(*args, **kwargs)
-        self.init_thm(types, is_thm)
-        self.init_html_class(html_class)
+        self.html_class = html_class
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
+        self.is_thm = is_thm
+        self.types, self.start_regex_choices, self.end_regex_choices = util.init_env_types(types, self.is_thm)
+        self.start_regex = None
+        self.end_regex = None
 
     def test(self, parent, block):
-        return ThmMixin.test(self, parent, block)
+        typ = util.test_for_env_types(self.start_regex_choices, parent, block)
+        if typ is None:
+            return False
+        self.type_opts = self.types[typ]
+        self.start_regex = self.start_regex_choices[typ]
+        self.end_regex = self.end_regex_choices[typ]
+        return True
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
         # remove summary starting delim that must immediately follow dropdown's starting delim
         # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
-        if not self.is_thm and not re.match(self.RE_SUMMARY_START, blocks[1], re.MULTILINE):
+        if not self.is_thm and not re.match(self.SUMMARY_START_REGEX, blocks[1], re.MULTILINE):
             blocks.clear() # `blocks = org_blocks` doesn't work; must mutate `blocks` instead of reassigning it
             blocks.extend(org_blocks)
             return False
-        blocks[1] = re.sub(self.RE_SUMMARY_START, "", blocks[1], flags=re.MULTILINE)
+        blocks[1] = re.sub(self.SUMMARY_START_REGEX, "", blocks[1], flags=re.MULTILINE)
 
         # remove dropdown starting delim
         # first generate theorem heading from it to use as default summary if applicable
-        thm_heading_md = self.gen_thm_heading_md(blocks[0])
-        blocks[0] = re.sub(self.start_re, "", blocks[0], flags=re.MULTILINE)
+        thm_heading_md = ""
+        if self.is_thm:
+            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_regex, blocks[0])
+        blocks[0] = re.sub(self.start_regex, "", blocks[0], flags=re.MULTILINE)
 
         # find and remove summary ending delim, and extract element
-        # `elem_summary` initialized outside loop since the loop isn't guaranteed here to find & initialize it
-        elem_summary = etree.Element("summary")
+        # `summary_elem` initialized outside loop since the loop isn't guaranteed here to find & initialize it
+        summary_elem = etree.Element("summary")
         if self.summary_html_class != "":
-            elem_summary.set("class", self.summary_html_class)
+            summary_elem.set("class", self.summary_html_class)
         has_valid_summary = self.is_thm
         for i, block in enumerate(blocks):
             # if we haven't found summary ending delim but have found the overall dropdown ending delim,
             # then don't keep going; maybe the summary was omitted as it was optional for theorems
-            if re.search(self.end_re, block, flags=re.MULTILINE):
+            if re.search(self.end_regex, block, flags=re.MULTILINE):
                 break
-            if re.search(self.RE_SUMMARY_END, block, flags=re.MULTILINE):
+            if re.search(self.SUMMARY_END_REGEX, block, flags=re.MULTILINE):
                 has_valid_summary = True
                 # remove ending delim
-                blocks[i] = re.sub(self.RE_SUMMARY_END, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.SUMMARY_END_REGEX, "", block, flags=re.MULTILINE)
                 # build HTML for summary
-                self.parser.parseBlocks(elem_summary, blocks[:i + 1])
+                self.parser.parseBlocks(summary_elem, blocks[:i + 1])
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
@@ -65,25 +77,25 @@ class DropdownProcessor(BlockProcessor, HtmlClassMixin, ThmMixin):
             blocks.clear()
             blocks.extend(org_blocks)
             return False
-        # add thm heading to summary if applicable
-        self.prepend_thm_heading_md(elem_summary, thm_heading_md)
+        # add thm heading to summary if applicable, again outside loop
+        util.prepend_thm_heading_md(self.type_opts, summary_elem, thm_heading_md)
 
         # find and remove dropdown ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.end_re, block, flags=re.MULTILINE):
+            if re.search(self.end_regex, block, flags=re.MULTILINE):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.end_re, "", block, flags=re.MULTILINE)
+                blocks[i] = re.sub(self.end_regex, "", block, flags=re.MULTILINE)
                 # build HTML for dropdown
-                elem_details = etree.SubElement(parent, "details")
+                details_elem = etree.SubElement(parent, "details")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
-                    elem_details.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
-                elem_details.append(elem_summary)
-                elem_details_content = etree.SubElement(elem_details, "div")
+                    details_elem.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
+                details_elem.append(summary_elem)
+                content_elem = etree.SubElement(details_elem, "div")
                 if self.content_html_class != "":
-                    elem_details_content.set("class", self.content_html_class)
-                self.parser.parseBlocks(elem_details_content, blocks[0:i + 1])
+                    content_elem.set("class", self.content_html_class)
+                self.parser.parseBlocks(content_elem, blocks[0:i + 1])
                 # remove used blocks
                 for _ in range(0, i + 1):
                     blocks.pop(0)

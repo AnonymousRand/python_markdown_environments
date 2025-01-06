@@ -7,7 +7,6 @@ from markdown.postprocessors import Postprocessor
 from markdown.treeprocessors import Treeprocessor
 
 from . import util
-from .mixins import HtmlClassMixin
 
 
 # the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
@@ -16,7 +15,7 @@ from .mixins import HtmlClassMixin
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class ThmCounterProcessor(Treeprocessor):
 
-    RE = r"{{([0-9,]+)}}"
+    REGEX = r"{{([0-9,]+)}}"
 
     def __init__(self, *args, add_html_elem: bool, html_id_prefix: str, html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,7 +31,7 @@ class ThmCounterProcessor(Treeprocessor):
                 continue
             new_text = ""
             prev_match_end = 0
-            for m in re.finditer(self.RE, text):
+            for m in re.finditer(self.REGEX, text):
                 input_counter = m.group(1)
                 parsed_counter = input_counter.split(",")
                 # make sure we have enough room to parse counter into `self.counter`
@@ -69,13 +68,13 @@ class ThmCounterProcessor(Treeprocessor):
 
 
 # `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
-class ThmHeadingProcessor(Postprocessor, HtmlClassMixin):
+class ThmHeadingProcessor(Postprocessor):
 
-    RE = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
+    REGEX = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
 
     def __init__(self, *args, html_class: str, emph_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_html_class(html_class)
+        self.html_class = html_class
         self.emph_html_class = emph_html_class
 
     def run(self, text):
@@ -89,25 +88,35 @@ class ThmHeadingProcessor(Postprocessor, HtmlClassMixin):
 
         new_text = ""
         prev_match_end = 0
-        for m in re.finditer(self.RE, text):
+        for m in re.finditer(self.REGEX, text):
+            thm_type = m.group(1)
+            thm_name = m.group(2)
+            thm_hidden_name = m.group(3)
+            thm_punct = "."
+
             # create theorem heading element
             elem = etree.Element("span")
             if self.html_class != "":
                 elem.set("class", self.html_class)
-            # create and fill in theorem type subelement
-            elem_emph = etree.SubElement(elem, "span")
+            # fill in theorem type + counter, and apply `emph` styling to this
+            emph_elem = etree.SubElement(elem, "span")
             if self.emph_html_class != "":
-                elem_emph.set("class", self.emph_html_class)
-            elem_emph.text = f"{m.group(1)}"
-            # fill in the rest
-            if m.group(2) is not None:
-                # add theorem name
-                elem_emph.tail = f" ({m.group(2)})"
-                elem.set("id", format_for_html(m.group(2)))
-            elif m.group(3) is not None:
-                # add theorem `id` from hidden name
-                elem.set("id", format_for_html(m.group(3)))
-            # put changes into final output text
+                emph_elem.set("class", self.emph_html_class)
+            emph_elem.text = f"{thm_type}"
+            # fill in theorem name and hidden name
+            if thm_name is not None:
+                emph_elem.tail = f" ({thm_name})"
+                elem.set("id", format_for_html(thm_name))
+            elif thm_hidden_name is not None:
+                elem.set("id", format_for_html(thm_hidden_name))
+            # generate theorem punct HTML, applying `emph` styling to it as well (even if separated from
+            # main `emph` section of thm type + counter by theorem name; this is default LaTeX behavior)
+            thm_punct_elem = etree.SubElement(elem, "span")
+            if self.emph_html_class != "":
+                thm_punct_elem.set("class", self.emph_html_class)
+            thm_punct_elem.text = thm_punct
+
+            # convert all this to HTML and insert into final output, replacing the original match
             new_text += text[prev_match_end:m.start()] + etree.tostring(elem, encoding="unicode")
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
@@ -202,7 +211,7 @@ class ThmsExtension(Extension):
                             "exer": {
                                 "thm_type": "Exercise",
                                 "html_class": "md-exer",
-                                "thm_counter_incr": "0,0,1",
+                                "thm_counter_incr": "0,0,1"
                             }
                         },
                         "html_class": "md-dropdown",
@@ -213,7 +222,7 @@ class ThmsExtension(Extension):
                         "html_id_prefix": "spanish-inquisition"
                     },
                     thm_heading_config={
-                        "html_class": "md-thm-heading",
+                        "html_class": "md-thm-heading"
                     }
                 )
             ])
@@ -242,7 +251,7 @@ class ThmsExtension(Extension):
               <span id="[optional thm name/optional hidden thm name]">
                 <span>[thm type][thm counter]</span>
               </span>
-              [optional thm name][type's thm_punct] [content]
+              [optional thm name]. [content]
             </div>
 
     Markdown usage (dropdown-based):
@@ -280,7 +289,7 @@ class ThmsExtension(Extension):
                 <span id="[optional thm name/optional hidden thm name]">
                   <span>[thm type][thm counter]</span>
                 </span>
-                [optional thm name][type's thm_punct] [summary]
+                [optional thm name]. [summary]
               </summary>
 
               <div class="[content_html_class]">
@@ -336,13 +345,9 @@ class ThmsExtension(Extension):
             - **html_class** (*str*) -- HTML `class` attribute to add to theorems of that type. Defaults to `""`.
             - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings. Defaults to `""`; leave
               default to not have a counter.
-            - **thm_punct** (*str*) -- Theorem punctuation inserted at the end of theorem headings. Defaults to `"."`.
-            - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading should just be theorem
-              name if a theorem name is provided, like the default behavior of `\\begin{proof}` environments in LaTeX.
-              Defaults to `False`.
-            - **use_punct_if_nothing_after** (*bool*) -- Whether theorem punctuation should still be put if no content
-              after the theorem heading, or if no more content in the summary in the case of dropdown-based theorems.
-              Defaults to `True`.
+            - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading besides the theorem
+              punct should just be theorem name if a theorem name is provided, like the default behavior of
+              `\\begin{proof}` environments in LaTeX.  Defaults to `False`.
         """
 
         self.config = {
@@ -415,8 +420,7 @@ class ThmsExtension(Extension):
             from .div import DivProcessor
             md.parser.blockprocessors.register(
                 DivProcessor(
-                    md.parser, types=div_config.get("types"), html_class=div_config.get("html_class"),
-                    is_thm=True
+                    md.parser, types=div_config.get("types"), html_class=div_config.get("html_class"), is_thm=True
                 ),
                 "thms_div", 105
             )
@@ -427,7 +431,8 @@ class ThmsExtension(Extension):
                     md.parser, types=dropdown_config.get("types"), 
                     html_class=dropdown_config.get("html_class"),
                     summary_html_class=dropdown_config.get("summary_html_class"),
-                    content_html_class=dropdown_config.get("content_html_class"), is_thm=True
+                    content_html_class=dropdown_config.get("content_html_class"),
+                    is_thm=True
                 ),
                 "thms_dropdown", 999
             )
