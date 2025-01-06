@@ -222,8 +222,8 @@ so using dropdowns like `pf` and `exer` here without a `summary` block is also f
 
 ### Closed dropdowns:
 
-![example render (closed dropdowns)](https://github.com/user-attachments/assets/c16866ad-6e80-4405-b85a-545e7d8506a0)
+![example render (closed dropdowns)](https://github.com/user-attachments/assets/d1faaf34-e703-495a-99c6-29ef98af9869)
 
 ### Open dropdowns:
 
-![example render (open dropdowns)](https://github.com/user-attachments/assets/79de91c5-e4fa-4126-85cd-06a83fb14ca1)
+![example render (open dropdowns)](https://github.com/user-attachments/assets/754bacc8-a767-4990-b6fe-c00f3cf78b6c)
