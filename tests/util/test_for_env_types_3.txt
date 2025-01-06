@@ -1,0 +1,1 @@
+\begin{thm\*}{2ds}

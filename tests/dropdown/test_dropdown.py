@@ -1,7 +1,7 @@
 import pytest
 
 from markdown_environments import DropdownExtension
-from ..util import run_extension_test
+from ..tests_util import run_extension_test
 
 
 TYPES = {
