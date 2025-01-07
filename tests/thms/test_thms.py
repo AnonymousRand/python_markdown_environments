@@ -59,4 +59,4 @@ DROPDOWN_TYPES = {
     ]
 )
 def test_thms(extension, filename_base):
-    run_extension_test(extension, filename_base)
+    run_extension_test([extension], filename_base)

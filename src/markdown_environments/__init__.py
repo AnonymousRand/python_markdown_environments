@@ -6,9 +6,8 @@ The base Markdown syntax defined by this extension is::
     \end{...}
 
 Important:
-    - There must be a blank line before each `\\begin{}` and after each `\\end{}`
-    - Nesting environments is currently an undefined behavior; it may work with environments of different types but will
-      likely not work with environments of the same type
+    - There must be a blank line before each `\\begin{}` and after each `\\end{}`.
+    - Only nested different types of environments works; nesting the same environment within itself does not.
 """
 
 from .captioned_figure import CaptionedFigureExtension

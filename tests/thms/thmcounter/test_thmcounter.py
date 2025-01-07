@@ -26,4 +26,4 @@ from ...tests_util import run_extension_test
     ]
 )
 def test_thmcounter(extension, filename_base):
-    run_extension_test(extension, filename_base)
+    run_extension_test([extension], filename_base)

@@ -19,4 +19,4 @@ from ..tests_util import run_extension_test
     ]
 )
 def test_cited_blockquote(extension, filename_base):
-    run_extension_test(extension, filename_base)
+    run_extension_test([extension], filename_base)

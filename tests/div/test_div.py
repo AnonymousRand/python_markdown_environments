@@ -23,4 +23,4 @@ TYPES = {
     ]
 )
 def test_div(extension, filename_base):
-    run_extension_test(extension, filename_base)
+    run_extension_test([extension], filename_base)

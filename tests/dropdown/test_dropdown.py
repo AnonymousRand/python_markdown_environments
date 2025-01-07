@@ -34,4 +34,4 @@ TYPES = {
     ]
 )
 def test_dropdown(extension, filename_base):
-    run_extension_test(extension, filename_base)
+    run_extension_test([extension], filename_base)
