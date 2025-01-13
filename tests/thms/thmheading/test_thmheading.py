@@ -11,9 +11,10 @@ from ...tests_util import run_extension_test
         (ThmsExtension(), "thms/thmheading/success_2"),
         (ThmsExtension(), "thms/thmheading/success_3"),
         (ThmsExtension(), "thms/thmheading/success_4"),
+        (ThmsExtension(), "thms/thmheading/success_5"),
         (
             ThmsExtension(thm_heading_config={"html_class": "bottom-text", "emph_html_class": "top-text"}),
-            "thms/thmheading/success_5"
+            "thms/thmheading/success_6"
         ),
         (ThmsExtension(), "thms/thmheading/fail_1")
     ]

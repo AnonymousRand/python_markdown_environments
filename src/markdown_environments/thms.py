@@ -79,10 +79,10 @@ class ThmHeadingProcessor(Postprocessor):
 
     def run(self, text):
         def format_for_html(s: str) -> str:
-            soup = BeautifulSoup(s, "lxml")      # remove any HTML tags
+            soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
             s = soup.get_text()
             s = ("-".join(s.split())).lower() 
-            s = s[:-1].replace(".", "-") + s[-1] # replace periods, except trailing ones for counter, with hyphens
+            s = s[:-1].replace(".", "-") + s[-1]   # replace periods, except trailing ones for counter, with hyphens
             s = re.sub(r"[^A-Za-z0-9-]", "", s)
             return s
 
@@ -117,7 +117,9 @@ class ThmHeadingProcessor(Postprocessor):
             thm_punct_elem.text = thm_punct
 
             # convert all this to HTML and insert into final output, replacing the original match
-            new_text += text[prev_match_end:m.start()] + etree.tostring(elem, encoding="unicode")
+            # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered Markdown in thm heading
+            new_text += text[prev_match_end:m.start()] \
+                    + etree.tostring(elem, encoding="unicode").replace("&lt;", "<").replace("&gt;", ">")
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
         return new_text
