@@ -1,4 +1,4 @@
-# Markdown-Environments
+# Python-Markdown Environments
 
 Replicating amsthm features and syntax in Markdown so you can publish mathematical papers in HTML—because what mathematician *hasn't* tried to publish to the very reputable journal called *Their Janky Flask Personal Site That No One Will Ever See*?
 
