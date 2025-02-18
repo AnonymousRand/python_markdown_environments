@@ -31,9 +31,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/AnonymousRand/python-markdown-environments"
+Homepage = "https://github.com/AnonymousRand/python_markdown_environments"
 Documentation = "https://python-markdown-environments.readthedocs.io"
-Issues = "https://github.com/AnonymousRand/python-markdown-environments/issues"
+Issues = "https://github.com/AnonymousRand/python_markdown_environments/issues"
 
 [tool.hatch.version]
 path = "src/markdown_environments/__init__.py"
