@@ -66,7 +66,7 @@ sphinxcontrib-serializinghtml==2.0.0
 tomli==2.2.1
 tomli_w==1.1.0
 tomlkit==0.13.2
-trove-classifiers==2024.10.21.16
+trove-classifiers==2025.2.18.16
 typing_extensions==4.12.2
 urllib3==2.3.0
 userpath==1.9.2
