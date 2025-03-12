@@ -37,6 +37,7 @@ Issues = "https://github.com/AnonymousRand/python_markdown_environments/issues"
 
 [tool.hatch.version]
 path = "src/markdown_environments/__init__.py"
+validate-bump = false
 
 [tool.hatch.envs.types]
 extra-dependencies = [
