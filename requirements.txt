@@ -27,7 +27,7 @@ jaraco.classes==3.4.0
 jaraco.context==6.0.1
 jaraco.functools==4.1.0
 jeepney==0.8.0
-Jinja2==3.1.5
+Jinja2==3.1.6
 keyring==25.6.0
 Markdown==3.7
 markdown-it-py==3.0.0
@@ -71,6 +71,5 @@ typing_extensions==4.12.2
 urllib3==2.3.0
 userpath==1.9.2
 uv==0.5.13
-virtualenv==20.28.0
 zipp==3.20.2
 zstandard==0.23.0
