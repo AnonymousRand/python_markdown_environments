@@ -72,8 +72,9 @@ class ThmHeadingProcessor(Postprocessor):
 
     REGEX = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
 
-    def __init__(self, *args, html_class: str, emph_html_class: str, **kwargs):
+    def __init__(self, *args, html_id_prefix: str, html_class: str, emph_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
+        self.html_id_prefix = html_id_prefix
         self.html_class = html_class
         self.emph_html_class = emph_html_class
 
@@ -106,9 +107,9 @@ class ThmHeadingProcessor(Postprocessor):
             # fill in theorem name and hidden name
             if thm_name is not None:
                 emph_elem.tail = f" ({thm_name})"
-                elem.set("id", format_for_html(thm_name))
+                elem.set("id", self.html_id_prefix + format_for_html(thm_name))
             elif thm_hidden_name is not None:
-                elem.set("id", format_for_html(thm_hidden_name))
+                elem.set("id", self.html_id_prefix + format_for_html(thm_hidden_name))
             # generate theorem punct HTML, applying `emph` styling to it as well (even if separated from
             # main `emph` section of thm type + counter by theorem name; this is default LaTeX behavior)
             thm_punct_elem = etree.SubElement(elem, "span")
@@ -333,26 +334,29 @@ class ThmsExtension(Extension):
                   Defaults to `False`.
                 - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem counters if
                   `add_html_elem` is `True`; usually useful for linking. Defaults to `""`.
-                - **html_class** (*str*) -- HTML `class` attribute of theorem counters if `add_html_elem` is `True`.
-                  Defaults to `""`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to theorem counters if `add_html_elem` is
+                  `True`. Defaults to `""`.
 
             - **thm_heading_config** (*dict*) -- configs for theorem headings. Possible config keys are:
 
+                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem headings (for all
+                  theorem heading elements with `id` attributes). Defaults to `""`.
                 - **html_class** (*str*) -- HTML `class` attribute to add to theorem headings. Defaults to `""`.
                 - **emph_html_class** (*str*) -- HTML `class` attribute to add to theorem types in theorem headings.
                   Defaults to `""`.
 
         The key for each type defined in both `div_config`'s and `dropdown_config`'s `types` is inserted directly into
         the regex patterns that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
-        interpreted as regex. In addition, each type's value is itself a dictionary with the following possible options:
+        interpreted as regex. In addition, each type's value in `types` is itself a dictionary with the following
+        possible options:
 
             - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.
             - **html_class** (*str*) -- HTML `class` attribute to add to theorems of that type. Defaults to `""`.
             - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings (again, no spaces!).
-              Defaults to `""`; leave default produce an unnumbered theorem type.
+              Defaults to `""`; leave default to produce an unnumbered theorem type.
             - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading besides the theorem
               punct should just be theorem name if a theorem name is provided, like the default behavior of
-              `\\begin{proof}` environments in LaTeX.  Defaults to `False`.
+              `\\begin{proof}` environments in LaTeX. Defaults to `False`.
         """
 
         self.config = {
@@ -393,6 +397,7 @@ class ThmsExtension(Extension):
         thm_counter_config.setdefault("html_class", "")
 
         thm_heading_config = self.getConfig("thm_heading_config")
+        thm_heading_config.setdefault("html_id_prefix", "")
         thm_heading_config.setdefault("html_class", "")
         thm_heading_config.setdefault("emph_html_class", "")
 
@@ -415,7 +420,8 @@ class ThmsExtension(Extension):
         )
         md.postprocessors.register(
             ThmHeadingProcessor(
-                md, html_class=thm_heading_config.get("html_class"),
+                md, html_id_prefix=thm_heading_config.get("html_id_prefix"),
+                html_class=thm_heading_config.get("html_class"),
                 emph_html_class=thm_heading_config.get("emph_html_class")
             ),
             "thm_heading", 105

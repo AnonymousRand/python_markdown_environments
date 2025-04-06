@@ -45,8 +45,8 @@ def gen_thm_heading_md(type_opts: dict, start_regex: str, block: str) -> str:
     if type_opts.get("thm_name_overrides_thm_heading") and thm_name is not None:
         return "{[" + thm_name + "]}{" + thm_name + "}"
     # else assemble theorem heading into `ThmHeading`'s syntax
-    # fill in theorem counter using `ThmCounter`'s syntax
     if thm_counter_incr != "":
+        # fill in theorem counter using `ThmCounter`'s syntax
         thm_type += " {{" + thm_counter_incr + "}}"
     thm_heading_md = "{[" + thm_type + "]}"
     if thm_name is not None:
