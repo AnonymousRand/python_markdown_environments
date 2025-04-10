@@ -59,9 +59,14 @@ def gen_thm_heading_md(type_opts: dict, start_regex: str, block: str) -> str:
 def prepend_thm_heading_md(type_opts: dict, target_elem: etree.Element, thm_heading_md: str) -> None:
     if thm_heading_md == "":
         return
-    # add to first `<p>` child if possible to put it on the same line and minimize CSS `display: inline` chaos
-    first_p = target_elem.find("p")
-    target_elem = first_p if first_p is not None else target_elem
+    # if first child is a `<p>`, add thm heading to it instead to put it on the same line
+    # without needing CSS `display: inline` chaos
+    try:
+        if target_elem[0].tag == "p":
+            target_elem = target_elem[0]
+    except IndexError:
+        # if no children
+        pass
     if target_elem.text is not None:
         target_elem.text = f"{thm_heading_md} {target_elem.text}"
     else:

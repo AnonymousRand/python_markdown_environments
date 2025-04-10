@@ -1,0 +1,43 @@
+# Section {{1}}: this is theorem counter syntax from ThmsExtension()
+
+## Subsection {{0,1}}: Bees
+
+Here we begin our study of bees.
+
+
+
+\begin{thm}[the bee theorem]
+According to all known laws of aviation, there is no way that a bee should be able to fly.
+\end{thm}
+
+\begin{pf}
+Its wings are too small to get its fat little body off the ground.
+\end{pf}
+
+
+
+\begin{thm\*}{hidden thm name used as `id`; not real LaTeX syntax}
+Bees, of course, fly anyways.
+\end{thm\*}
+
+\begin{pf}[Proofs are configured to have titles override the heading]{hidden names are useless when there's already a name}
+Because bees don't care what humans think is impossible.
+\end{pf}
+
+
+
+\begin{exer}
+
+\begin{summary}
+Prove that this `summary` environment is common to all dropdown-based environments.
+\end{summary}
+
+Solution: by reading the documentation, of course!
+\end{exer}
+
+
+
+\begin{exer}
+All dropdowns initialized in `ThmsExtension()` have a default `summary` value of `thm_type`,
+so using dropdowns like `pf` and `exer` here without a `summary` block is also fine.
+\end{exer}

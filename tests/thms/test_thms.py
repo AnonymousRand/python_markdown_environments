@@ -37,6 +37,7 @@ DROPDOWN_TYPES = {
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_2"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_3"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_4"),
+        (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_5"),
         # readme example
         (
             ThmsExtension(
@@ -51,7 +52,7 @@ DROPDOWN_TYPES = {
                     "emph_html_class": "md-thm-heading__emph"
                 }
             ),
-            "thms/success_5"
+            "thms/success_6"
         ),
         (ThmsExtension(), "thms/fail_1"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/fail_2"),
