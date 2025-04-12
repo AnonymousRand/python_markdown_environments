@@ -38,46 +38,51 @@ class DropdownProcessor(BlockProcessor):
         org_blocks = list(blocks)
         # remove summary starting delim that must immediately follow dropdown's starting delim
         # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
-        if not self.is_thm and not re.match(self.SUMMARY_START_REGEX, blocks[1], re.MULTILINE):
-            blocks.clear() # `blocks = org_blocks` doesn't work; must mutate `blocks` instead of reassigning it
-            blocks.extend(org_blocks)
-            return False
+        has_summary = True
+        if not re.match(self.SUMMARY_START_REGEX, blocks[1], re.MULTILINE):
+            if self.is_thm:
+                has_summary = False
+            else:
+                blocks.clear() # `blocks = org_blocks` doesn't work; must mutate `blocks` instead of reassigning it
+                blocks.extend(org_blocks)
+                return False
         blocks[1] = re.sub(self.SUMMARY_START_REGEX, "", blocks[1], flags=re.MULTILINE)
 
         # remove dropdown starting delim
-        # first generate theorem heading from it to use as default summary if applicable
+        # also first generate theorem heading from it to use as default summary if applicable
         thm_heading_md = ""
         if self.is_thm:
             thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_regex, blocks[0])
         blocks[0] = re.sub(self.start_regex, "", blocks[0], flags=re.MULTILINE)
 
-        # find and remove summary ending delim, and extract element
+        # find and remove summary ending delim if summary starting delim was present, and extract element
         # `summary_elem` initialized outside loop since the loop isn't guaranteed here to find & initialize it
         summary_elem = etree.Element("summary")
         if self.summary_html_class != "":
             summary_elem.set("class", self.summary_html_class)
         has_valid_summary = self.is_thm
-        for i, block in enumerate(blocks):
-            # if we haven't found summary ending delim but have found the overall dropdown ending delim,
-            # then don't keep going; maybe the summary was omitted as it was optional for theorems
-            if re.search(self.end_regex, block, flags=re.MULTILINE):
-                break
-            if re.search(self.SUMMARY_END_REGEX, block, flags=re.MULTILINE):
-                has_valid_summary = True
-                # remove ending delim
-                blocks[i] = re.sub(self.SUMMARY_END_REGEX, "", block, flags=re.MULTILINE)
-                # build HTML for summary
-                self.parser.parseBlocks(summary_elem, blocks[:i + 1])
-                # remove used blocks
-                for _ in range(i + 1):
-                    blocks.pop(0)
-                break
+        if has_summary:
+            for i, block in enumerate(blocks):
+                # if we haven't found summary ending delim but have found the overall dropdown ending delim,
+                # then don't keep going; maybe the summary was omitted as it was optional for theorems
+                if re.search(self.end_regex, block, flags=re.MULTILINE):
+                    break
+                if re.search(self.SUMMARY_END_REGEX, block, flags=re.MULTILINE):
+                    has_valid_summary = True
+                    # remove ending delim
+                    blocks[i] = re.sub(self.SUMMARY_END_REGEX, "", block, flags=re.MULTILINE)
+                    # build HTML for summary
+                    self.parser.parseBlocks(summary_elem, blocks[:i + 1])
+                    # remove used blocks
+                    for _ in range(i + 1):
+                        blocks.pop(0)
+                    break
         # if no valid summary (e.g. no ending delim with no default), restore and do nothing
         if not has_valid_summary:
             blocks.clear()
             blocks.extend(org_blocks)
             return False
-        # add thm heading to summary if applicable, again outside loop
+        # prepend thm heading (including default summary) to summary if applicable, again outside loop
         util.prepend_thm_heading_md(self.type_opts, summary_elem, thm_heading_md)
 
         # find and remove dropdown ending delim, and extract element
