@@ -35,6 +35,9 @@ class DropdownProcessor(BlockProcessor):
         return True
 
     def run(self, parent, blocks):
+        # guard against index out of bounds on matching `self.SUMMARY_START_REGEX` for recursive `run()` parsing
+        if len(blocks) < 2:
+            return False
         org_blocks = list(blocks)
         # remove summary starting delim that must immediately follow dropdown's starting delim
         # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
