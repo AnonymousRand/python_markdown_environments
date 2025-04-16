@@ -57,17 +57,28 @@ def gen_thm_heading_md(type_opts: dict, start_regex: str, block: str) -> str:
 
 
 def prepend_thm_heading_md(type_opts: dict, target_elem: etree.Element, thm_heading_md: str) -> None:
+    thm_heading_elem = target_elem
     if thm_heading_md == "":
         return
     # if first child is a `<p>`, add thm heading to it instead to put it on the same line
     # without needing CSS `display: inline` chaos
+    added_inline = False
     try:
         if target_elem[0].tag == "p":
-            target_elem = target_elem[0]
+            added_inline = True
+            thm_heading_elem = target_elem[0]
     except IndexError:
         # if no children
         pass
-    if target_elem.text is not None:
-        target_elem.text = f"{thm_heading_md} {target_elem.text}"
+
+    if not added_inline:
+        # if not able to add to first `<p>`, wrap theorem heading in its own `<p>` and then prepend to target elem
+        # since it's just a `<span>` right now (for bottom margin etc.)
+        p_elem = etree.Element("p")
+        p_elem.text = thm_heading_md
+        p_elem.tail = " "
+        thm_heading_elem.insert(0, p_elem)
     else:
-        target_elem.text = f"{thm_heading_md}"
+        # else just prepend theorem heading normally
+        old_text = thm_heading_elem.text if thm_heading_elem.text is not None else ""
+        thm_heading_elem.text = f"{thm_heading_md} {old_text}"

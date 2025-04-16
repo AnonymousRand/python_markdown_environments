@@ -89,9 +89,10 @@ def test_prepend_thm_heading_md():
 
     # test when there's no `<p>` child
     elem = etree.Element("div")
-    elem.text = "outside para"
-    util.prepend_thm_heading_md(type_opts, elem, "sd")
-    assert elem.text == "sd outside para"
+    subelem = etree.SubElement(elem, "span")
+    subelem.text = "not a para!"
+    util.prepend_thm_heading_md(type_opts, elem, "heading.")
+    assert etree.tostring(elem, encoding="unicode") == "<div><p>heading.</p> <span>not a para!</span></div>"
 
     # test when there is a `<p>` child
     elem = etree.Element("div")

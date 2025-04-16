@@ -39,6 +39,11 @@ def test_nesting(filename_base):
                 },
                 dropdown_config={
                     "types": {
+                        "exer": {
+                            "thm_type": "Exercise",
+                            "html_class": "md-exer",
+                            "thm_counter_incr": "0,0,1"
+                        },
                         "pf": {
                             "thm_type": "Proof",
                             "html_class": "md-dropdown--pf",

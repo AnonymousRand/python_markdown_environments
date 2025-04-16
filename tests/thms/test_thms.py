@@ -54,8 +54,6 @@ DROPDOWN_TYPES = {
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_4"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_5"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_6"),
-        # test nesting dropdowns of different types doesn't cause dropdowns to eat each other
-        (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_7"),
         (ThmsExtension(), "thms/fail_1"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/fail_2"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/fail_3")
