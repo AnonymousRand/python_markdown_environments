@@ -71,7 +71,7 @@ class ThmCounterProcessor(Treeprocessor):
 class ThmHeadingProcessor(Postprocessor):
 
     PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", flags=re.MULTILINE)
-    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[/:]", flags=re.MULTILINE)
+    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[\./:]", flags=re.MULTILINE)
     FORMAT_FOR_HTML_REMOVE_PATTERN = re.compile(r"[^A-Za-z0-9-]", flags=re.MULTILINE)
 
     def __init__(self, *args, html_id_prefix: str, html_class: str, emph_html_class: str, **kwargs):
@@ -85,8 +85,7 @@ class ThmHeadingProcessor(Postprocessor):
             soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
             s = soup.get_text()
             s = ("-".join(s.split())).lower()      # replace whitespace with hyphens
-            s = s[:-1].replace(".", "-") + s[-1]   # replace periods, except trailing ones for counter, with hyphens TODO: is this actually doing anything? also is this tested?
-            s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s)
+            s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s[:-1]) + s[-1] # don't have trailing hyphens since ugly
             s = self.FORMAT_FOR_HTML_REMOVE_PATTERN.sub("", s)
             return s
 

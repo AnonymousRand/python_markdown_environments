@@ -54,6 +54,8 @@ DROPDOWN_TYPES = {
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_4"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_5"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_6"),
+        # test HTML sanitization on theorem element `id`s
+        (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/success_7"),
         (ThmsExtension(), "thms/fail_1"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/fail_2"),
         (ThmsExtension(div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}), "thms/fail_3")
