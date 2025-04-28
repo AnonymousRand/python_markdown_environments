@@ -9,10 +9,10 @@ from . import util
 
 class CaptionedFigureProcessor(BlockProcessor):
 
-    START_REGEX = r"^\\begin{captioned_figure}"
-    END_REGEX = r"^\\end{captioned_figure}"
-    CAPTION_START_REGEX = r"^\\begin{caption}"
-    CAPTION_END_REGEX = r"^\\end{caption}"
+    START_PATTERN = re.compile(r"^\\begin{captioned_figure}", flags=re.MULTILINE)
+    END_PATTERN = re.compile(r"^\\end{captioned_figure}", flags=re.MULTILINE)
+    CAPTION_START_PATTERN = re.compile(r"^\\begin{caption}", flags=re.MULTILINE)
+    CAPTION_END_PATTERN = re.compile(r"^\\end{caption}", flags=re.MULTILINE)
 
     def __init__(self, *args, html_class: str, caption_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,22 +20,22 @@ class CaptionedFigureProcessor(BlockProcessor):
         self.caption_html_class = caption_html_class
 
     def test(self, parent, block):
-        return re.match(self.START_REGEX, block, re.MULTILINE)
+        return self.START_PATTERN.match(block)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove figure starting delim
-        blocks[0] = re.sub(self.START_REGEX, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = self.START_PATTERN.sub("", blocks[0])
 
         # find and remove caption starting delim
         caption_start_i = None
         for i, block in enumerate(blocks):
-            if re.match(self.CAPTION_START_REGEX, block, re.MULTILINE):
+            if self.CAPTION_START_PATTERN.match(block):
                 # remove ending delim and note which block captions started on
                 # (as caption content itself is an unknown number of blocks)
                 caption_start_i = i
-                blocks[i] = re.sub(self.CAPTION_START_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.CAPTION_START_PATTERN.sub("", block)
                 break
 
         # if no starting delim for caption, restore and do nothing
@@ -51,10 +51,10 @@ class CaptionedFigureProcessor(BlockProcessor):
         # start search at caption starting delim; caption is at end so this is a good optimization
         delim_found = False
         for i, block in enumerate(blocks[caption_start_i:], start=caption_start_i):
-            if re.search(self.CAPTION_END_REGEX, block, flags=re.MULTILINE):
+            if self.CAPTION_END_PATTERN.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.CAPTION_END_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.CAPTION_END_PATTERN.sub("", block)
                 # build HTML for caption
                 caption_elem = etree.Element("figcaption")
                 if self.caption_html_class != "":
@@ -73,10 +73,10 @@ class CaptionedFigureProcessor(BlockProcessor):
         # find and remove figure ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.END_REGEX, block, flags=re.MULTILINE):
+            if self.END_PATTERN.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.END_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.END_PATTERN.sub("", block)
                 # build HTML for figure
                 figure_elem = etree.SubElement(parent, "figure")
                 if self.html_class != "":

@@ -13,17 +13,17 @@ class DivProcessor(BlockProcessor):
         super().__init__(*args, **kwargs)
         self.html_class = html_class
         self.is_thm = is_thm
-        self.types, self.start_regex_choices, self.end_regex_choices = util.init_env_types(types, self.is_thm)
-        self.start_regex = None
-        self.end_regex = None
+        self.types, self.start_pattern_choices, self.end_pattern_choices = util.init_env_types(types, self.is_thm)
+        self.start_pattern = None
+        self.end_pattern = None
 
     def test(self, parent, block):
-        typ = util.test_for_env_types(self.start_regex_choices, parent, block)
+        typ = util.test_for_env_types(self.start_pattern_choices, parent, block)
         if typ is None:
             return False
         self.type_opts = self.types[typ]
-        self.start_regex = self.start_regex_choices[typ]
-        self.end_regex = self.end_regex_choices[typ]
+        self.start_pattern = self.start_pattern_choices[typ]
+        self.end_pattern = self.end_pattern_choices[typ]
         return True
 
     def run(self, parent, blocks):
@@ -31,17 +31,17 @@ class DivProcessor(BlockProcessor):
         # generate default thm heading if applicable
         thm_heading_md = ""
         if self.is_thm:
-            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_regex, blocks[0])
+            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
         # remove starting delim (after generating thm heading from it, if applicable)
-        blocks[0] = re.sub(self.start_regex, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = self.start_pattern.sub("", blocks[0])
 
         # find and remove ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.end_regex, block, flags=re.MULTILINE):
+            if self.end_pattern.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.end_regex, "", block, flags=re.MULTILINE)
+                blocks[i] = self.end_pattern.sub("", block)
                 # build HTML
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":

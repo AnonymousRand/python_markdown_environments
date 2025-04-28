@@ -9,10 +9,10 @@ from . import util
 
 class CitedBlockquoteProcessor(BlockProcessor):
 
-    START_REGEX = r"^\\begin{cited_blockquote}"
-    END_REGEX = r"^\\end{cited_blockquote}"
-    CITATION_START_REGEX = r"^\\begin{citation}"
-    CITATION_END_REGEX = r"^\\end{citation}"
+    START_PATTERN = re.compile(r"^\\begin{cited_blockquote}", flags=re.MULTILINE)
+    END_PATTERN = re.compile(r"^\\end{cited_blockquote}", flags=re.MULTILINE)
+    CITATION_START_PATTERN = re.compile(r"^\\begin{citation}", flags=re.MULTILINE)
+    CITATION_END_PATTERN = re.compile(r"^\\end{citation}", flags=re.MULTILINE)
 
     def __init__(self, *args, html_class: str, citation_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,24 +20,24 @@ class CitedBlockquoteProcessor(BlockProcessor):
         self.citation_html_class = citation_html_class
 
     def test(self, parent, block):
-        return re.match(self.START_REGEX, block, re.MULTILINE)
+        return self.START_PATTERN.match(block)
 
     def run(self, parent, blocks):
         org_blocks = list(blocks)
 
         # remove blockquote starting delim
-        blocks[0] = re.sub(self.START_REGEX, "", blocks[0], flags=re.MULTILINE)
+        blocks[0] = self.START_PATTERN.sub("", blocks[0])
 
         # find and remove citation starting delim
         delim_found = False
         citation_start_i = None
         for i, block in enumerate(blocks):
-            if re.match(self.CITATION_START_REGEX, block, re.MULTILINE):
+            if self.CITATION_START_PATTERN.match(block):
                 delim_found = True
                 # remove ending delim and note which block citation started on
                 # (as citation content itself is an unknown number of blocks)
                 citation_start_i = i
-                blocks[i] = re.sub(self.CITATION_START_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.CITATION_START_PATTERN.sub("", block)
                 break
         # if no starting delim for citation, restore and do nothing
         if not delim_found:
@@ -49,10 +49,10 @@ class CitedBlockquoteProcessor(BlockProcessor):
         # start search at citation starting delim; citation is at end so this is a good optimization
         delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
-            if re.search(self.CITATION_END_REGEX, block, flags=re.MULTILINE):
+            if self.CITATION_END_PATTERN.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.CITATION_END_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.CITATION_END_PATTERN.sub("", block)
                 # build HTML for citation
                 citation_elem = etree.Element("cite")
                 if self.citation_html_class != "":
@@ -71,10 +71,10 @@ class CitedBlockquoteProcessor(BlockProcessor):
         # find and remove blockquote ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.END_REGEX, block, flags=re.MULTILINE):
+            if self.END_PATTERN.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.END_REGEX, "", block, flags=re.MULTILINE)
+                blocks[i] = self.END_PATTERN.sub("", block)
                 # build HTML for blockquote
                 blockquote_elem = etree.SubElement(parent, "blockquote")
                 if self.html_class != "":

@@ -9,8 +9,8 @@ from . import util
 
 class DropdownProcessor(BlockProcessor):
 
-    SUMMARY_START_REGEX = r"^\\begin{summary}"
-    SUMMARY_END_REGEX = r"^\\end{summary}"
+    SUMMARY_START_REGEX = re.compile(r"^\\begin{summary}", flags=re.MULTILINE)
+    SUMMARY_END_REGEX = re.compile(r"^\\end{summary}", flags=re.MULTILINE)
 
     def __init__(
         self, *args, types: dict, html_class: str, summary_html_class: str, content_html_class: str,
@@ -21,17 +21,17 @@ class DropdownProcessor(BlockProcessor):
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
         self.is_thm = is_thm
-        self.types, self.start_regex_choices, self.end_regex_choices = util.init_env_types(types, self.is_thm)
-        self.start_regex = None
-        self.end_regex = None
+        self.types, self.start_pattern_choices, self.end_pattern_choices = util.init_env_types(types, self.is_thm)
+        self.start_pattern = None
+        self.end_pattern = None
 
     def test(self, parent, block):
-        typ = util.test_for_env_types(self.start_regex_choices, parent, block)
+        typ = util.test_for_env_types(self.start_pattern_choices, parent, block)
         if typ is None:
             return False
         self.type_opts = self.types[typ]
-        self.start_regex = self.start_regex_choices[typ]
-        self.end_regex = self.end_regex_choices[typ]
+        self.start_pattern = self.start_pattern_choices[typ]
+        self.end_pattern = self.end_pattern_choices[typ]
         return True
 
     def run(self, parent, blocks):
@@ -42,21 +42,21 @@ class DropdownProcessor(BlockProcessor):
         # remove summary starting delim that must immediately follow dropdown's starting delim
         # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
         has_summary = True
-        if not re.match(self.SUMMARY_START_REGEX, blocks[1], re.MULTILINE):
+        if not self.SUMMARY_START_REGEX.match(blocks[1]):
             if self.is_thm:
                 has_summary = False
             else:
                 blocks.clear() # `blocks = org_blocks` doesn't work; must mutate `blocks` instead of reassigning it
                 blocks.extend(org_blocks)
                 return False
-        blocks[1] = re.sub(self.SUMMARY_START_REGEX, "", blocks[1], flags=re.MULTILINE)
+        blocks[1] = self.SUMMARY_START_REGEX.sub("", blocks[1])
 
         # remove dropdown starting delim
         # also first generate theorem heading from it to use as default summary if applicable
         thm_heading_md = ""
         if self.is_thm:
-            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_regex, blocks[0])
-        blocks[0] = re.sub(self.start_regex, "", blocks[0], flags=re.MULTILINE)
+            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
+        blocks[0] = self.start_pattern.sub("", blocks[0])
 
         # find and remove summary ending delim if summary starting delim was present, and extract element
         # `summary_elem` initialized outside loop since the loop isn't guaranteed here to find & initialize it
@@ -68,12 +68,12 @@ class DropdownProcessor(BlockProcessor):
             for i, block in enumerate(blocks):
                 # if we haven't found summary ending delim but have found the overall dropdown ending delim,
                 # then don't keep going; maybe the summary was omitted as it was optional for theorems
-                if re.search(self.end_regex, block, flags=re.MULTILINE):
+                if self.end_pattern.search(block):
                     break
-                if re.search(self.SUMMARY_END_REGEX, block, flags=re.MULTILINE):
+                if self.SUMMARY_END_REGEX.search(block):
                     has_valid_summary = True
                     # remove ending delim
-                    blocks[i] = re.sub(self.SUMMARY_END_REGEX, "", block, flags=re.MULTILINE)
+                    blocks[i] = self.SUMMARY_END_REGEX.sub("", block)
                     # build HTML for summary
                     self.parser.parseBlocks(summary_elem, blocks[:i + 1])
                     # remove used blocks
@@ -91,10 +91,10 @@ class DropdownProcessor(BlockProcessor):
         # find and remove dropdown ending delim, and extract element
         delim_found = False
         for i, block in enumerate(blocks):
-            if re.search(self.end_regex, block, flags=re.MULTILINE):
+            if self.end_pattern.search(block):
                 delim_found = True
                 # remove ending delim
-                blocks[i] = re.sub(self.end_regex, "", block, flags=re.MULTILINE)
+                blocks[i] = self.end_pattern.sub("", block)
                 # build HTML for dropdown
                 details_elem = etree.SubElement(parent, "details")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":

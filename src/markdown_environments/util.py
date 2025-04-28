@@ -10,36 +10,36 @@ def init_extension_with_configs(obj, **kwargs) -> None:
 
 
 def init_env_types(types: dict, is_thm: bool) -> tuple[dict, dict, dict]:
-    start_regex_choices = {}
-    end_regex_choices = {}
+    start_pattern_choices = {}
+    end_pattern_choices = {}
     for typ, opts in types.items():
         # set default options for individual types
         opts.setdefault("thm_type", "")
         opts.setdefault("html_class", "")
         opts.setdefault("thm_counter_incr", "")
         opts.setdefault("thm_name_overrides_thm_heading", False)
-        # add type to regex choices
+        # add type to regex pattern choices
         if is_thm:
-            start_regex_choices[typ] = rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?"
+            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?", flags=re.MULTILINE)
         else:
-            start_regex_choices[typ] = rf"^\\begin{{{typ}}}"
-        end_regex_choices[typ] = rf"^\\end{{{typ}}}"
-    return types, start_regex_choices, end_regex_choices
+            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}", flags=re.MULTILINE)
+        end_pattern_choices[typ] = re.compile(rf"^\\end{{{typ}}}", flags=re.MULTILINE)
+    return types, start_pattern_choices, end_pattern_choices
 
 
-def test_for_env_types(start_regex_choices: dict, parent: etree.Element, block: str) -> str | None:
-    for typ, regex in start_regex_choices.items():
-        if re.match(regex, block, re.MULTILINE):
+def test_for_env_types(start_pattern_choices: dict, parent: etree.Element, block: str) -> str | None:
+    for typ, pattern in start_pattern_choices.items():
+        if pattern.match(block):
             return typ
     return None
 
 
-def gen_thm_heading_md(type_opts: dict, start_regex: str, block: str) -> str:
-    start_regex_match = re.match(start_regex, block, re.MULTILINE)
+def gen_thm_heading_md(type_opts: dict, start_pattern: re.Pattern, block: str) -> str:
+    start_pattern_match = start_pattern.match(block)
     thm_type = type_opts.get("thm_type")
     thm_counter_incr = type_opts.get("thm_counter_incr")
-    thm_name = start_regex_match.group(1)
-    thm_hidden_name = start_regex_match.group(2)
+    thm_name = start_pattern_match.group(1)
+    thm_hidden_name = start_pattern_match.group(2)
 
     # override theorem heading with theorem name if applicable
     if type_opts.get("thm_name_overrides_thm_heading") and thm_name is not None:

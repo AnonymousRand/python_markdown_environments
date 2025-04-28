@@ -15,7 +15,7 @@ from . import util
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class ThmCounterProcessor(Treeprocessor):
 
-    REGEX = r"{{([0-9,]+)}}"
+    PATTERN = re.compile(r"{{([0-9,]+)}}", flags=re.MULTILINE)
 
     def __init__(self, *args, add_html_elem: bool, html_id_prefix: str, html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,7 +31,7 @@ class ThmCounterProcessor(Treeprocessor):
                 continue
             new_text = ""
             prev_match_end = 0
-            for m in re.finditer(self.REGEX, text):
+            for m in self.PATTERN.finditer(text):
                 input_counter = m.group(1)
                 parsed_counter = input_counter.split(",")
                 # make sure we have enough room to parse counter into `self.counter`
@@ -70,7 +70,9 @@ class ThmCounterProcessor(Treeprocessor):
 # `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
 class ThmHeadingProcessor(Postprocessor):
 
-    REGEX = r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?"
+    PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", flags=re.MULTILINE)
+    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[/:]", flags=re.MULTILINE)
+    FORMAT_FOR_HTML_REMOVE_PATTERN = re.compile(r"[^A-Za-z0-9-]", flags=re.MULTILINE)
 
     def __init__(self, *args, html_id_prefix: str, html_class: str, emph_html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,14 +84,15 @@ class ThmHeadingProcessor(Postprocessor):
         def format_for_html(s: str) -> str:
             soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
             s = soup.get_text()
-            s = ("-".join(s.split())).lower() 
-            s = s[:-1].replace(".", "-") + s[-1]   # replace periods, except trailing ones for counter, with hyphens
-            s = re.sub(r"[^A-Za-z0-9-]", "", s)
+            s = ("-".join(s.split())).lower()      # replace whitespace with hyphens
+            s = s[:-1].replace(".", "-") + s[-1]   # replace periods, except trailing ones for counter, with hyphens TODO: is this actually doing anything? also is this tested?
+            s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s)
+            s = self.FORMAT_FOR_HTML_REMOVE_PATTERN.sub("", s)
             return s
 
         new_text = ""
         prev_match_end = 0
-        for m in re.finditer(self.REGEX, text):
+        for m in self.PATTERN.finditer(text):
             thm_type = m.group(1)
             thm_name = m.group(2)
             thm_hidden_name = m.group(3)
