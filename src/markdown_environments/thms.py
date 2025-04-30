@@ -71,7 +71,7 @@ class ThmCounterProcessor(Treeprocessor):
 class ThmHeadingProcessor(Postprocessor):
 
     PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", flags=re.MULTILINE)
-    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[\./:]", flags=re.MULTILINE)
+    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[ \./]", flags=re.MULTILINE)
     FORMAT_FOR_HTML_REMOVE_PATTERN = re.compile(r"[^A-Za-z0-9-]", flags=re.MULTILINE)
 
     def __init__(self, *args, html_id_prefix: str, html_class: str, emph_html_class: str, **kwargs):
@@ -84,7 +84,7 @@ class ThmHeadingProcessor(Postprocessor):
         def format_for_html(s: str) -> str:
             soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
             s = soup.get_text()
-            s = ("-".join(s.split())).lower()      # replace whitespace with hyphens
+            s = s.lower()
             s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s[:-1]) + s[-1] # don't have trailing hyphens since ugly
             s = self.FORMAT_FOR_HTML_REMOVE_PATTERN.sub("", s)
             return s
