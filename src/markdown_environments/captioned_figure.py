@@ -59,6 +59,7 @@ class CaptionedFigureProcessor(BlockProcessor):
                 caption_elem = etree.Element("figcaption")
                 if self.caption_html_class != "":
                     caption_elem.set("class", self.caption_html_class)
+                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
                 self.parser.parseBlocks(caption_elem, blocks[caption_start_i:i + 1])
                 # remove used blocks
                 for _ in range(caption_start_i, i + 1):

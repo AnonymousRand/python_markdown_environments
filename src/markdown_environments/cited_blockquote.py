@@ -57,6 +57,7 @@ class CitedBlockquoteProcessor(BlockProcessor):
                 citation_elem = etree.Element("cite")
                 if self.citation_html_class != "":
                     citation_elem.set("class", self.citation_html_class)
+                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
                 self.parser.parseBlocks(citation_elem, blocks[citation_start_i:i + 1])
                 # remove used blocks
                 for _ in range(citation_start_i, i + 1):
