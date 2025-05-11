@@ -75,6 +75,7 @@ class DropdownProcessor(BlockProcessor):
                     # remove ending delim
                     blocks[i] = self.SUMMARY_END_REGEX.sub("", block)
                     # build HTML for summary
+                    blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
                     self.parser.parseBlocks(summary_elem, blocks[:i + 1])
                     # remove used blocks
                     for _ in range(i + 1):
@@ -103,6 +104,7 @@ class DropdownProcessor(BlockProcessor):
                 content_elem = etree.SubElement(details_elem, "div")
                 if self.content_html_class != "":
                     content_elem.set("class", self.content_html_class)
+                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
                 self.parser.parseBlocks(content_elem, blocks[0:i + 1])
                 # remove used blocks
                 for _ in range(0, i + 1):

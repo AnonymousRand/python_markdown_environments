@@ -46,6 +46,7 @@ class DivProcessor(BlockProcessor):
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
                     elem.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
+                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
                 self.parser.parseBlocks(elem, blocks[0:i + 1])
                 # remove used blocks
                 for _ in range(0, i + 1):
