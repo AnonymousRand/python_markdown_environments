@@ -16,7 +16,7 @@ filelock==3.16.1
 h11==0.16.0
 hatch==1.14.0
 hatchling==1.27.0
-httpcore==1.0.7
+httpcore==1.0.9
 httpx==0.28.1
 hyperlink==21.0.0
 idna==3.10
@@ -68,7 +68,7 @@ tomli_w==1.1.0
 tomlkit==0.13.2
 trove-classifiers==2024.10.21.16
 typing_extensions==4.12.2
-urllib3==2.3.0
+urllib3==2.5.0
 userpath==1.9.2
 uv==0.5.13
 zipp==3.20.2
