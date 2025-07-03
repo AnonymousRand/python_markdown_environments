@@ -4,7 +4,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from . import util
+from . import utils
 
 
 class CitedBlockquoteProcessor(BlockProcessor):
@@ -155,10 +155,12 @@ class CitedBlockquoteExtension(Extension):
                 "HTML `class` attribute to add to cited blockquote's citation. Defaults to `\"\"`."
             ]
         }
-        util.init_extension_with_configs(self, **kwargs)
+        utils.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CitedBlockquoteProcessor(md.parser, **self.getConfigs()), "cited_blockquote", 105)
+        md.parser.blockprocessors.register(
+            CitedBlockquoteProcessor(md.parser, **self.getConfigs()), "cited_blockquote", 105
+        )
 
 
 def makeExtension(**kwargs):

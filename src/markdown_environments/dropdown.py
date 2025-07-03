@@ -4,7 +4,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from . import util
+from . import utils
 
 
 class DropdownProcessor(BlockProcessor):
@@ -21,12 +21,12 @@ class DropdownProcessor(BlockProcessor):
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
         self.is_thm = is_thm
-        self.types, self.start_pattern_choices, self.end_pattern_choices = util.init_env_types(types, self.is_thm)
+        self.types, self.start_pattern_choices, self.end_pattern_choices = utils.init_env_types(types, self.is_thm)
         self.start_pattern = None
         self.end_pattern = None
 
     def test(self, parent, block):
-        typ = util.test_for_env_types(self.start_pattern_choices, parent, block)
+        typ = utils.test_for_env_types(self.start_pattern_choices, parent, block)
         if typ is None:
             return False
         self.type_opts = self.types[typ]
@@ -55,7 +55,7 @@ class DropdownProcessor(BlockProcessor):
         # also first generate theorem heading from it to use as default summary if applicable
         thm_heading_md = ""
         if self.is_thm:
-            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
+            thm_heading_md = utils.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
         blocks[0] = self.start_pattern.sub("", blocks[0])
 
         # find and remove summary ending delim if summary starting delim was present, and extract element
@@ -87,7 +87,7 @@ class DropdownProcessor(BlockProcessor):
             blocks.extend(org_blocks)
             return False
         # prepend thm heading (including default summary) to summary if applicable, again outside loop
-        util.prepend_thm_heading_md(self.type_opts, summary_elem, thm_heading_md)
+        utils.prepend_thm_heading_md(self.type_opts, summary_elem, thm_heading_md)
 
         # find and remove dropdown ending delim, and extract element
         delim_found = False
@@ -208,7 +208,7 @@ class DropdownExtension(Extension):
                 "Whether to use theorem logic (e.g. heading); used only by `ThmExtension`. Defaults to `False`."
             ]
         }
-        util.init_extension_with_configs(self, **kwargs)
+        utils.init_extension_with_configs(self, **kwargs)
 
         # set default options for individual types
         for type, opts in self.getConfig("types").items():

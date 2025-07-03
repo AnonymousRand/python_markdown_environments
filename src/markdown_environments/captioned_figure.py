@@ -4,7 +4,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from . import util
+from . import utils
 
 
 class CaptionedFigureProcessor(BlockProcessor):
@@ -157,10 +157,12 @@ class CaptionedFigureExtension(Extension):
                 "HTML `class` attribute to add to captioned figure's caption (default: `\"\"`)."
             ]
         }
-        util.init_extension_with_configs(self, **kwargs)
+        utils.init_extension_with_configs(self, **kwargs)
 
     def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(CaptionedFigureProcessor(md.parser, **self.getConfigs()), "captioned_figure", 105)
+        md.parser.blockprocessors.register(
+            CaptionedFigureProcessor(md.parser, **self.getConfigs()), "captioned_figure", 105
+        )
 
 
 def makeExtension(**kwargs):

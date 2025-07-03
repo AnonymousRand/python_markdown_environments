@@ -4,7 +4,7 @@ import xml.etree.ElementTree as etree
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
-from . import util
+from . import utils
 
 
 class DivProcessor(BlockProcessor):
@@ -13,12 +13,12 @@ class DivProcessor(BlockProcessor):
         super().__init__(*args, **kwargs)
         self.html_class = html_class
         self.is_thm = is_thm
-        self.types, self.start_pattern_choices, self.end_pattern_choices = util.init_env_types(types, self.is_thm)
+        self.types, self.start_pattern_choices, self.end_pattern_choices = utils.init_env_types(types, self.is_thm)
         self.start_pattern = None
         self.end_pattern = None
 
     def test(self, parent, block):
-        typ = util.test_for_env_types(self.start_pattern_choices, parent, block)
+        typ = utils.test_for_env_types(self.start_pattern_choices, parent, block)
         if typ is None:
             return False
         self.type_opts = self.types[typ]
@@ -31,7 +31,7 @@ class DivProcessor(BlockProcessor):
         # generate default thm heading if applicable
         thm_heading_md = ""
         if self.is_thm:
-            thm_heading_md = util.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
+            thm_heading_md = utils.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
         # remove starting delim (after generating thm heading from it, if applicable)
         blocks[0] = self.start_pattern.sub("", blocks[0])
 
@@ -52,7 +52,7 @@ class DivProcessor(BlockProcessor):
                 for _ in range(0, i + 1):
                     blocks.pop(0)
                 # add thm heading if applicable
-                util.prepend_thm_heading_md(self.type_opts, elem, thm_heading_md)
+                utils.prepend_thm_heading_md(self.type_opts, elem, thm_heading_md)
                 break
         # if no ending delim, restore and do nothing
         if not delim_found:
@@ -126,7 +126,7 @@ class DivExtension(Extension):
                 )
             ]
         }
-        util.init_extension_with_configs(self, **kwargs)
+        utils.init_extension_with_configs(self, **kwargs)
 
         # set default options for individual types
         for type, opts in self.getConfig("types").items():

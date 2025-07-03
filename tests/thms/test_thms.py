@@ -1,7 +1,7 @@
 import pytest
 
 from markdown_environments import ThmsExtension
-from ..tests_util import run_extension_test
+from ..tests_utils import run_extension_test
 
 
 DIV_TYPES = {

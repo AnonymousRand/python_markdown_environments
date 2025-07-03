@@ -6,7 +6,7 @@ from markdown.extensions import Extension
 from markdown.postprocessors import Postprocessor
 from markdown.treeprocessors import Treeprocessor
 
-from . import util
+from . import utils
 
 
 # the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
@@ -379,7 +379,7 @@ class ThmsExtension(Extension):
                 "Config for theorem heading"
             ]
         }
-        util.init_extension_with_configs(self, **kwargs)
+        utils.init_extension_with_configs(self, **kwargs)
 
         # set default configs for each extension, since we no longer have the top-level `self.config` functionality
         # to set defaults for us
