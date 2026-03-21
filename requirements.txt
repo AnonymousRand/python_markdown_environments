@@ -5,10 +5,10 @@ babel==2.16.0
 backports.tarfile==1.2.0
 beautifulsoup4==4.12.3
 certifi==2024.12.14
-cffi==1.17.1
+cffi==2.0.0
 charset-normalizer==3.4.1
 click==8.1.8
-cryptography==44.0.1
+cryptography==46.0.5
 distlib==0.3.9
 docutils==0.21.2
 exceptiongroup==1.2.2
@@ -29,7 +29,7 @@ jaraco.functools==4.1.0
 jeepney==0.8.0
 Jinja2==3.1.6
 keyring==25.6.0
-Markdown==3.7
+Markdown==3.8.1
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mdit-py-plugins==0.4.2
@@ -67,7 +67,7 @@ tomli==2.2.1
 tomli_w==1.1.0
 tomlkit==0.13.2
 trove-classifiers==2024.10.21.16
-typing_extensions==4.12.2
+typing_extensions==4.13.2
 urllib3==2.6.3
 userpath==1.9.2
 uv==0.9.6
