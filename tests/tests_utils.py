@@ -1,3 +1,6 @@
+# NOTE: this is not a test file! it's for testing utilities
+# to find the tests for `utils.py`, go to `tests/utils/`
+
 import markdown
 
 

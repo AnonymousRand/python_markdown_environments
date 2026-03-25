@@ -41,11 +41,11 @@ TYPES = {
 @pytest.mark.parametrize(
     "filename_base",
     [
-        ("src_utils/test_for_env_types_1"),
-        ("src_utils/test_for_env_types_2"),
-        ("src_utils/test_for_env_types_3"),
-        ("src_utils/test_for_env_types_4"),
-        ("src_utils/test_for_env_types_5"),
+        ("utils/test_for_env_types_1"),
+        ("utils/test_for_env_types_2"),
+        ("utils/test_for_env_types_3"),
+        ("utils/test_for_env_types_4"),
+        ("utils/test_for_env_types_5"),
     ]
 )
 def test_test_for_env_types(filename_base):
@@ -63,16 +63,16 @@ def test_test_for_env_types(filename_base):
 @pytest.mark.parametrize(
     "filename_base",
     [
-        ("src_utils/gen_thm_heading_md_1"),
-        ("src_utils/gen_thm_heading_md_2"),
-        ("src_utils/gen_thm_heading_md_3"),
-        ("src_utils/gen_thm_heading_md_4"),
-        ("src_utils/gen_thm_heading_md_5"),
-        ("src_utils/gen_thm_heading_md_6"),
+        ("utils/gen_thm_heading_md_1"),
+        ("utils/gen_thm_heading_md_2"),
+        ("utils/gen_thm_heading_md_3"),
+        ("utils/gen_thm_heading_md_4"),
+        ("utils/gen_thm_heading_md_5"),
+        ("utils/gen_thm_heading_md_6"),
         # test that curly braces (e.g. from LaTeX) don't interfere with parsing
-        ("src_utils/gen_thm_heading_md_7"),
+        ("utils/gen_thm_heading_md_7"),
         # test that thm headings with no trailing newlines are not parsed
-        ("src_utils/gen_thm_heading_md_8"),
+        ("utils/gen_thm_heading_md_8"),
     ]
 )
 def test_gen_thm_heading_md(filename_base):
