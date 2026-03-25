@@ -1,0 +1,1 @@
+\begin{thm\*}{\\(\phantom{curly bracket test}\\)} this should fail to parse due to lack of newline

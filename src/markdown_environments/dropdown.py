@@ -27,7 +27,7 @@ class DropdownProcessor(BlockProcessor):
 
     def test(self, parent, block):
         typ = utils.test_for_env_types(self.start_pattern_choices, parent, block)
-        if typ is None:
+        if typ == "":
             return False
         self.type_opts = self.types[typ]
         self.start_pattern = self.start_pattern_choices[typ]

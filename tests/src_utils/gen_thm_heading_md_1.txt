@@ -1,1 +1,2 @@
-\begin{thm} sdadd
+\begin{thm}
+sdadd

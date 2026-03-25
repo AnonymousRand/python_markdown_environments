@@ -23,9 +23,7 @@
 </details>
 <details>
 <summary>
-<p><span id="picoctfsp4n1sh1nqu151t10n"><span>Proof 0.0.0.2</span><span>.</span></span></p>
+<p><span id="sp4n1sh1nqu151t10n"><span>Proof 0.0.0.2</span><span>.</span></span></p>
 </summary>
-<div>
-<p>}</p>
-</div>
+<div></div>
 </details>

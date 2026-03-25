@@ -1,1 +1,2 @@
-\begin{thm\*}{hidden title should not override} sdadd
+\begin{thm\*}{hidden title should not override}
+sdadd

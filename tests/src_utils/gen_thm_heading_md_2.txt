@@ -1,1 +1,2 @@
-\begin{thm}[title] sdadd
+\begin{thm}[title]
+sdadd

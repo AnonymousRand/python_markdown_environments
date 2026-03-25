@@ -18,6 +18,9 @@ from ...tests_utils import run_extension_test
             }),
             "thms/thmheading/success_6"
         ),
+
+        # test that curly braces (e.g. from LaTeX) don't interfere with parsing
+        (ThmsExtension(), "thms/thmheading/success_7"),
         (ThmsExtension(), "thms/thmheading/fail_1")
     ]
 )

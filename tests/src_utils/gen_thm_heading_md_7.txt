@@ -1,0 +1,2 @@
+\begin{thm\*}{\\(\phantom{curly bracket test}\\)}
+sdadd

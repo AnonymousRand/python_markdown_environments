@@ -20,9 +20,9 @@ def init_env_types(types: dict, is_thm: bool) -> tuple[dict, dict, dict]:
         opts.setdefault("thm_name_overrides_thm_heading", False)
         # add type to regex pattern choices
         if is_thm:
-            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?", flags=re.MULTILINE)
+            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}(?:\[(.+?)\])?(?:{{(.+?)}})?$", flags=re.MULTILINE)
         else:
-            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}", flags=re.MULTILINE)
+            start_pattern_choices[typ] = re.compile(rf"^\\begin{{{typ}}}$", flags=re.MULTILINE)
         end_pattern_choices[typ] = re.compile(rf"^\\end{{{typ}}}", flags=re.MULTILINE)
     return types, start_pattern_choices, end_pattern_choices
 
@@ -31,7 +31,7 @@ def test_for_env_types(start_pattern_choices: dict, parent: etree.Element, block
     for typ, pattern in start_pattern_choices.items():
         if pattern.match(block):
             return typ
-    return None
+    return ""
 
 
 def gen_thm_heading_md(type_opts: dict, start_pattern: re.Pattern, block: str) -> str:
@@ -42,18 +42,22 @@ def gen_thm_heading_md(type_opts: dict, start_pattern: re.Pattern, block: str) -
     thm_hidden_name = start_pattern_match.group(2)
 
     # override theorem heading with theorem name if applicable
+    thm_heading_md = ""
     if type_opts.get("thm_name_overrides_thm_heading") and thm_name is not None:
-        return "{[" + thm_name + "]}{" + thm_name + "}"
+        thm_heading_md = "{[" + thm_name + "]}{" + thm_name + "}"
     # else assemble theorem heading into `ThmHeading`'s syntax
-    if thm_counter_incr != "":
-        # fill in theorem counter using `ThmCounter`'s syntax
-        thm_type += " {{" + thm_counter_incr + "}}"
-    thm_heading_md = "{[" + thm_type + "]}"
-    if thm_name is not None:
-        thm_heading_md += "[" + thm_name + "]"
-    if thm_hidden_name is not None:
-        thm_heading_md += "{" + thm_hidden_name + "}"
-    return thm_heading_md
+    else:
+        if thm_counter_incr != "":
+            # fill in theorem counter using `ThmCounter`'s syntax
+            thm_type += " {{" + thm_counter_incr + "}}"
+        thm_heading_md = "{[" + thm_type + "]}"
+        if thm_name is not None:
+            thm_heading_md += "[" + thm_name + "]"
+        if thm_hidden_name is not None:
+            thm_heading_md += "{" + thm_hidden_name + "}"
+    # trailing newline to make sure text within the theorem heading (e.g. LaTeX curly brackets)
+    # don't interfere with parsing and cause the regex pattern to stop matching prematurely
+    return thm_heading_md + "\n"
 
 
 def prepend_thm_heading_md(type_opts: dict, target_elem: etree.Element, thm_heading_md: str) -> None:

@@ -70,7 +70,7 @@ class ThmCounterProcessor(Treeprocessor):
 # `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
 class ThmHeadingProcessor(Postprocessor):
 
-    PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?", flags=re.MULTILINE)
+    PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?\n", flags=re.MULTILINE)
     FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[ \./]", flags=re.MULTILINE)
     FORMAT_FOR_HTML_REMOVE_PATTERN = re.compile(r"[^A-Za-z0-9-]", flags=re.MULTILINE)
 

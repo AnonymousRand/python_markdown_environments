@@ -11,5 +11,5 @@ i dont want a lot for christmas
 all i want for christmas is this proof
 \end{pf}
 
-\begin{pf}{picoCTF\{sp4n1sh_1nqu151t10n\}}
+\begin{pf}{sp4n1sh_1nqu151t10n}
 \end{pf}

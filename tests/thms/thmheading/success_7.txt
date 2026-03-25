@@ -1,0 +1,2 @@
+{[Theorem 6.9]}{\\(\text{curly bracket test}\\)}
+apparently there must be text here

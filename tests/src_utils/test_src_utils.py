@@ -39,23 +39,25 @@ TYPES = {
 
 
 @pytest.mark.parametrize(
-    "filename_base, expected_type",
+    "filename_base",
     [
-        ("src_utils/test_for_env_types_1", "thm"),
-        ("src_utils/test_for_env_types_2", "thm"),
-        ("src_utils/test_for_env_types_3", r"thm\\\*"),
-        ("src_utils/test_for_env_types_4", "lem"),
-        ("src_utils/test_for_env_types_5", None),
+        ("src_utils/test_for_env_types_1"),
+        ("src_utils/test_for_env_types_2"),
+        ("src_utils/test_for_env_types_3"),
+        ("src_utils/test_for_env_types_4"),
+        ("src_utils/test_for_env_types_5"),
     ]
 )
-def test_test_for_env_types(filename_base, expected_type):
+def test_test_for_env_types(filename_base):
     block = read_file(f"{filename_base}.txt")
     parent = etree.Element("p")
     parent.text = block
     _, start_regex_choices, _ = utils.init_env_types(types=TYPES, is_thm=True)
-    typ = utils.test_for_env_types(start_regex_choices, parent, block)
-    print(typ, end="\n\n")
-    assert typ == expected_type
+
+    expected = read_file(f"{filename_base}_expected.txt")
+    actual = utils.test_for_env_types(start_regex_choices, parent, block)
+    print(actual, end="\n")
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -67,6 +69,10 @@ def test_test_for_env_types(filename_base, expected_type):
         ("src_utils/gen_thm_heading_md_4"),
         ("src_utils/gen_thm_heading_md_5"),
         ("src_utils/gen_thm_heading_md_6"),
+        # test that curly braces (e.g. from LaTeX) don't interfere with parsing
+        ("src_utils/gen_thm_heading_md_7"),
+        # test that thm headings with no trailing newlines are not parsed
+        ("src_utils/gen_thm_heading_md_8"),
     ]
 )
 def test_gen_thm_heading_md(filename_base):
@@ -75,13 +81,18 @@ def test_gen_thm_heading_md(filename_base):
     parent.text = block
     _, start_regex_choices, _ = utils.init_env_types(types=TYPES, is_thm=True)
     typ = utils.test_for_env_types(start_regex_choices, parent, block)
-    type_opts = TYPES[typ]
-    start_regex = start_regex_choices[typ]
 
     expected = read_file(f"{filename_base}_expected.txt")
-    actual = utils.gen_thm_heading_md(type_opts, start_regex, block)
-    print(actual, end="\n\n")
-    assert actual == expected
+    # if nothing detected, check that indeed nothing is supposed to change
+    if typ == "":
+        print(block, end="\n")
+        assert block == expected
+    else:
+        type_opts = TYPES[typ]
+        start_regex = start_regex_choices[typ]
+        actual = utils.gen_thm_heading_md(type_opts, start_regex, block)
+        print(actual, end="\n")
+        assert actual == expected
 
 
 def test_prepend_thm_heading_md():

@@ -14,7 +14,7 @@ $ pip install -r requirements.txt
 
 ## Running Tests
 
-Run `hatch test` in the project's root directory. Tests are located in `tests/`; carefully modify tests if adding new features.
+Run `hatch test` in the project's root directory. Tests are located in `tests/`; carefully modify tests if adding new features. (These tests also print out any "incorrect" output, so this can be a good way to test work-in-progress changes without having to set up an actual driver.)
 
 ## Generating Documentation
 

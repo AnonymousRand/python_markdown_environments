@@ -1,0 +1,1 @@
+<p><span id="textcurly-bracket-test"><span>Theorem 6.9</span><span>.</span></span>apparently there must be text here</p>
