@@ -71,7 +71,7 @@ class ThmCounterProcessor(Treeprocessor):
 class ThmHeadingProcessor(Postprocessor):
 
     PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?\n", flags=re.MULTILINE)
-    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[ \./]", flags=re.MULTILINE)
+    FORMAT_FOR_HTML_HYPHEN_PATTERN = re.compile(r"[ \./\u2013\u2014]", flags=re.MULTILINE)
     FORMAT_FOR_HTML_REMOVE_PATTERN = re.compile(r"[^A-Za-z0-9-]", flags=re.MULTILINE)
 
     def __init__(self, *args, html_id_prefix: str, html_class: str, emph_html_class: str, **kwargs):

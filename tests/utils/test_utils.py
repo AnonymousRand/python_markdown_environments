@@ -45,7 +45,7 @@ TYPES = {
         ("utils/test_for_env_types_2"),
         ("utils/test_for_env_types_3"),
         ("utils/test_for_env_types_4"),
-        ("utils/test_for_env_types_5"),
+        ("utils/test_for_env_types_5")
     ]
 )
 def test_test_for_env_types(filename_base):
@@ -72,7 +72,7 @@ def test_test_for_env_types(filename_base):
         # test that curly braces (e.g. from LaTeX) don't interfere with parsing
         ("utils/gen_thm_heading_md_7"),
         # test that thm headings with no trailing newlines are not parsed
-        ("utils/gen_thm_heading_md_8"),
+        ("utils/gen_thm_heading_md_8")
     ]
 )
 def test_gen_thm_heading_md(filename_base):
