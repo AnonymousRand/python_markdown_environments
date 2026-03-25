@@ -103,8 +103,9 @@ class DivExtension(Extension):
             - **html_class** (*str*) -- HTML `class` attribute to add to divs. Defaults to `""`.
 
         The key for each type defined in `types` is inserted directly into the regex patterns that search for
-        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. In addition, each
-        type's value is itself a dictionary with the following possible options:
+        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. However,
+        if the key is an empty string, its regex will never be matched against, so it is effectively useless.
+        In addition, each type's value is itself a dictionary with the following possible options:
 
             - **html_class** (*str*) -- HTML `class` attribute to add to divs of that type. Defaults to `""`.
         """

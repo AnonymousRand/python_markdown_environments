@@ -349,7 +349,8 @@ class ThmsExtension(Extension):
 
         The key for each type defined in both `div_config`'s and `dropdown_config`'s `types` is inserted directly into
         the regex patterns that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
-        interpreted as regex. In addition, each type's value in `types` is itself a dictionary with the following
+        interpreted as regex. However, if the key is an empty string, its regex will never be matched against, so it
+        is effectively useless. In addition, each type's value in `types` is itself a dictionary with the following
         possible options:
 
             - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.

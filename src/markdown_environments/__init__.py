@@ -6,10 +6,8 @@ The base Markdown syntax defined by this extension is::
     \end{...}
 
 Important:
-    - There must be a blank line before each `\\begin{}` and after each `\\end{}`.
+    - Each `\\begin{}` must be on its own line with a blank line above, and each `\\end{}` must be on its own line with a blank line below.
     - Only nesting different types of environments works; nesting the same environment within itself does not.
-    - However, the `summary` part of a dropdown cannot contain other dropdowns with summaries, as the `summary`
-      environment of the nested dropdown will not work.
 """
 
 from .captioned_figure import CaptionedFigureExtension
