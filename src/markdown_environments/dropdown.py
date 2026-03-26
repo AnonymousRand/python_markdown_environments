@@ -166,7 +166,7 @@ class DropdownExtension(Extension):
             </details>
 
     Important:
-        The `summary` block *must be placed at the start* of the `dropdown` block, of course with blank lines before and
+        The `summary` block must be placed at the *start* of the `dropdown` block, of course with blank lines before and
         after the `summary` block.
     """
 
