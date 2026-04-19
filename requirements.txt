@@ -44,7 +44,7 @@ pluggy==1.5.0
 ptyprocess==0.7.0
 pycparser==2.22
 Pygments==2.20.0
-pytest==8.3.4
+pytest==9.0.3
 PyYAML==6.0.2
 requests==2.33.0
 rich==13.9.4
@@ -70,6 +70,6 @@ trove-classifiers==2024.10.21.16
 typing_extensions==4.13.2
 urllib3==2.6.3
 userpath==1.9.2
-uv==0.9.6
+uv==0.11.6
 zipp==3.20.2
 zstandard==0.23.0
