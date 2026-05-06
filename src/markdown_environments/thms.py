@@ -255,6 +255,8 @@ class ThmsExtension(Extension):
           using its thm name or thm hidden name (which is analogous to `\label{}`).
         - Theorem counters' counter (the output of `\ref{}`) using its hidden name (which is analogous to `label{}`).
 
+        This is so that the counters, for example, are generated dynamically even if they change in the future.
+
         Markdown usage:
             .. code-block:: md
 
