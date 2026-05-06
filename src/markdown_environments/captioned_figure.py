@@ -123,7 +123,7 @@ class CaptionedFigureExtension(Extension):
 
             \end{captioned_figure}
 
-        becomes…
+        becomes:
 
         .. code-block:: html
 

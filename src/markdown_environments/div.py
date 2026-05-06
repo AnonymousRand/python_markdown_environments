@@ -86,7 +86,7 @@ class DivExtension(Extension):
             <content>
             \end{<type>}
 
-        becomes…
+        becomes:
 
         .. code-block:: html
 
