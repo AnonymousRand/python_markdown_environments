@@ -1,0 +1,4 @@
+<div>
+<p><span id="hi"><span>Theorem 0.0.1</span> (hi)<span>.</span></span> cat</p>
+</div>
+<p>this should fail since hidden name should be ignored if regular name is present: \ref{hewwo}</p>

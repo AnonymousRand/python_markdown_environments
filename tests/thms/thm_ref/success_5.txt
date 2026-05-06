@@ -1,0 +1,15 @@
+\\[
+\tag{{{0,1}}{one \\(\C\\)}} meow
+\\]
+
+{{1}}{two \\(\R\\) bloop}
+
+\begin{thm}{\\(\Q\\) three}
+a
+\end{thm}
+
+\begin{thm}[four \\(\Z\\) bleh]
+b
+\end{thm}
+
+by 1 \ref{one \\(\C\\)} and 2 \ref{two \\(\R\\) bloop} and 3 \ref{\\(\Q\\) three} and 4 \ref{four \\(\Z\\) bleh}

@@ -1,0 +1,11 @@
+<p>\[
+\tag{0.1} meow
+\]</p>
+<p>1</p>
+<div>
+<p><span id="q-three"><span>Theorem 1.0.1</span><span>.</span></span> a</p>
+</div>
+<div>
+<p><span id="four-z-bleh"><span>Theorem 1.0.2</span> (four \(\Z\) bleh)<span>.</span></span> b</p>
+</div>
+<p>by 1 0.1 and 2 1 and 3 Theorem 1.0.1 and 4 Theorem 1.0.2</p>

@@ -26,7 +26,11 @@ DIV_TYPES = {
         # tests both thm headings and thm counters
         (ThmsExtension(div_config={"types": DIV_TYPES}), "thms/thm_ref/success_3"),
         # checks that hidden name for thm counters works inside things like LaTeX `\tag{}`
-        (ThmsExtension(div_config={"types": DIV_TYPES}), "thms/thm_ref/success_4")
+        (ThmsExtension(div_config={"types": DIV_TYPES}), "thms/thm_ref/success_4"),
+        # checks that having LaTeX `\\(\\)` in the name/hidden name doesn't break `\ref{}`
+        (ThmsExtension(div_config={"types": DIV_TYPES}), "thms/thm_ref/success_5"),
+        # checks that `\ref{}`ing a thm hiden name doesn't work if (non-hidden) thm name is present
+        (ThmsExtension(div_config={"types": DIV_TYPES}), "thms/thm_ref/fail_1")
     ]
 )
 def test_thm_counter(extension, filename_base):

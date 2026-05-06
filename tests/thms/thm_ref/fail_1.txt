@@ -1,0 +1,5 @@
+\begin{thm}[hi]{hewwo}
+cat
+\end{thm}
+
+this should fail since hidden name should be ignored if regular name is present: \ref{hewwo}

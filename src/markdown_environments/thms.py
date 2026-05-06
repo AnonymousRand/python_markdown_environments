@@ -56,6 +56,9 @@ class ThmCounterProcessor(Treeprocessor):
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
                 if hidden_name is not None:
+                    # since backslashes are escaped in final HTML and in thm heading's `Postprocessor`, but not yet
+                    # in `Treeprocessor` (otherwise, `\ref{}` on thm counters will require double the backslashes)
+                    hidden_name = hidden_name.replace("\\\\", "\\")
                     self.thm_ref_map[hidden_name] = output_counter_text
                 if self.add_html_elem:
                     elem = etree.Element("span")
@@ -162,10 +165,13 @@ class ThmRefProcessor(Postprocessor):
         prev_match_end = 0
         for m in self.PATTERN.finditer(text):
             ref_name = m.group(1)
+            text_to_add = ""
             if ref_name in thm_ref_map:
-                # convert all this to HTML and insert into final output, replacing the original match
-                # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered Markdown in thm heading
-                new_text += text[prev_match_end:m.start()] + thm_ref_map[ref_name]
+                text_to_add = thm_ref_map[ref_name]
+            else:
+                text_to_add = m.group(0)
+            # convert all this to HTML and insert into final output, replacing the original match
+            new_text += text[prev_match_end:m.start()] + text_to_add
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
         return new_text
