@@ -1,0 +1,14 @@
+here is some latex:
+
+\\[
+\tag{{{0,0,0,1}}{result-1:1}} kitty = me
+\\]
+
+clearly,
+
+\begin{alignat\*}{1}
+\tag{eqn {{0,0,0,1}}{result-1:2}} meow \\\\
+\tag{no hidden name here :3} nya
+\end{alignat\*}
+
+Thus by equation (\ref{result-1:1}), we have that meow meow meow (\ref{result-1:2})

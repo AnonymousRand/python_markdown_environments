@@ -55,7 +55,8 @@ class ThmCounterProcessor(Treeprocessor):
                 # only output as many counter segments as were inputted
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
-                self.thm_ref_map[hidden_name] = output_counter_text
+                if hidden_name is not None:
+                    self.thm_ref_map[hidden_name] = output_counter_text
                 if self.add_html_elem:
                     elem = etree.Element("span")
                     elem.set("id", self.html_id_prefix + '-'.join(output_counter))
@@ -118,10 +119,10 @@ class ThmHeadingProcessor(Postprocessor):
             if thm_name is not None:
                 emph_elem.tail = f" ({thm_name})"
                 elem.set("id", self.html_id_prefix + format_for_html(thm_name))
-                self.thm_ref_map[thm_type] = thm_name
+                self.thm_ref_map[thm_name] = thm_type
             elif thm_hidden_name is not None:
                 elem.set("id", self.html_id_prefix + format_for_html(thm_hidden_name))
-                self.thm_ref_map[thm_type] = thm_hidden_name
+                self.thm_ref_map[thm_hidden_name] = thm_type
             # generate theorem punct HTML, applying `emph` styling to it as well (even if separated from
             # main `emph` section of thm type + counter by theorem name; this is default LaTeX behavior)
             thm_punct_elem = etree.SubElement(elem, "span")
@@ -155,7 +156,7 @@ class ThmRefProcessor(Postprocessor):
 
     def run(self, text):
         thm_ref_map = self.thm_counter_processor.get_thm_ref_map()
-        thm_ref_map.update(self.thm_counter_processor.get_thm_ref_map())
+        thm_ref_map.update(self.thm_heading_processor.get_thm_ref_map())
 
         new_text = ""
         prev_match_end = 0

@@ -1,0 +1,9 @@
+\begin{thm}[Theorem 1]
+    meow
+\end{thm}
+
+\begin{lem}{Lemma 2}
+    mrrp
+\end{lem}
+
+so "\ref{Theorem 1}" should produce "Theorem 0.0.1" and "\ref{Lemma 2}" should produce "Lemma 0.0.2" :3

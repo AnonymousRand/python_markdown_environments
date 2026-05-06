@@ -1,0 +1,13 @@
+# {{1}}{Section 1} very important stuffs here :3
+
+\begin{lem}[golly gosh i need to stop meowing :3]
+    meow :3
+\end{lem}
+
+# {{1}}{Section 2 ꒰ 𓂂• ⩊ •𓈒꒱} 0~0
+
+\begin{thm}{owo}
+    haiii :3
+\end{thm}
+
+Recall from Section \ref{Section 1}, in particular [\ref{golly gosh i need to stop meowing :3}](#thms-golly-gosh-i-need-to-stop-meowing), that meow :3. also \ref{Section 2 ꒰ 𓂂• ⩊ •𓈒꒱} 0~0
