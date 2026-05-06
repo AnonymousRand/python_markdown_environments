@@ -15,7 +15,7 @@ from . import utils
 # `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
 class ThmCounterProcessor(Treeprocessor):
 
-    PATTERN = re.compile(r"{{([0-9,]+)}}", flags=re.MULTILINE)
+    PATTERN = re.compile(r"{{([0-9,]+)}}(?:{(.+?)})?", flags=re.MULTILINE)
 
     def __init__(self, *args, add_html_elem: bool, html_id_prefix: str, html_class: str, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,6 +23,7 @@ class ThmCounterProcessor(Treeprocessor):
         self.html_id_prefix = html_id_prefix
         self.html_class = html_class
         self.counter = []
+        self.thm_ref_map = {}
 
     def run(self, root):
         for child in root.iter():
@@ -33,6 +34,8 @@ class ThmCounterProcessor(Treeprocessor):
             prev_match_end = 0
             for m in self.PATTERN.finditer(text):
                 input_counter = m.group(1)
+                hidden_name = m.group(2)
+
                 parsed_counter = input_counter.split(",")
                 # make sure we have enough room to parse counter into `self.counter`
                 while len(parsed_counter) > len(self.counter):
@@ -52,6 +55,7 @@ class ThmCounterProcessor(Treeprocessor):
                 # only output as many counter segments as were inputted
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
+                self.thm_ref_map[hidden_name] = output_counter_text
                 if self.add_html_elem:
                     elem = etree.Element("span")
                     elem.set("id", self.html_id_prefix + '-'.join(output_counter))
@@ -66,6 +70,9 @@ class ThmCounterProcessor(Treeprocessor):
             new_text += text[prev_match_end:] # fill in remaining text after last regex match
             child.text = new_text
 
+    def get_thm_ref_map():
+        return self.thm_ref_map
+
 
 # `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
 class ThmHeadingProcessor(Postprocessor):
@@ -79,6 +86,7 @@ class ThmHeadingProcessor(Postprocessor):
         self.html_id_prefix = html_id_prefix
         self.html_class = html_class
         self.emph_html_class = emph_html_class
+        self.thm_ref_map = {}
 
     def run(self, text):
         def format_for_html(s: str) -> str:
@@ -110,8 +118,10 @@ class ThmHeadingProcessor(Postprocessor):
             if thm_name is not None:
                 emph_elem.tail = f" ({thm_name})"
                 elem.set("id", self.html_id_prefix + format_for_html(thm_name))
+                self.thm_ref_map[thm_type] = thm_name
             elif thm_hidden_name is not None:
                 elem.set("id", self.html_id_prefix + format_for_html(thm_hidden_name))
+                self.thm_ref_map[thm_type] = thm_hidden_name
             # generate theorem punct HTML, applying `emph` styling to it as well (even if separated from
             # main `emph` section of thm type + counter by theorem name; this is default LaTeX behavior)
             thm_punct_elem = etree.SubElement(elem, "span")
@@ -127,13 +137,46 @@ class ThmHeadingProcessor(Postprocessor):
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
         return new_text
 
+    def get_thm_ref_map():
+        return self.thm_ref_map
+
+
+# `Postprocessor` to make sure it runs after both thm counter and thm heading processors
+class ThmRefProcessor(Postprocessor):
+
+    PATTERN = re.compile(r"\\ref{([^}]+)}", flags=re.MULTILINE)
+
+    def __init__(self, *args, thm_counter_processor: ThmCounterProcessor, thm_heading_processor: ThmHeadingProcessor):
+        super().__init__(*args, **kwargs)
+        self.thm_counter_processor = thm_counter_processor
+        self.thm_heading_processor = thm_heading_processor
+
+    def run(self, text):
+        thm_ref_map = self.thm_counter_processor.get_thm_ref_map()
+        thm_ref_map.update(self.thm_counter_processor.get_thm_ref_map())
+
+        new_text = ""
+        prev_match_end = 0
+        for m in self.PATTERN.finditer(text):
+            ref_name = m.group(1)
+            if ref_name in thm_ref_map:
+                # convert all this to HTML and insert into final output, replacing the original match
+                # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered Markdown in thm heading
+                new_text += text[prev_match_end:m.start()] + thm_ref_map[ref_name]
+            prev_match_end = m.end()
+        new_text += text[prev_match_end:] # fill in remaining text after last regex match
+        return new_text
+
 
 class ThmsExtension(Extension):
     r"""
     A wrapper around divs and dropdowns that provides more options to mimic the theorem capabilities of LaTeX.
 
     In particular, this extension introduces theorem headings and theorem counters, which are used in theorem
-    environments but can also be used standalone as described below.
+    environments but can also be used standalone as described below. It also introduces theorem `\ref{}`s,
+    which can be used like in LaTeX to dynamically generate the text corresponding to a theorem or counter's
+    "theorem type" and counter (e.g. "Proposition 3.1.2" or "2.1.5") via the theorem's name or theorem's/counter's
+    "hidden name" (which are like LaTeX `label{}`s).
 
     Theorem headings:
         The terminology I use for the parts of a theorem heading throughout the documentation is as follows:
@@ -412,23 +455,24 @@ class ThmsExtension(Extension):
         dropdown_config = self.getConfig("dropdown_config")
         thm_counter_config = self.getConfig("thm_counter_config")
         thm_heading_config = self.getConfig("thm_heading_config")
-        # remember `ThmCounter`'s priority must be higher than TOC extension
-        md.treeprocessors.register(
-            ThmCounterProcessor(
-                md, add_html_elem=thm_counter_config.get("add_html_elem"),
-                html_id_prefix=thm_counter_config.get("html_id_prefix"),
-                html_class=thm_counter_config.get("html_class")
-            ),
-            "thm_counter", 999
+
+        thm_counter_processor = ThmCounterProcessor(
+            md, add_html_elem=thm_counter_config.get("add_html_elem"),
+            html_id_prefix=thm_counter_config.get("html_id_prefix"),
+            html_class=thm_counter_config.get("html_class")
         )
-        md.postprocessors.register(
-            ThmHeadingProcessor(
-                md, html_id_prefix=thm_heading_config.get("html_id_prefix"),
-                html_class=thm_heading_config.get("html_class"),
-                emph_html_class=thm_heading_config.get("emph_html_class")
-            ),
-            "thm_heading", 105
+        thm_heading_processor = ThmHeadingProcessor(
+            md, html_id_prefix=thm_heading_config.get("html_id_prefix"),
+            html_class=thm_heading_config.get("html_class"),
+            emph_html_class=thm_heading_config.get("emph_html_class")
         )
+        thm_ref_processor = ThmRefProcessor(
+            md, thm_counter_processor=thm_counter_processor, thm_heading_processor=thm_heading_processor
+        )
+        # `ThmCounter`'s priority must be higher than TOC extension, and `ThmRef`'s priority must be lower than `ThmCounter` and `ThmHeading`!
+        md.treeprocessors.register(thm_counter_processor, "thm_counter", 999)
+        md.postprocessors.register(thm_heading_processor, "thm_heading", 105)
+        md.postprocessors.register(thm_ref_processor, "thm_ref", 95)
 
         if len(div_config.get("types", {})) > 0:
             from .div import DivProcessor
