@@ -151,7 +151,7 @@ class DropdownExtension(Extension):
             <collapsible content>
             \end{<type>}
 
-        becomes…
+        becomes:
 
         .. code-block:: html
 

@@ -121,7 +121,7 @@ class CitedBlockquoteExtension(Extension):
 
             \end{cited_blockquote}
 
-        becomes…
+        becomes:
 
         .. code-block:: html
 

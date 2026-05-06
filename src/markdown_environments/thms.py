@@ -145,7 +145,7 @@ class ThmHeadingProcessor(Postprocessor):
 # `Postprocessor` to make sure it runs after both thm counter and thm heading processors
 class ThmRefProcessor(Postprocessor):
 
-    PATTERN = re.compile(r"\\ref{([^}]+)}", flags=re.MULTILINE)
+    PATTERN = re.compile(r"\\ref{(.+?)}", flags=re.MULTILINE)
 
     def __init__(
         self, *args, thm_counter_processor: ThmCounterProcessor, thm_heading_processor: ThmHeadingProcessor, **kwargs
@@ -196,7 +196,7 @@ class ThmsExtension(Extension):
 
                 {[<thm type><thm counter>]}[<optional thm name>]{<optional hidden thm name>}
 
-            becomes…
+            becomes:
 
             .. code-block:: html
 
@@ -205,9 +205,9 @@ class ThmsExtension(Extension):
                   [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
                 </span>
 
-        Note:
-            `<optional hidden thm name>` is only used for the HTML `id`, and it is ignored if `<optional thm name>` is
-            provided.
+    Note:
+        `<optional hidden thm name>` is only used for the HTML `id` or `\ref{}` (see below)
+        without being displayed on the page. It is ignored if `<optional thm name>` is provided.
 
     Theorem counters:
         Theorem counters are specified as a (positive) offset from the previous theorem counter, similar to how
@@ -215,7 +215,13 @@ class ThmsExtension(Extension):
         specified per segment, and incrementing a segment resets all following segments to 0. In addition, each counter
         will display only as many segments as provided in its Markdown.
 
-        Usage:
+        Markdown usage:
+            .. code-block:: md
+
+                {{<counter>}}{<optional hidden name>}
+
+            so
+
             .. code-block:: md
 
                 Section {{1}}
@@ -225,7 +231,7 @@ class ThmsExtension(Extension):
                 Reevaluating Life Choices {{0,0,0,3}}
                 What even is this {{1,2,0,3,9}} (first counter segment resets next ones, and so on)
 
-            becomes…
+            becomes:
 
             .. code-block:: html
 
@@ -237,7 +243,44 @@ class ThmsExtension(Extension):
                 <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
 
     Important:
-        There cannot be spaces within the Markdown `{{}}` syntax for theorem counters.
+        There cannot be spaces within the Markdown `{{}}` syntax.
+
+    Note:
+        `<optional hidden name>` is only used for `\ref{}` (see below).
+
+    Theorem `\ref{}`s:
+        Much like `label{}` and then `\ref{}` in LaTeX, this lets you reference:
+
+        - Theorems' thm type + thm counter portion (the output of `\ref{}`)
+          using its thm name or thm hidden name (which is analogous to `\label{}`).
+        - Theorem counters' counter (the output of `\ref{}`) using its hidden name (which is analogous to `label{}`).
+
+        Markdown usage:
+            .. code-block:: md
+
+                {[<thm type><thm counter>]}[<optional thm name>]{<optional hidden thm name>}
+                Observe that by \ref{<optional thm name/optional hidden thm name>}, ...
+
+            becomes:
+
+            .. code-block:: html
+
+                ...
+                <p>Observe that by [thm type] [thm counter], ...</p>
+
+            and
+
+            .. code-block:: md
+
+                {{<counter>}}{<optional hidden name>}
+                Observe that by equation (\ref{<optional hidden name>}), ...
+
+            becomes:
+
+            .. code-block:: html
+
+                ...
+                <p>Observe that by equation ([counter]), ...</p>
 
     Usage:
         .. code-block:: py
@@ -286,7 +329,7 @@ class ThmsExtension(Extension):
             <content>
             \end{<type>}
 
-        becomes, with theorem heading and counter syntax…
+        becomes, with theorem heading and counter syntax:
 
         .. code-block:: md
 
@@ -295,7 +338,7 @@ class ThmsExtension(Extension):
             <content>
             \end{<type>}
 
-        becomes…
+        which then becomes:
 
         .. code-block:: html
 
@@ -319,7 +362,7 @@ class ThmsExtension(Extension):
             <collapsible content>
             \end{<type>}
 
-        becomes, with theorem heading and counter syntax…
+        becomes, with theorem heading and counter syntax:
 
         .. code-block:: md
 
@@ -333,7 +376,7 @@ class ThmsExtension(Extension):
             <collapsible content>
             \end{<type>}
 
-        becomes…
+        which then becomes:
 
         .. code-block:: html
 
