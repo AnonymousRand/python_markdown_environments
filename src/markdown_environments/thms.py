@@ -70,7 +70,7 @@ class ThmCounterProcessor(Treeprocessor):
             new_text += text[prev_match_end:] # fill in remaining text after last regex match
             child.text = new_text
 
-    def get_thm_ref_map():
+    def get_thm_ref_map(self):
         return self.thm_ref_map
 
 
@@ -137,7 +137,7 @@ class ThmHeadingProcessor(Postprocessor):
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
         return new_text
 
-    def get_thm_ref_map():
+    def get_thm_ref_map(self):
         return self.thm_ref_map
 
 
@@ -146,7 +146,9 @@ class ThmRefProcessor(Postprocessor):
 
     PATTERN = re.compile(r"\\ref{([^}]+)}", flags=re.MULTILINE)
 
-    def __init__(self, *args, thm_counter_processor: ThmCounterProcessor, thm_heading_processor: ThmHeadingProcessor):
+    def __init__(
+        self, *args, thm_counter_processor: ThmCounterProcessor, thm_heading_processor: ThmHeadingProcessor, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.thm_counter_processor = thm_counter_processor
         self.thm_heading_processor = thm_heading_processor
