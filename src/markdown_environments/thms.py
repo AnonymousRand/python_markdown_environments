@@ -291,7 +291,8 @@ class ThmsExtension(Extension):
     Note:
         I am aware that `\ref{}` also exists in MathJax; however, this extension is for the convenience of having
         syntax built-in to the theorem environments and counters instead of having to still manually use MathJax's
-        `\label{}` to label theorems and theorem counters for `\ref{}`ing later.
+        `\label{}` to label theorems and theorem counters for `\ref{}`ing later. (Also, this should not interfere
+        with `\ref{}` in MathJax: the ones not matched by this extension will be left to MathJax.)
 
     Usage:
         .. code-block:: py
