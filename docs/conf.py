@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path("..", "src").resolve()))
 
 project = "Markdown-Environments"
-copyright = "2025, AnonymousRand"
+copyright = "2026, AnonymousRand"
 author = "AnonymousRand"
 
 extensions = [
