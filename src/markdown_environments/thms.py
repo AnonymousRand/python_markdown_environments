@@ -249,7 +249,8 @@ class ThmsExtension(Extension):
                 <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
 
     Important:
-        There cannot be spaces within the Markdown `{{}}` syntax.
+        - There cannot be spaces within `<counter>`.
+        - There cannot be a `}` character within `<optional hidden name>`.
 
     Note:
         `<optional hidden name>` is only used for `\ref{}` (see below).
