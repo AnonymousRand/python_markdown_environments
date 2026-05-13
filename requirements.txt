@@ -68,7 +68,7 @@ tomli_w==1.1.0
 tomlkit==0.13.2
 trove-classifiers==2024.10.21.16
 typing_extensions==4.13.2
-urllib3==2.6.3
+urllib3==2.7.0
 userpath==1.9.2
 uv==0.11.6
 zipp==3.20.2
