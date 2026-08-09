@@ -1,6 +1,6 @@
 # Contributing
 
-I don't expect this project to be huge, so feel free to drop an issue or pull request on [GitHub](https://github.com/AnonymousRand/python-markdown-environments) to report bugs or suggest features. Running tests and updating documentation before submitting a pull request is appreciated ^^
+Feel free to drop an issue or pull request on [GitHub](https://github.com/AnonymousRand/python-markdown-environments) to report bugs or suggest features. Running tests and updating documentation before submitting a pull request would be appreciated ^^
 
 ## Setting Up Development Environment
 

@@ -66,16 +66,16 @@ def prepend_thm_heading_md(type_opts: dict, target_elem: etree.Element, thm_head
         return
     # if first child is a `<p>`, add thm heading to it instead to put it on the same line
     # without needing CSS `display: inline` chaos
-    added_inline = False
+    is_added_inline = False
     try:
         if target_elem[0].tag == "p":
-            added_inline = True
+            is_added_inline = True
             thm_heading_elem = target_elem[0]
     except IndexError:
         # if no children
         pass
 
-    if not added_inline:
+    if not is_added_inline:
         # if not able to add to first `<p>`, wrap theorem heading in its own `<p>` and then prepend to target elem
         # since it's just a `<span>` right now (for bottom margin etc.)
         p_elem = etree.Element("p")
