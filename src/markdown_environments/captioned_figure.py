@@ -48,7 +48,7 @@ class CaptionedFigureProcessor(BlockProcessor):
             return False
 
         # find and remove caption ending delim, and extract element
-        # start search at caption starting delim; caption is at end so this is a good optimization
+        # start search at caption starting delim
         delim_found = False
         for i, block in enumerate(blocks[caption_start_i:], start=caption_start_i):
             if self.CAPTION_END_PATTERN.search(block):

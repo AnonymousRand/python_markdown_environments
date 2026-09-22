@@ -46,7 +46,7 @@ class CitedBlockquoteProcessor(BlockProcessor):
             return False
 
         # find and remove citation ending delim, and extract element
-        # start search at citation starting delim; citation is at end so this is a good optimization
+        # start search at citation starting delim
         delim_found = False
         for i, block in enumerate(blocks[citation_start_i:], start=citation_start_i):
             if self.CITATION_END_PATTERN.search(block):
