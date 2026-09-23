@@ -143,8 +143,8 @@ class ThmHeadingProcessor(Postprocessor):
             # Markdown in thm heading
             new_text += text[prev_match_end:m.start()] + (
                 etree.tostring(elem, encoding="unicode")
-                .replace("&lt;", "<")
-                .replace("&gt;", ">")
+                    .replace("&lt;", "<")
+                    .replace("&gt;", ">")
             )
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
