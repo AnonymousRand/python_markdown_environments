@@ -1,3 +1,17 @@
+fiuw ehfjils
+
+\begin{random}
+
+qwertyuiop
+
+\begin{random_inner}
+sad!
+\end{random_inner}
+
+\end{random}
+
+obama
+
 \begin{cited_blockquote}
 
 never gonna give you up<br>
@@ -6,6 +20,9 @@ never gonna run around and desert you
 
 \begin{citation}
 -- richard paul astley
+\end{citation}
 
 peekaboo
 \end{cited_blockquote}
+
+brock

@@ -451,12 +451,12 @@ class ThmsExtension(Extension):
 
         The key for each type defined in both `div_config`'s and `dropdown_config`'s `types` is inserted directly into
         the regex patterns that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
-        interpreted as regex. However, if the key is an empty string, its regex will never be matched against, so it
-        is effectively useless. In addition, each type's value in `types` is itself a dictionary with the following
+        interpreted as regex. (However, if the key is an empty string, its regex will never be matched against, so it
+        is effectively useless.) In addition, each type's value in `types` is itself a dictionary with the following
         possible options:
 
             - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.
-            - **html_class** (*str*) -- HTML `class` attribute to add to theorems of that type. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to all theorems of that type. Defaults to `""`.
             - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings (again, no spaces!).
               Defaults to `""`; leave default to produce an unnumbered theorem type.
             - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading besides the theorem

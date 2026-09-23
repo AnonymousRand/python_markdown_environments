@@ -4,59 +4,50 @@ from markdown_environments import *
 from ..tests_utils import run_extension_test
 
 
-@pytest.mark.parametrize("filename_base", ["nesting/success_1"])
+@pytest.mark.parametrize("filename_base", ["nesting/docs_behavior_1"])
 def test_nesting(filename_base):
     run_extension_test(
         [
-            CaptionedFigureExtension(
-                html_class="md-captioned-figure", caption_html_class="md-captioned-figure__caption"
-            ),
-            CitedBlockquoteExtension(
-                html_class="md-cited-blockquote", citation_html_class="md-cited-blockquote__citation"
-            ),
             DivExtension(
                 types={
-                    "textbox": {"html_class": "md-textbox last-child-no-mb border--1px"}
+                    "div":  {"html_class": "div"},
+                    "div2": {"html_class": "div2"}
                 }
             ),
             DropdownExtension(
-                types = {
-                    "dropdown": {"html_class": "md-dropdown--default"}
-                },
-                html_class="md-dropdown",
-                summary_html_class="md-dropdown__summary last-child-no-mb",
-                content_html_class="md-dropdown__content last-child-no-mb"
+                types={
+                    "dropdown":  {"html_class": "dropdown"},
+                    "dropdown2": {"html_class": "dropdown2"}
+                }
+            ),
+            NestedEnvExtension(
+                types={
+                    "nested_env": {
+                        "html_tag": "div",
+                        "inner": "inner",
+                        "inner_html_tag": "span",
+                        "inner_pos": "start"
+                    },
+                    "nested_env2": {
+                        "html_tag": "blockquote",
+                        "inner": "inner2",
+                        "inner_html_tag": "cite",
+                        "inner_pos": "end"
+                    }
+                }
             ),
             ThmsExtension(
                 div_config={
                     "types": {
-                        "thm": {
-                            "thm_type": "Theorem",
-                            "html_class": "md-textbox last-child-no-mb border--4px border--custom-orange-deep-light",
-                            "thm_counter_incr": "0,0,1"
-                        }
+                        "div_thm":  {"thm_type": "Div Thm"},
+                        "div_thm2": {"thm_type": "Div Thm 2"},
                     }
                 },
                 dropdown_config={
                     "types": {
-                        "exer": {
-                            "thm_type": "Exercise",
-                            "html_class": "md-exer",
-                            "thm_counter_incr": "0,0,1"
-                        },
-                        "pf": {
-                            "thm_type": "Proof",
-                            "html_class": "md-dropdown--pf",
-                            "thm_name_overrides_thm_heading": True
-                        }
-                    },
-                    "html_class": "md-dropdown",
-                    "summary_html_class": "md-dropdown__summary last-child-no-mb",
-                    "content_html_class": "md-dropdown__content last-child-no-mb"
-                },
-                thm_heading_config={
-                    "html_class": "md-thm-heading",
-                    "emph_html_class": "md-thm-heading__emph"
+                        "dropdown_thm":  {"thm_type": "Dropdown Thm"},
+                        "dropdown_thm2": {"thm_type": "Dropdown Thm 2"},
+                    }
                 }
             )
         ],

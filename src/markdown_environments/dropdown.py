@@ -5,9 +5,10 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
 
 from . import utils
+from .thms_impls_base import ThmsImplsBase
 
 
-class DropdownProcessor(BlockProcessor):
+class DropdownProcessor(BlockProcessor, ThmsImplsBase):
 
     SUMMARY_START_REGEX = re.compile(r"^\\begin{summary}", flags=re.MULTILINE)
     SUMMARY_END_REGEX = re.compile(r"^\\end{summary}", flags=re.MULTILINE)
@@ -16,31 +17,26 @@ class DropdownProcessor(BlockProcessor):
         self, *args, types: dict, html_class: str, summary_html_class: str, content_html_class: str,
         is_thm: bool, **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        BlockProcessor.__init__(self, *args, **kwargs)
+        ThmsImplsBase.__init__(self, types=types, is_thm=is_thm);
         self.html_class = html_class
         self.summary_html_class = summary_html_class
         self.content_html_class = content_html_class
-        self.is_thm = is_thm
-        self.types, self.start_pattern_choices, self.end_pattern_choices = utils.init_env_types(types, self.is_thm)
-        self.start_pattern = None
-        self.end_pattern = None
 
+    # this is technically not required, but it makes the multiple inheritance situation (where
+    # `ThmsImplsBase` is implementing this method required for `BlockProcessor`s) more explicit
     def test(self, parent, block):
-        typ = utils.test_for_env_types(self.start_pattern_choices, parent, block)
-        if typ == "":
-            return False
-        self.type_opts = self.types[typ]
-        self.start_pattern = self.start_pattern_choices[typ]
-        self.end_pattern = self.end_pattern_choices[typ]
-        return True
+        return ThmsImplsBase.test(self, parent, block)
 
     def run(self, parent, blocks):
-        # guard against index out of bounds on matching `self.SUMMARY_START_REGEX` for recursive `run()` parsing
+        # guard against index out of bounds on matching `self.SUMMARY_START_REGEX` for recursive
+        # `run()` parsing
         if len(blocks) < 2:
             return False
         org_blocks = list(blocks)
         # remove summary starting delim that must immediately follow dropdown's starting delim
-        # if no starting delim for summary and not a thm dropdown which should provide a default, restore and do nothing
+        # if no starting delim for summary and not a thm dropdown which should provide a default,
+        # restore and do nothing
         has_summary = True
         if not self.SUMMARY_START_REGEX.match(blocks[1]):
             if self.is_thm:
@@ -55,7 +51,7 @@ class DropdownProcessor(BlockProcessor):
         # also first generate theorem heading from it to use as default summary if applicable
         thm_heading_md = ""
         if self.is_thm:
-            thm_heading_md = utils.gen_thm_heading_md(self.type_opts, self.start_pattern, blocks[0])
+            thm_heading_md = self.gen_thm_heading_md(blocks[0])
         blocks[0] = self.start_pattern.sub("", blocks[0])
 
         # find and remove summary ending delim if summary starting delim was present, and extract element
@@ -87,7 +83,7 @@ class DropdownProcessor(BlockProcessor):
             blocks.extend(org_blocks)
             return False
         # prepend thm heading (including default summary) to summary if applicable, again outside loop
-        utils.prepend_thm_heading_md(self.type_opts, summary_elem, thm_heading_md)
+        ThmsImplsBase.prepend_thm_heading_md(summary_elem, thm_heading_md)
 
         # find and remove dropdown ending delim, and extract element
         delim_found = False
@@ -175,13 +171,13 @@ class DropdownExtension(Extension):
         Initialize dropdown extension, with configuration options passed as the following keyword arguments:
 
             - **types** (*dict*) -- Types of dropdown environments to define. Defaults to `{}`.
-            - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns. Defaults to `""`.
-            - **summary_html_class** (*str*) -- HTML `class` attribute to add to dropdown summaries. Defaults to `""`.
-            - **content_html_class** (*str*) -- HTML `class` attribute to add to dropdown contents. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to all dropdowns. Defaults to `""`.
+            - **summary_html_class** (*str*) -- HTML `class` attribute to add to all dropdown summaries. Defaults to `""`.
+            - **content_html_class** (*str*) -- HTML `class` attribute to add to all dropdown contents. Defaults to `""`.
 
         The key for each type defined in `types` is inserted directly into the regex patterns that search for
-        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. However,
-        if the key is an empty string, its regex will never be matched against, so it is effectively useless.
+        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. (However,
+        if the key is an empty string, its regex will never be matched against, so it is effectively useless.)
         In addition, each type's value is itself a dictionary with the following possible options:
 
             - **html_class** (*str*) -- HTML `class` attribute to add to dropdowns of that type. Defaults to `""`.
@@ -194,15 +190,15 @@ class DropdownExtension(Extension):
             ],
             "html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown. Defaults to `\"\"`."
+                "HTML `class` attribute to add to all dropdowns. Defaults to `\"\"`."
             ],
             "summary_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown summary. Defaults to `\"\"`."
+                "HTML `class` attribute to add to all dropdown summaries. Defaults to `\"\"`."
             ],
             "content_html_class": [
                 "",
-                "HTML `class` attribute to add to dropdown content. Defaults to `\"\"`."
+                "HTML `class` attribute to add to all dropdown contents. Defaults to `\"\"`."
             ],
             "is_thm": [
                 False,

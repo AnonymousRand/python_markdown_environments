@@ -1,0 +1,448 @@
+<p>testing every possible combination of nesting</p>
+<p>================================================================================</p>
+<p>================================================================================</p>
+
+<div class=" div">
+<p>\begin{div}
+div inside same div, should not work</p>
+</div>
+<p>\end{div}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div class=" div">
+<div class=" div2">
+<p>div inside diff div, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<div class=" div">
+<p>div inside dropdown, should work</p>
+</div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary>
+<div class=" div">
+<p>div inside dropdown summary, should work</p>
+</div>
+</summary>
+<div></div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span></span><div class=" div">
+<p>div inside nested env, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span><div class=" div"><p>div inside nested env inner, should work</p></div></span></div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span></p>
+<div class=" div">
+<p>div inside div thm, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<div class=" div">
+<p>div inside dropdown thm, should work</p>
+</div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+<div class=" div">
+<p>div inside dropdown thm summary, should work</p>
+</div>
+</summary>
+<div></div>
+</details>
+<p>================================================================================</p>
+<p>================================================================================</p>
+
+<div class=" div">
+<details class=" dropdown">
+<summary>
+<p>dropdown inside div, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<p>\begin{dropdown}</p>
+<p>\begin{summary}
+dropdown inside same dropdown, should not work consistently
+\end{summary}</p>
+</div>
+</details>
+<p>\end{dropdown}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary>
+<p>\begin{dropdown}</p>
+<p>\begin{summary}
+dropdown inside same dropdown summary, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+<p>\end{summary}</p>
+<p>\end{dropdown}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<details class=" dropdown2">
+<summary>
+<p>dropdown inside diff dropdown, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown2">
+<summary>
+<p>\begin{dropdown2}</p>
+<p>\begin{summary}
+dropdown inside diff dropdown summary, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+<p>\end{summary}</p>
+<p>\end{dropdown}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span></span><details class=" dropdown">
+<summary>
+<p>dropdown inside nested env, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span><details class=" dropdown"><summary><p>dropdown inside nested env inner, should work</p></summary><div></div></details></span></div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span></p>
+<details class=" dropdown">
+<summary>
+<p>dropdown inside div thm, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<details class=" dropdown">
+<summary>
+<p>dropdown inside dropdown thm, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> \begin{dropdown}</p>
+<p>\begin{summary}
+dropdown inside dropdown thm summary, should not work consistently</p>
+</summary>
+<div>
+<p>\end{dropdown}</p>
+<p>\end{summary}</p>
+</div>
+</details>
+<p>================================================================================</p>
+<p>================================================================================</p>
+
+<div class=" div">
+<div><span><p>nested env inside div, should work</p></span></div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<div><span><p>nested env inside dropdown, should work</p></span></div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary>
+<div><span><p>nested env inside dropdown summary, should work</p></span></div>
+</summary>
+<div></div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span></span><p>\begin{nested_env}</p>
+<p>\begin{inner}
+nested env inside same nested env, should not work
+\end{inner}</p>
+</div>
+<p>\end{nested_env}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span><p>\begin{nested_env}</p><p>\begin{inner}
+nested env inside same nested env inner, should not work</p></span></div>
+<p>\end{inner}</p>
+<p>\end{nested_env}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<blockquote><cite><p>nested env inside diff nested env, should not work consistently</p></cite></blockquote>
+<span></span></div>
+<p>--------------------------------------------------------------------------------</p>
+
+<p>\begin{nested_env}</p>
+<p>\begin{inner}</p>
+<blockquote><cite><p>nested env inside diff nested env inner, should not work consistently</p></cite></blockquote>
+<p>\end{inner}</p>
+<p>\end{nested_env}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span></p>
+<div><span><p>nested env inside div thm, should work</p></span></div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<div><span><p>nested env inside dropdown thm, should work</p></span></div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+<div><span><p>nested env inside dropdown thm summary, should work</p></span></div>
+</summary>
+<div></div>
+</details>
+<p>================================================================================</p>
+<p>================================================================================</p>
+
+<div class=" div">
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside div, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside dropdown, should work</p>
+</div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary>
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside dropdown summary, should work</p>
+</div>
+</summary>
+<div></div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span></span><div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside nested env, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span><div><p><span><span>Div Thm</span><span>.</span></span> div thm inside nested env inner, should work</p></div></span></div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> \begin{div_thm}
+div thm inside same div thm, should not work</p>
+</div>
+<p>\end{div_thm}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span></p>
+<div>
+<p><span><span>Div Thm 2</span><span>.</span></span> div thm inside diff div thm, should work</p>
+</div>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside dropdown thm, should work</p>
+</div>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+<div>
+<p><span><span>Div Thm</span><span>.</span></span> div thm inside dropdown thm summary, should work</p>
+</div>
+</summary>
+<div></div>
+</details>
+<p>================================================================================</p>
+<p>================================================================================</p>
+
+<div class=" div">
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> dropdown thm inside div, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary></summary>
+<div>
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> dropdown thm inside dropdown, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details class=" dropdown">
+<summary>
+<p>\begin{dropdown_thm}</p>
+<p>\begin{summary}
+dropdown thm inside dropdown summary, should not work consistently</p>
+</summary>
+<div>
+<p>\end{dropdown_thm}</p>
+<p>\end{summary}</p>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span></span><details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> dropdown thm inside nested env, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div><span><details><summary><p><span><span>Dropdown Thm</span><span>.</span></span> dropdown thm inside nested env inner, should work</p></summary><div></div></details></span></div>
+<p>--------------------------------------------------------------------------------</p>
+
+<div>
+<p><span><span>Div Thm</span><span>.</span></span></p>
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> dropdown thm inside div thm, should work</p>
+</summary>
+<div></div>
+</details>
+</div>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<p>\begin{dropdown_thm}</p>
+<p>\begin{summary}
+dropdown thm inside same dropdown thm, should not work
+\end{summary}</p>
+</div>
+</details>
+<p>\end{dropdown_thm}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> \begin{dropdown_thm}</p>
+<p>\begin{summary}
+dropdown thm inside same dropdown thm summary, should not work</p>
+</summary>
+<div></div>
+</details>
+<p>\end{summary}</p>
+<p>\end{dropdown_thm}</p>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span></p>
+</summary>
+<div>
+<details>
+<summary>
+<p><span><span>Dropdown Thm 2</span><span>.</span></span> dropdown thm inside diff dropdown thm, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+</div>
+</details>
+<p>--------------------------------------------------------------------------------</p>
+
+<details>
+<summary>
+<p><span><span>Dropdown Thm</span><span>.</span></span> \begin{dropdown_thm2}</p>
+<p>\begin{summary}
+dropdown thm inside diff dropdown thm summary, should not work consistently</p>
+</summary>
+<div></div>
+</details>
+<p>\end{summary}</p>
+<p>\end{dropdown_thm}</p>

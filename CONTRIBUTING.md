@@ -21,6 +21,8 @@ Run `hatch test` in the project's root directory. Tests are located in `tests/`;
 
 (These tests also print out any "incorrect" output, so this can be a good way to test work-in-progress changes without having to set up an actual driver.)
 
+Note that there may be some tests called "docs_behavior", which means that them failing isn't necessarily wrong; it just means that new behaviors have appeared that make the docs outdated and in need of updating. For example, this could be some improved behavior like better nesting that is good to keep, but the current docs explicitly warn against users expecting such behavior.
+
 ## Generating Documentation
 
 Module, class, and function documentation are generated automatically from docstrings by `sphinx.ext.autodoc`. To update the documentation, simply update the docstrings in the Python source files in `src/`, and Read the Docs will automatically run Sphinx to regenerate the documentation when I create a new release. Alternatively, to generate the documentation manually for testing, run `make html` in the `docs/` directory and then open `docs/_build/html/index.html` in a browser.
