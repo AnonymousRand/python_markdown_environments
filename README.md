@@ -8,7 +8,7 @@ This [Python-Markdown](https://github.com/Python-Markdown/markdown) extension us
 ...
 \end{...}
 ```
-to create environments such as captioned figures, general-purpose `<div>`s, dropdowns, and user-defined LaTeX-style theorems that can be styled with attached HTML `class`es.
+to create environments such as general-purpose `<div>`s, dropdowns, nested environments, and user-defined LaTeX-style theorems that can be styled with attached HTML `class`es.
 
 ## Installation
 
@@ -18,14 +18,14 @@ pip install markdown-environments
 
 ## Available Environments
 
-- `\begin{captioned_figure}`: figures with captions
-- `\begin{cited_blockquote}`: blockquotes with quote attribution
-- User-defined environments wrapped in general-purpose `<div>`s to style to your heart's content
+- User-defined environments wrapped in general-purpose `<div>`s with customizable HTML classes
 - User-defined environments formatted as `<details>` and `<summary>` dropdowns
+- User-defined nested environments with customizable HTML tags and classes (think a figure with a caption, or a quote with a citation)
 - User-defined LaTeX theorem environments with customizable:
     - Theorem counters
     - Heading punctuation
     - Linkable `id`s by theorem name
+    - HTML classes
 
 ## Documentation
 
