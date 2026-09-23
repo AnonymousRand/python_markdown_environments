@@ -28,3 +28,7 @@ Note that there may be some tests called "docs_behavior", which means that them 
 Module, class, and function documentation are generated automatically from docstrings by `sphinx.ext.autodoc`. To update the documentation, simply update the docstrings in the Python source files in `src/`, and Read the Docs will automatically run Sphinx to regenerate the documentation when I create a new release. Alternatively, to generate the documentation manually for testing, run `make html` in the `docs/` directory and then open `docs/_build/html/index.html` in a browser.
 
 Docstrings use Google style, although a sprinkle of reStructuredText/Sphinx style is used for things like controlling syntax highlighting on code blocks.
+
+## Conventions
+
+I don't really have a formatter or whatever going, so mostly just look around and stick to the existing conventions I guess. Limit lines to 100 characters wide.
