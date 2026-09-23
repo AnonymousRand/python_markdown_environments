@@ -19,7 +19,9 @@ from ...tests_utils import run_extension_test
             "thms/thm_counter/success_4"
         ),
         (
-            ThmsExtension(thm_counter_config={"add_html_elem": True, "html_id_prefix": "alice", "html_class": "bob"}),
+            ThmsExtension(thm_counter_config={
+                "add_html_elem": True, "html_id_prefix": "alice", "html_class": "bob"
+            }),
             "thms/thm_counter/success_5"
         ),
         (ThmsExtension(), "thms/thm_counter/fail_1")

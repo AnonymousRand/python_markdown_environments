@@ -5,8 +5,8 @@ from markdown_environments.thms_impls_base import *
 from ..tests_utils import read_file
 
 
-# no test for `init_env_types()` right now because dealing with escape characters with comparing regex strings is pain
-# and i have school tomorrow (i deserve coal for christmas)
+# no test for `init_type_opts()` right now because dealing with escape characters when comparing
+# regex strings is pain, and i have school tomorrow (i deserve coal for christmas)
 
 
 TYPES = {
@@ -90,7 +90,8 @@ def test_prepend_thm_heading_md():
     subelem = etree.SubElement(elem, "span")
     subelem.text = "not a para!"
     ThmsImplsBase.prepend_thm_heading_md(elem, "heading.")
-    assert etree.tostring(elem, encoding="unicode") == "<div><p>heading.</p> <span>not a para!</span></div>"
+    assert etree.tostring(elem, encoding="unicode") \
+            == "<div><p>heading.</p> <span>not a para!</span></div>"
 
     # test when there is a `<p>` child
     elem = etree.Element("div")

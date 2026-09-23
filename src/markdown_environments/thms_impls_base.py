@@ -16,11 +16,12 @@ class ThmsImplsBase:
         self.end_pattern = None
         self.type_opts = None
 
-        self.init_env_types()
+        self.init_type_opts()
 
-    def init_env_types(self) -> None:
+    def init_type_opts(self) -> None:
         for typ, opts in self.types.items():
-            # set default options for individual types
+            # set default options for each type nested within `types`
+            # (this breaks with `KeyError`s if you don't set these here)
             opts.setdefault("thm_type", "")
             opts.setdefault("html_class", "")
             opts.setdefault("thm_counter_incr", "")
@@ -87,8 +88,8 @@ class ThmsImplsBase:
             thm_heading_elem = target_elem[0]
 
         if not is_added_inline:
-            # if not able to add to first `<p>`, wrap theorem heading in its own `<p>` and then prepend to target elem
-            # since it's just a `<span>` right now (for bottom margin etc.)
+            # if not able to add to first `<p>`, wrap theorem heading in its own `<p>` and then
+            # prepend to target elem since it's just a `<span>` right now (for bottom margin etc.)
             p_elem = etree.Element("p")
             p_elem.text = thm_heading_md
             p_elem.tail = " "

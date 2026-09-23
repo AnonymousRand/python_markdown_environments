@@ -10,7 +10,8 @@ TESTS_PATH = "tests"
 def read_file(filename: str) -> str:
     with open(f"{TESTS_PATH}/{filename}", "r") as file:
         contents = file.read()
-        # trim off trailing newline, but only one so that actual trailing whitespace we do want is preserved
+        # trim off trailing newline, but only one so that actual trailing whitespace that
+        # we do want is preserved
         if contents.endswith("\n"):
             return contents[:-1]
         else:

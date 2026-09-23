@@ -24,18 +24,22 @@ class NestedEnvProcessor(BlockProcessor):
         self.inner_end_pattern = None
         self.type_opts = None
 
-        self.init_env_types()
+        self.init_type_opts()
 
-    def init_env_types(self) -> None:
+    def init_type_opts(self) -> None:
         for typ, opts in self.types.items():
-            # set default options for individual types
+            # set default options for each type nested within `types`
             opts.setdefault("html_class", "")
             opts.setdefault("inner_html_class", "")
             # add type to regex pattern choices
             self.start_patterns[typ] = re.compile(rf"^\\begin{{{typ}}}$", flags=re.MULTILINE)
             self.end_patterns[typ] = re.compile(rf"^\\end{{{typ}}}", flags=re.MULTILINE)
-            self.inner_start_patterns[typ] = re.compile(rf"^\\begin{{{opts['inner']}}}$", flags=re.MULTILINE)
-            self.inner_end_patterns[typ] = re.compile(rf"^\\end{{{opts['inner']}}}", flags=re.MULTILINE)
+            self.inner_start_patterns[typ] = re.compile(
+                rf"^\\begin{{{opts['inner']}}}$", flags=re.MULTILINE
+            )
+            self.inner_end_patterns[typ] = re.compile(
+                rf"^\\end{{{opts['inner']}}}", flags=re.MULTILINE
+            )
 
     def test(self, parent, block):
         matched_type = ""
@@ -92,7 +96,7 @@ class NestedEnvProcessor(BlockProcessor):
                 inner_elem = etree.Element(self.type_opts["inner_html_tag"])
                 if self.type_opts["inner_html_class"] != "":
                     inner_elem.set("class", self.type_opts["inner_html_class"])
-                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
+                blocks[i] = blocks[i].rstrip() # remove whitespace from newline after `\end{}`
                 self.parser.parseBlocks(inner_elem, blocks[inner_start_i:i + 1])
                 # remove used blocks
                 for _ in range(inner_start_i, i + 1):
@@ -188,28 +192,32 @@ class NestedEnvExtension(Extension):
 
     def __init__(self, **kwargs):
         """
-        Initialize nested env extension, with configuration options passed as the following keyword arguments:
+        Initialize nested env extension, with configuration options passed as the following
+        keyword arguments:
 
             - **types** (*dict*) -- Types of nested env environments to define. Defaults to `{}`.
-            - **html_class** (*str*) -- HTML `class` attribute to add to outer parts of all nested envs.
-              Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to outer parts of all
+              nested envs. Defaults to `""`.
 
-        The key for each type defined in `types` is inserted directly into the regex patterns that search for
-        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. ((However,
-        if the key is an empty string, its regex will never be matched against, so it is effectively useless.)
+        The key for each type defined in `types` is inserted directly into the regex patterns
+        that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
+        interpreted as regex. (However, if the key is an empty string, its regex will never be
+        matched against, so it is effectively useless.)
+
         In addition, each type's value is itself a dictionary with the following possible options:
 
-            - **html_tag** (*str*) -- HTML tag to use for outer parts of all nested envs of that type. Must be set.
-            - **html_class** (*str*) -- HTML `class` attribute to add to outer parts of all nested envs of that type.
-              Defaults to `""`.
-            - **inner** (*str*) -- name of inner part, also inserted directly into regex. Must be set.
-            - **inner_html_tag** (*str*) -- HTML tag to use for inner parts of all nested envs of that type.
+            - **html_tag** (*str*) -- HTML tag to use for outer parts of all nested envs of
+              that type. Must be set.
+            - **html_class** (*str*) -- HTML `class` attribute to add to outer parts of all
+              nested envs of that type. Defaults to `""`.
+            - **inner** (*str*) -- name of inner part, also inserted directly into regex.
               Must be set.
-            - **inner_html_class** (*str*) -- HTML `class` attribute to add to inner parts of all nested envs
-              of that type.
-              Defaults to `""`.
-            - **inner_pos** (*str*) -- one of "start" or "end" specifying if the inner part should be placed
-              at the start or end of the outer part. Must be set.
+            - **inner_html_tag** (*str*) -- HTML tag to use for inner parts of all nested envs of
+              that type. Must be set.
+            - **inner_html_class** (*str*) -- HTML `class` attribute to add to inner parts of all
+              nested envs of that type. Defaults to `""`.
+            - **inner_pos** (*str*) -- one of "start" or "end" specifying if the inner part should
+              be placed at the start or end of the outer part. Must be set.
         """
 
         self.config = {
@@ -219,14 +227,18 @@ class NestedEnvExtension(Extension):
             ],
             "html_class": [
                 "",
-                "HTML `class` attribute to add to outer parts of all nested envs. Defaults to `\"\"`."
+                (
+                    "HTML `class` attribute to add to outer parts of all nested envs. "
+                    "Defaults to `\"\"`."
+                )
             ],
         }
         utils.init_extension_with_configs(self, **kwargs)
 
-        # validate options (this doesn't seem to error properly sometimes when done in
+        # validate options and set defaults for each type nested within `types`
+        # (note: validation doesn't seem to error properly sometimes when done in
         # `NestedEnvProcessor.__init__()`)
-        for typ, opts in self.config["types"][0].items():
+        for typ, opts in self.getConfig("types").items():
             if ((opts.get("html_tag") is None)
                     or (opts.get("inner") is None)
                     or (opts.get("inner_html_tag") is None)

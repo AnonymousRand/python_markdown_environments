@@ -9,10 +9,11 @@ from markdown.treeprocessors import Treeprocessor
 from . import utils
 
 
-# the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or `Postprocessor`, all of
-# which make more sense, is because we need this to run after `thms` (`BlockProcessor`) and before the TOC extension
-# (`Treeprocessor` with low priority): `thms` generates `counter` syntax, while TOC will duplicate unparsed
-# `counter` syntax from headings into the TOC and cause `counter` later to increment twice as much
+# the only reason this is a `Treeprocessor` and not a `Preprocessor`, `InlineProcessor`, or
+# `Postprocessor`, all of which make more sense, is because we need this to run after `thms`
+# (`BlockProcessor`) and before the TOC extension (`Treeprocessor` with low priority): `thms`
+# generates `counter` syntax, while TOC will duplicate unparsed `counter` syntax from headings
+# into the TOC and cause `counter` later to increment twice as much
 class ThmCounterProcessor(Treeprocessor):
 
     PATTERN = re.compile(r"{{([0-9,]+)}}(?:{(.+?)})?", flags=re.MULTILINE)
@@ -56,8 +57,9 @@ class ThmCounterProcessor(Treeprocessor):
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
                 if hidden_name is not None:
-                    # since backslashes are escaped in final HTML and in thm heading's `Postprocessor`, but not yet
-                    # in `Treeprocessor` (otherwise, `\ref{}` on thm counters will require double the backslashes)
+                    # since backslashes are escaped in final HTML and in thm heading's
+                    # `Postprocessor`, but not yet in `Treeprocessor` (otherwise, `\ref{}` on
+                    # thm counters will require double the backslashes)
                     hidden_name = hidden_name.replace("\\\\", "\\")
                     self.thm_ref_map[hidden_name] = output_counter_text
                 if self.add_html_elem:
@@ -78,7 +80,8 @@ class ThmCounterProcessor(Treeprocessor):
         return self.thm_ref_map
 
 
-# `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax in thm heading
+# `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax
+# in thm heading
 class ThmHeadingProcessor(Postprocessor):
 
     PATTERN = re.compile(r"{\[(.+?)\]}(?:\[(.+?)\])?(?:{(.+?)})?\n", flags=re.MULTILINE)
@@ -97,7 +100,8 @@ class ThmHeadingProcessor(Postprocessor):
             soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
             s = soup.get_text()
             s = s.lower()
-            s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s[:-1]) + s[-1] # don't have trailing hyphens since ugly
+            # also remove trailing hyphens since ugly
+            s = self.FORMAT_FOR_HTML_HYPHEN_PATTERN.sub("-", s[:-1]) + s[-1]
             s = self.FORMAT_FOR_HTML_REMOVE_PATTERN.sub("", s)
             return s
 
@@ -126,17 +130,22 @@ class ThmHeadingProcessor(Postprocessor):
             elif thm_hidden_name is not None:
                 elem.set("id", self.html_id_prefix + format_for_html(thm_hidden_name))
                 self.thm_ref_map[thm_hidden_name] = thm_type
-            # generate theorem punct HTML, applying `emph` styling to it as well (even if separated from
-            # main `emph` section of thm type + counter by theorem name; this is default LaTeX behavior)
+            # generate theorem punct HTML, applying `emph` styling to it as well (even if
+            # separated from main `emph` section of thm type + counter by theorem name; this is
+            # default LaTeX behavior)
             thm_punct_elem = etree.SubElement(elem, "span")
             if self.emph_html_class != "":
                 thm_punct_elem.set("class", self.emph_html_class)
             thm_punct_elem.text = thm_punct
 
             # convert all this to HTML and insert into final output, replacing the original match
-            # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered Markdown in thm heading
-            new_text += text[prev_match_end:m.start()] \
-                    + etree.tostring(elem, encoding="unicode").replace("&lt;", "<").replace("&gt;", ">")
+            # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered
+            # Markdown in thm heading
+            new_text += text[prev_match_end:m.start()] + (
+                etree.tostring(elem, encoding="unicode")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+            )
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match
         return new_text
@@ -151,7 +160,8 @@ class ThmRefProcessor(Postprocessor):
     PATTERN = re.compile(r"\\ref{(.+?)}", flags=re.MULTILINE)
 
     def __init__(
-        self, *args, thm_counter_processor: ThmCounterProcessor, thm_heading_processor: ThmHeadingProcessor, **kwargs
+        self, *args, thm_counter_processor: ThmCounterProcessor,
+        thm_heading_processor: ThmHeadingProcessor, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.thm_counter_processor = thm_counter_processor
@@ -179,16 +189,19 @@ class ThmRefProcessor(Postprocessor):
 
 class ThmsExtension(Extension):
     r"""
-    A wrapper around divs and dropdowns that provides more options to mimic the theorem capabilities of LaTeX.
+    A wrapper around divs and dropdowns that provides more options to mimic the theorem
+    capabilities of LaTeX.
 
-    In particular, this extension introduces theorem headings and theorem counters, which are used in theorem
-    environments but can also be used standalone as described below. It also introduces theorem `\ref{}`s,
-    which can be used like in LaTeX to dynamically generate the text corresponding to a theorem or counter's
-    "theorem type" and counter (e.g. "Proposition 3.1.2" or "2.1.5") via the theorem's name or theorem's/counter's
-    "hidden name" (which are like LaTeX `label{}`s).
+    In particular, this extension introduces theorem headings and theorem counters, which are used
+    in theorem environments but can also be used standalone as described below. It also introduces
+    theorem `\ref{}`s, which can be used like in LaTeX to dynamically generate the text
+    corresponding to a theorem or a counter's "theorem type" + counter (e.g. "Proposition 3.1.2"
+    or "2.1.5") via the theorem's name or theorem's/counter's "hidden name" (which are like
+    LaTeX `label{}`s).
 
     Theorem headings:
-        The terminology I use for the parts of a theorem heading throughout the documentation is as follows:
+        The terminology I use for the parts of a theorem heading throughout the documentation is
+        as follows:
             
            .. code-block:: text
 
@@ -206,9 +219,9 @@ class ThmsExtension(Extension):
 
             .. code-block:: html
 
-                <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
-                  <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
-                  [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
+                <span id="[thm name/hidden thm name]" class="[thm_heading_config.html_class]">
+                  <span class="[thm_heading_config.emph_html_class]">[thm type][thm counter]</span>
+                  [thm name]<span class="[thm_heading_config.emph_html_class]">.</span>
                 </span>
 
     Note:
@@ -216,10 +229,11 @@ class ThmsExtension(Extension):
         without being displayed on the page. It is ignored if `<optional thm name>` is provided.
 
     Theorem counters:
-        Theorem counters are specified as a (positive) offset from the previous theorem counter, similar to how
-        `\\newtheorem` in LaTeX lets you define the counter (but hopefully in a slightly less janky way). Offsets are
-        specified per segment, and incrementing a segment resets all following segments to 0. In addition, each counter
-        will display only as many segments as provided in its Markdown.
+        Theorem counters are specified as a (positive) offset from the previous theorem counter,
+        similar to how `\\newtheorem` in LaTeX lets you define the counter (but hopefully in a
+        slightly less janky way). Offsets are specified per segment, and incrementing a segment
+        resets all following segments to 0. In addition, each counter will display only as many
+        segments as provided in its Markdown.
 
         Markdown usage:
             .. code-block:: md
@@ -233,9 +247,9 @@ class ThmsExtension(Extension):
                 Section {{1}}
                 Subsection {{0,1,0,0,0,0,0}} (displays as many segments as given)
                 Lemma {{0,0,0,1}}
-                Theorem {{0,0,1}} (the fourth counter segment is reset here). Let x be a lorem ipsum.
+                Theorem {{0,0,1}} (the 4th counter segment is reset here). Let x be lorem ipsum.
                 Reevaluating Life Choices {{0,0,0,3}}
-                What even is this {{1,2,0,3,9}} (first counter segment resets next ones, and so on)
+                What even is this {{1,2,0,3,9}} (first counter segment resets next ones, etc.)
 
             becomes:
 
@@ -244,9 +258,9 @@ class ThmsExtension(Extension):
                 <p>Section 1</p>
                 <p>Subsection 1.1.0.0.0.0.0 (displays as many segments as given)</p>
                 <p>Lemma 1.1.0.1</p>
-                <p>Theorem 1.1.1 (the fourth counter segment is reset here). Let x be a lorem ipsum.</p>
+                <p>Theorem 1.1.1 (the 4th counter segment is reset here). Let x be lorem ipsum.</p>
                 <p>Reevaluating Life Choices 1.1.1.3</p>
-                <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, and so on)</p>
+                <p>What even is this 2.2.0.3.9 (first counter segment resets next ones, etc.)</p>
 
     Important:
         - There cannot be spaces within `<counter>`.
@@ -260,7 +274,8 @@ class ThmsExtension(Extension):
 
         - Theorems' thm type + thm counter portion (the output of `\ref{}`)
           using its thm name or thm hidden name (which is analogous to `\label{}`).
-        - Theorem counters' counter (the output of `\ref{}`) using its hidden name (which is analogous to `label{}`).
+        - Theorem counters' counter (the output of `\ref{}`) using its hidden name (which is
+          analogous to `label{}`).
 
         Markdown usage:
             .. code-block:: md
@@ -290,10 +305,11 @@ class ThmsExtension(Extension):
                 <p>Observe that by equation ([counter]), ...</p>
 
     Note:
-        I am aware that `\ref{}` also exists in MathJax; however, this extension is for the convenience of having
-        syntax built-in to the theorem environments and counters instead of having to still manually use MathJax's
-        `\label{}` to label theorems and theorem counters for `\ref{}`ing later. (Also, this should not interfere
-        with `\ref{}` in MathJax: the ones not matched by this extension will be left to MathJax.)
+        I am aware that `\ref{}` also exists in MathJax; however, this extension is for the
+        convenience of having syntax built-in to the theorem environments and counters instead of
+        having to still manually use MathJax's `\label{}` to label theorems and theorem counters for
+        `\ref{}`ing later. (Also, this should not interfere with `\ref{}` in MathJax: the ones not
+        matched by this extension will be left to MathJax.)
 
     Usage:
         .. code-block:: py
@@ -347,7 +363,7 @@ class ThmsExtension(Extension):
         .. code-block:: md
 
             \begin{<type>}
-            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
+            {[<type.thm type> {{<type.thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
             <content>
             \end{<type>}
 
@@ -355,10 +371,10 @@ class ThmsExtension(Extension):
 
         .. code-block:: html
 
-            <div class="[html_class] [type's html_class]">
-              <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
-                <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
-                [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
+            <div class="[html_class] [type.html_class]">
+              <span id="[thm name/hidden thm name]" class="[thm_heading_config.html_class]">
+                <span class="[thm_heading_config.emph_html_class]">[thm type][thm counter]</span>
+                [thm name]<span class="[thm_heading_config.emph_html_class]">.</span>
               </span>
               [content]
             </div>
@@ -382,7 +398,7 @@ class ThmsExtension(Extension):
             \begin{<type>}
             
             \begin{summary}
-            {[<type's thm type> {{<type's thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
+            {[<type.thm type> {{<type.thm_counter_incr>}}]}[<thm name>]{<hidden thm name>}
             <summary>
             \end{summary}
 
@@ -393,11 +409,11 @@ class ThmsExtension(Extension):
 
         .. code-block:: html
 
-            <details class="[html_class] [type's html_class]">
+            <details class="[html_class] [type.html_class]">
               <summary class="[summary_html_class]">
-                <span id="[thm name/hidden thm name]" class="[thm_heading_config's html_class]">
-                  <span class="[thm_heading_config's emph_html_class]">[thm type][thm counter]</span>
-                  [thm name]<span class="[thm_heading_config's emph_html_class]">.</span>
+                <span id="[thm name/hidden thm name]" class="[thm_heading_config.html_class]">
+                  <span class="[thm_heading_config.emph_html_class]">[thm type][thm counter]</span>
+                  [thm name]<span class="[thm_heading_config.emph_html_class]">.</span>
                 </span>
                 [summary]
               </summary>
@@ -407,61 +423,74 @@ class ThmsExtension(Extension):
               </div>
             </details>
 
-        Notice that with dropdowns, the theorem heading is prepended to the summary of the dropdown. In addition, the
-        `\\begin{summary}` block is optional with theorems; if omitted, the summary will only include the theorem
-        heading.
+        Notice that with dropdowns, the theorem heading is prepended to the summary of the dropdown.
+        In addition, the `\\begin{summary}` block is optional with theorems; if omitted, the summary
+        will only include the theorem heading.
     """
 
     def __init__(self, **kwargs):
         r"""
-        Initialize dropdown extension, with configuration options passed as the following keyword arguments:
+        Initialize dropdown extension, with configuration options passed as the following keyword
+        arguments:
 
             - **div_config** (*dict*) -- configs for divs. Possible config keys are:
 
-                - **types** (*dict*) -- Types of div-based theorem environments to define. Defaults to `{}`.
-                - **html_class** (*str*) -- HTML `class` attribute to add to div-based theorem environments.
-                  Defaults to `""`.
+                - **types** (*dict*) -- Types of div-based theorem environments to define.
+                  Defaults to `{}`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to div-based theorem
+                  environments. Defaults to `""`.
 
             - **dropdown_config** (*dict*) -- configs for dropdowns. Possible config keys are:
 
-                - **types** (*dict*) -- Types of dropdown-based theorem environments to define. Defaults to `{}`.
-                - **html_class** (*str*) -- HTML `class` attribute to add to dropdown-based theorem environments.
+                - **types** (*dict*) -- Types of dropdown-based theorem environments to define.
+                  Defaults to `{}`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to dropdown-based theorem
+                  environments. Defaults to `""`.
+                - **summary_html_class** (*str*) -- HTML `class` attribute to add to dropdown
+                  summaries. Defaults to `""`.
+                - **content_html_class** (*str*) -- HTML `class` attribute to add to dropdown
+                  contents. Defaults to `""`.
+
+            - **thm_counter_config** (*dict*) -- configs for theorem counter. Possible config
+              keys are:
+
+                - **add_html_elem** (*bool*) -- Whether theorem counters are contained in their own
+                  HTML element. Defaults to `False`.
+                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem
+                  counters if `add_html_elem` is `True`; usually useful for linking. Defaults
+                  to `""`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to theorem counters if
+                  `add_html_elem` is `True`. Defaults to `""`.
+
+            - **thm_heading_config** (*dict*) -- configs for theorem headings. Possible config
+              keys are:
+
+                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem
+                  headings (for all theorem heading elements with `id` attributes). Defaults
+                  to `""`.
+                - **html_class** (*str*) -- HTML `class` attribute to add to theorem headings.
                   Defaults to `""`.
-                - **summary_html_class** (*str*) -- HTML `class` attribute to add to dropdown summaries.
-                  Defaults to `""`.
-                - **content_html_class** (*str*) -- HTML `class` attribute to add to dropdown contents.
-                  Defaults to `""`.
+                - **emph_html_class** (*str*) -- HTML `class` attribute to add to theorem types
+                  in theorem headings. Defaults to `""`.
 
-            - **thm_counter_config** (*dict*) -- configs for theorem counter. Possible config keys are:
+        The key for each type defined in both `div_config`'s and `dropdown_config`'s `types`
+        is inserted directly into the regex patterns that search for `\\begin{<type>}` and
+        `\\end{<type>}`, so anything you specify will be interpreted as regex. (However,
+        if the key is an empty string, its regex will never be matched against, so it is
+        effectively useless.) In addition, each type's value in `types` is itself a dictionary
+        with the following possible options:
 
-                - **add_html_elem** (*bool*) -- Whether theorem counters are contained in their own HTML element.
-                  Defaults to `False`.
-                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem counters if
-                  `add_html_elem` is `True`; usually useful for linking. Defaults to `""`.
-                - **html_class** (*str*) -- HTML `class` attribute to add to theorem counters if `add_html_elem` is
-                  `True`. Defaults to `""`.
-
-            - **thm_heading_config** (*dict*) -- configs for theorem headings. Possible config keys are:
-
-                - **html_id_prefix** (*str*) -- Text to prepend to HTML `id` attribute of theorem headings (for all
-                  theorem heading elements with `id` attributes). Defaults to `""`.
-                - **html_class** (*str*) -- HTML `class` attribute to add to theorem headings. Defaults to `""`.
-                - **emph_html_class** (*str*) -- HTML `class` attribute to add to theorem types in theorem headings.
-                  Defaults to `""`.
-
-        The key for each type defined in both `div_config`'s and `dropdown_config`'s `types` is inserted directly into
-        the regex patterns that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
-        interpreted as regex. (However, if the key is an empty string, its regex will never be matched against, so it
-        is effectively useless.) In addition, each type's value in `types` is itself a dictionary with the following
-        possible options:
-
-            - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings. Defaults to `""`.
-            - **html_class** (*str*) -- HTML `class` attribute to add to all theorems of that type. Defaults to `""`.
-            - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings (again, no spaces!).
-              Defaults to `""`; leave default to produce an unnumbered theorem type.
-            - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading besides the theorem
-              punct should just be theorem name if a theorem name is provided, like the default behavior of
-              `\\begin{proof}` environments in LaTeX. Defaults to `False`.
+            - **thm_type** (*str*) -- Theorem type actually displayed in theorem headings.
+              Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to all theorems of that type.
+              Defaults to `""`.
+            - **thm_counter_incr** (*str*) -- Theorem counter inserted into theorem headings
+              (again, no spaces!). Defaults to `""`; leave default to produce an unnumbered
+              theorem type.
+            - **thm_name_overrides_thm_heading** (*bool*) -- Whether the entire theorem heading
+              besides the theorem punct should just be theorem name if a theorem name is provided,
+              like the default behavior of `\\begin{proof}` environments in LaTeX. Defaults
+              to `False`.
         """
 
         self.config = {
@@ -484,8 +513,8 @@ class ThmsExtension(Extension):
         }
         utils.init_extension_with_configs(self, **kwargs)
 
-        # set default configs for each extension, since we no longer have the top-level `self.config` functionality
-        # to set defaults for us
+        # set default configs for each extension, since we no longer have the top-level
+        # `self.config` functionality to set defaults for us
         div_config = self.getConfig("div_config")
         div_config.setdefault("types", {})
         div_config.setdefault("html_class", "")
@@ -507,7 +536,8 @@ class ThmsExtension(Extension):
         thm_heading_config.setdefault("emph_html_class", "")
 
     def extendMarkdown(self, md):
-        # registering resets state between uses of `markdown.Markdown` object for things like the `ThmCounter` extension
+        # registering resets state between uses of `markdown.Markdown` object for things
+        # like the `ThmCounter` extension
         md.registerExtension(self)
 
         div_config = self.getConfig("div_config")
@@ -526,9 +556,11 @@ class ThmsExtension(Extension):
             emph_html_class=thm_heading_config.get("emph_html_class")
         )
         thm_ref_processor = ThmRefProcessor(
-            md, thm_counter_processor=thm_counter_processor, thm_heading_processor=thm_heading_processor
+            md, thm_counter_processor=thm_counter_processor,
+            thm_heading_processor=thm_heading_processor
         )
-        # `ThmCounter`'s priority must be higher than TOC extension, and `ThmRef`'s priority must be lower than `ThmCounter` and `ThmHeading`!
+        # `ThmCounter`'s priority must be higher than TOC extension, and `ThmRef`'s priority
+        # must be lower than `ThmCounter` and `ThmHeading`!
         md.treeprocessors.register(thm_counter_processor, "thm_counter", 999)
         md.postprocessors.register(thm_heading_processor, "thm_heading", 105)
         md.postprocessors.register(thm_ref_processor, "thm_ref", 95)
@@ -537,7 +569,8 @@ class ThmsExtension(Extension):
             from .div import DivProcessor
             md.parser.blockprocessors.register(
                 DivProcessor(
-                    md.parser, types=div_config.get("types"), html_class=div_config.get("html_class"), is_thm=True
+                    md.parser, types=div_config.get("types"),
+                    html_class=div_config.get("html_class"), is_thm=True
                 ),
                 "thms_div", 105
             )

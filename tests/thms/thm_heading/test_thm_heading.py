@@ -14,7 +14,8 @@ from ...tests_utils import run_extension_test
         (ThmsExtension(), "thms/thm_heading/success_5"),
         (
             ThmsExtension(thm_heading_config={
-                "html_id_prefix": "defenestrate-", "html_class": "bottom-text", "emph_html_class": "top-text"
+                "html_id_prefix": "defenestrate-",
+                "html_class": "bottom-text", "emph_html_class": "top-text"
             }),
             "thms/thm_heading/success_6"
         ),

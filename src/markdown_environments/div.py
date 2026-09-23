@@ -40,7 +40,7 @@ class DivProcessor(BlockProcessor, ThmsImplsBase):
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
                     elem.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")
-                blocks[i] = blocks[i].rstrip() # remove trailing whitespace from the newline into `\end{}`
+                blocks[i] = blocks[i].rstrip() # remove whitespace from newline after `\end{}`
                 self.parser.parseBlocks(elem, blocks[0:i + 1])
                 # remove used blocks
                 for _ in range(0, i + 1):
@@ -84,24 +84,28 @@ class DivExtension(Extension):
 
         .. code-block:: html
 
-            <div class="[html_class] [type's html_class]">
+            <div class="[html_class] [type.html_class]">
               [content]
             </div>
     """
 
     def __init__(self, **kwargs):
         r"""
-        Initialize div extension, with configuration options passed as the following keyword arguments:
+        Initialize div extension, with configuration options passed as the following keyword
+        arguments:
 
             - **types** (*dict*) -- Types of div environments to define. Defaults to `{}`.
             - **html_class** (*str*) -- HTML `class` attribute to add to all divs. Defaults to `""`.
 
-        The key for each type defined in `types` is inserted directly into the regex patterns that search for
-        `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be interpreted as regex. ((However,
-        if the key is an empty string, its regex will never be matched against, so it is effectively useless.)
+        The key for each type defined in `types` is inserted directly into the regex patterns
+        that search for `\\begin{<type>}` and `\\end{<type>}`, so anything you specify will be
+        interpreted as regex. (However, if the key is an empty string, its regex will never be
+        matched against, so it is effectively useless.)
+
         In addition, each type's value is itself a dictionary with the following possible options:
 
-            - **html_class** (*str*) -- HTML `class` attribute to add to divs of that type. Defaults to `""`.
+            - **html_class** (*str*) -- HTML `class` attribute to add to divs of that type.
+              Defaults to `""`.
         """
 
         self.config = {
@@ -116,17 +120,12 @@ class DivExtension(Extension):
             "is_thm": [
                 False,
                 (
-                    "Whether to use theorem logic (e.g. heading); you shouldn't have to set this value."
-                    "Defaults to `False`."
+                    "Whether to use theorem logic (e.g. heading); you shouldn't have to set "
+                    "this value manually. Defaults to `False`."
                 )
             ]
         }
         utils.init_extension_with_configs(self, **kwargs)
-
-        # set default options for individual types
-        # TODO is this still needed?
-        for type, opts in self.getConfig("types").items():
-            opts.setdefault("html_class", "")
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(DivProcessor(md.parser, **self.getConfigs()), "div", 105)

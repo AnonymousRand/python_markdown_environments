@@ -175,7 +175,8 @@ def test_nested_env(extension, filename_base):
             },
             (
                 "nested env: missing_inner_pos.html_tag, missing_inner_pos.inner, "
-                "missing_inner_pos.inner_html_tag, or missing_inner_pos.inner_pos key was not defined"
+                "missing_inner_pos.inner_html_tag, or missing_inner_pos.inner_pos key "
+                "was not defined"
             )
         ),
         (
