@@ -121,10 +121,15 @@ class NestedEnvProcessor(BlockProcessor):
                     html_class = self.html_class + " " + self.type_opts["html_class"]
                     outer_elem.set("class", html_class)
                 self.parser.parseBlocks(outer_elem, blocks[:i + 1])
-                if self.type_opts["inner_pos"] == "start":
-                    outer_elem.insert(0, inner_elem)
-                elif self.type_opts["inner_pos"] == "end":
-                    outer_elem.append(inner_elem)
+                match self.type_opts["inner_pos"]:
+                    case "start":
+                        outer_elem.insert(0, inner_elem)
+                    case "end":
+                        outer_elem.append(inner_elem)
+                    case "end_outside":
+                        parent.append(inner_elem)
+                    case _:
+                        raise ValueError("how did we get here")
                 # remove used blocks
                 for _ in range(i + 1):
                     blocks.pop(0)
@@ -247,8 +252,11 @@ class NestedEnvExtension(Extension):
                     f"nested env: {typ}.html_tag, {typ}.inner, "
                     f"{typ}.inner_html_tag, or {typ}.inner_pos key was not defined"
                 )
-            if opts["inner_pos"] not in ["start", "end"]:
-                raise KeyError(f"nested env: {typ}.inner_pos is not one of `start` or `end`")
+            if opts["inner_pos"] not in ["start", "end", "end_outside"]:
+                raise ValueError(
+                    f"nested env: {typ}.inner_pos is \"{opts['inner_pos']}\", which is not one of "
+                    "`start`, `end`, or `end_outside`"
+                )
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(

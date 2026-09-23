@@ -39,7 +39,7 @@ from ..tests_utils import run_extension_test
                     "inner": "citation",
                     "inner_html_tag": "cite",
                     "inner_html_class": "hewwo",
-                    "inner_pos": "end"
+                    "inner_pos": "end_outside"
                 }
             }),
             "nested_env/success_3",
@@ -51,7 +51,7 @@ from ..tests_utils import run_extension_test
                     "inner": "citation",
                     "inner_html_tag": "cite",
                     "inner_html_class": "hewwo",
-                    "inner_pos": "end"
+                    "inner_pos": "end_outside"
                 },
                 "random": {
                     "html_tag": "div",
@@ -115,7 +115,7 @@ def test_nested_env(extension, filename_base):
 
 
 @pytest.mark.parametrize(
-    "config, expected_error_text",
+    "config, expected_exception, expected_error_text",
     [
         (
             {
@@ -127,6 +127,7 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            KeyError,
             (
                 "nested env: missing_html_tag.html_tag, missing_html_tag.inner, "
                 "missing_html_tag.inner_html_tag, or missing_html_tag.inner_pos key was not defined"
@@ -142,6 +143,7 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            KeyError,
             (
                 "nested env: missing_inner.html_tag, missing_inner.inner, "
                 "missing_inner.inner_html_tag, or missing_inner.inner_pos key was not defined"
@@ -157,6 +159,7 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            KeyError,
             (
                 "nested env: missing_inner_html_tag.html_tag, missing_inner_html_tag.inner, "
                 "missing_inner_html_tag.inner_html_tag, or missing_inner_html_tag.inner_pos key "
@@ -173,6 +176,7 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            KeyError,
             (
                 "nested env: missing_inner_pos.html_tag, missing_inner_pos.inner, "
                 "missing_inner_pos.inner_html_tag, or missing_inner_pos.inner_pos key "
@@ -188,6 +192,7 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            KeyError,
             (
                 "nested env: missing_multiple.html_tag, missing_multiple.inner, "
                 "missing_multiple.inner_html_tag, or missing_multiple.inner_pos key was not defined"
@@ -204,14 +209,16 @@ def test_nested_env(extension, filename_base):
                     }
                 }
             },
+            ValueError,
             (
-                "nested env: bad_inner_pos_value.inner_pos is not one of `start` or `end`"
+                "nested env: bad_inner_pos_value.inner_pos is \"mrrp\", which is not one of "
+                "`start`, `end`, or `end_outside`"
             )
         )
     ]
 )
-def test_nested_env_errors(config, expected_error_text):
-    with pytest.raises(KeyError) as e:
+def test_nested_env_errors(config, expected_exception, expected_error_text):
+    with pytest.raises(expected_exception) as e:
         _ = NestedEnvExtension(**config)
     print(f"captured exception: {e.value}")
     assert expected_error_text in str(e.value)
