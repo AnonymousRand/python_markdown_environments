@@ -212,7 +212,7 @@ def test_nested_env(extension, filename_base):
             ValueError,
             (
                 "nested env: bad_inner_pos_value.inner_pos is \"mrrp\", which is not one of "
-                "`start`, `end`, or `end_outside`"
+                "['start', 'end', 'end_outside']"
             )
         )
     ]

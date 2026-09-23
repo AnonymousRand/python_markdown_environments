@@ -195,6 +195,8 @@ class NestedEnvExtension(Extension):
         of course, there are blank lines before and after the inner block.
     """
 
+    ALLOWED_INNER_POS = ["start", "end", "end_outside"];
+
     def __init__(self, **kwargs):
         """
         Initialize nested env extension, with configuration options passed as the following
@@ -221,8 +223,9 @@ class NestedEnvExtension(Extension):
               that type. Must be set.
             - **inner_html_class** (*str*) -- HTML `class` attribute to add to inner parts of all
               nested envs of that type. Defaults to `""`.
-            - **inner_pos** (*str*) -- one of "start" or "end" specifying if the inner part should
-              be placed at the start or end of the outer part. Must be set.
+            - **inner_pos** (*str*) -- one of "start", "end", or "end_outside" specifying if
+              the inner part should be placed at the start of, end of, or after (respectively)
+              the outer part. Must be set.
         """
 
         self.config = {
@@ -252,10 +255,10 @@ class NestedEnvExtension(Extension):
                     f"nested env: {typ}.html_tag, {typ}.inner, "
                     f"{typ}.inner_html_tag, or {typ}.inner_pos key was not defined"
                 )
-            if opts["inner_pos"] not in ["start", "end", "end_outside"]:
+            if opts["inner_pos"] not in self.ALLOWED_INNER_POS:
                 raise ValueError(
                     f"nested env: {typ}.inner_pos is \"{opts['inner_pos']}\", which is not one of "
-                    "`start`, `end`, or `end_outside`"
+                    f"{self.ALLOWED_INNER_POS}"
                 )
 
     def extendMarkdown(self, md):
