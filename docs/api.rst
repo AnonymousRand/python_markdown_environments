@@ -7,18 +7,6 @@ API Reference
     for making sure sphinx can find the classes
 .. currentmodule:: markdown_environments
 
-Captioned Figure
-----------------
-
-.. autoclass:: CaptionedFigureExtension()
-    :members: __init__
-
-Cited Blockquote
-----------------
-
-.. autoclass:: CitedBlockquoteExtension()
-    :members: __init__
-
 Div
 ---
 
@@ -29,6 +17,12 @@ Dropdown
 --------
 
 .. autoclass:: DropdownExtension()
+    :members: __init__
+
+Div
+---
+
+.. autoclass:: NestedEnvExtension()
     :members: __init__
 
 Thms
