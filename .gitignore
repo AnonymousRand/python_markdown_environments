@@ -5,6 +5,7 @@ dist/
 docs/_build/
 
 # package manager
+.venv/
 venv/
 
 # python
