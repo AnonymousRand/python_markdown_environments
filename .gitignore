@@ -4,16 +4,16 @@ dist/
 # docs
 docs/_build/
 
-# package manager
+# tests
+.pytest_cache/
+.coverage
+
+# package data
 .venv/
 venv/
 
 # python
 __pycache__/
-
-# tests
-.pytest_cache/
-.coverage
 
 # vim
 *.swp
