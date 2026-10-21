@@ -31,7 +31,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/AnonymousRand/python_markdown_environments"
+Homepage = "https://git.anonymousrand.xyz/AnonymousRand/python_markdown_environments"
+"Mirror" = "https://github.com/AnonymousRand/python_markdown_environments"
 Documentation = "https://python-markdown-environments.readthedocs.io"
 Issues = "https://github.com/AnonymousRand/python_markdown_environments/issues"
 
@@ -44,7 +45,7 @@ extra-dependencies = [
     "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/markdown_environments tests}"
+check = "mypy --install-types --non-interactive {args:src/markdown_environments/ tests}"
 
 [tool.coverage.run]
 source_pkgs = ["markdown_environments"]
@@ -53,8 +54,8 @@ parallel = true
 omit = []
 
 [tool.coverage.paths]
-markdown_environments = ["src/markdown_environments", "*/markdown-environments/src/markdown_environments"]
-tests = ["tests", "*/markdown-environments/tests"]
+markdown_environments = ["src/markdown_environments/", "*/markdown-environments/src/markdown_environments/"]
+tests = ["tests", "*/markdown-environments/tests/"]
 
 [tool.coverage.report]
 exclude_lines = [
