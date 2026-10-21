@@ -3,6 +3,8 @@ name: build and publish to pypi :3
 on:
   release:
     types: [published]
+  # this is just for debugging/testing workflow runs
+  workflow_dispatch:
 
 jobs:
   build:
