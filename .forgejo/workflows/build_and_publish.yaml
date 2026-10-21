@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: https://data.forgejo.org/actions/checkout@v7
+      - uses: https://data.forgejo.org/actions/setup-python@v7
+        with:
+          python-version: 3.14 
       - name: install hatch
         run: pip install hatch
       - name: build package
@@ -23,6 +26,7 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
+      - uses: https://data.forgejo.org/actions/checkout@v7
       - name: publish package
         uses: https://github.com/pypa/gh-action-pypi-publish@release/v1
         with:
