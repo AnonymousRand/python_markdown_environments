@@ -24,4 +24,4 @@ from .nested_env import NestedEnvExtension
 from .thms import ThmsExtension
 
 
-__version__ = "2.1.1"
+__version__ = "2.1.2"

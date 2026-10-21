@@ -4,7 +4,7 @@ astroid==3.3.8
 babel==2.16.0
 backports.tarfile==1.2.0
 beautifulsoup4==4.12.3
-certifi==2024.12.14
+certifi==2026.10.19
 cffi==2.0.0
 charset-normalizer==3.4.1
 click==8.1.8
@@ -70,6 +70,6 @@ trove-classifiers==2024.10.21.16
 typing_extensions==4.13.2
 urllib3==2.8.0
 userpath==1.9.2
-uv==0.11.15
+uv==0.13.4
 zipp==3.20.2
 zstandard==0.23.0
