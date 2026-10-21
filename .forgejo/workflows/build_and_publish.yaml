@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: https://data.forgejo.org/actions/chechkout@v7
+      - uses: https://data.forgejo.org/actions/checkout@v7
       - name: install hatch
         run: pip install hatch
       - name: build package
