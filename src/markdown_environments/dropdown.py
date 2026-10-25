@@ -74,7 +74,7 @@ class DropdownProcessor(BlockProcessor, ThmsImplsBase):
                     has_valid_summary = True
                     # remove ending delim
                     blocks[i] = self.SUMMARY_END_REGEX.sub("", block)
-                    # build HTML for summary
+                    # build html for summary
                     blocks[i] = blocks[i].rstrip() # remove whitespace from newline after `\end{}`
                     self.parser.parseBlocks(summary_elem, blocks[:i + 1])
                     # remove used blocks
@@ -97,7 +97,7 @@ class DropdownProcessor(BlockProcessor, ThmsImplsBase):
                 delim_found = True
                 # remove ending delim
                 blocks[i] = self.end_pattern.sub("", block)
-                # build HTML for dropdown
+                # build html for dropdown
                 details_elem = etree.SubElement(parent, "details")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
                     details_elem.set(

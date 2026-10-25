@@ -92,7 +92,7 @@ class NestedEnvProcessor(BlockProcessor):
                 delim_found = True
                 # remove ending delim
                 blocks[i] = self.inner_end_pattern.sub("", block)
-                # build HTML for inner
+                # build html for inner
                 inner_elem = etree.Element(self.type_opts["inner_html_tag"])
                 if self.type_opts["inner_html_class"] != "":
                     inner_elem.set("class", self.type_opts["inner_html_class"])
@@ -115,7 +115,7 @@ class NestedEnvProcessor(BlockProcessor):
                 delim_found = True
                 # remove ending delim
                 blocks[i] = self.end_pattern.sub("", block)
-                # build HTML for outer
+                # build html for outer
                 outer_elem = etree.SubElement(parent, self.type_opts["html_tag"])
                 if (self.html_class != "") or (self.type_opts["html_class"] != ""):
                     html_class = self.html_class + " " + self.type_opts["html_class"]

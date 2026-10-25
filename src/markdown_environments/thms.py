@@ -57,7 +57,7 @@ class ThmCounterProcessor(Treeprocessor):
                 output_counter = list(map(str, self.counter[:len(parsed_counter)]))
                 output_counter_text = ".".join(output_counter)
                 if hidden_name is not None:
-                    # since backslashes are escaped in final HTML and in thm heading's
+                    # since backslashes are escaped in final html and in thm heading's
                     # `Postprocessor`, but not yet in `Treeprocessor` (otherwise, `\ref{}` on
                     # thm counters will require double the backslashes)
                     hidden_name = hidden_name.replace("\\\\", "\\")
@@ -80,7 +80,7 @@ class ThmCounterProcessor(Treeprocessor):
         return self.thm_ref_map
 
 
-# `Postprocessor` instead of `Treeprocessor` to avoid placeholders for Markdown syntax
+# `Postprocessor` instead of `Treeprocessor` to avoid placeholders for markdown syntax
 # in thm heading
 class ThmHeadingProcessor(Postprocessor):
 
@@ -97,7 +97,7 @@ class ThmHeadingProcessor(Postprocessor):
 
     def run(self, text):
         def format_for_html(s: str) -> str:
-            soup = BeautifulSoup(s, "html.parser") # remove any HTML tags
+            soup = BeautifulSoup(s, "html.parser") # remove any html tags
             s = soup.get_text()
             s = s.lower()
             # also remove trailing hyphens since ugly
@@ -130,17 +130,17 @@ class ThmHeadingProcessor(Postprocessor):
             elif thm_hidden_name is not None:
                 elem.set("id", self.html_id_prefix + format_for_html(thm_hidden_name))
                 self.thm_ref_map[thm_hidden_name] = thm_type
-            # generate theorem punct HTML, applying `emph` styling to it as well (even if
+            # generate theorem punct html, applying `emph` styling to it as well (even if
             # separated from main `emph` section of thm type + counter by theorem name; this is
-            # default LaTeX behavior)
+            # default latex behavior)
             thm_punct_elem = etree.SubElement(elem, "span")
             if self.emph_html_class != "":
                 thm_punct_elem.set("class", self.emph_html_class)
             thm_punct_elem.text = thm_punct
 
-            # convert all this to HTML and insert into final output, replacing the original match
-            # unescape HTML that `tostring()` escapes to allow HTML and previously-rendered
-            # Markdown in thm heading
+            # convert all this to html and insert into final output, replacing the original match
+            # unescape html that `tostring()` escapes to allow html and previously-rendered
+            # markdown in thm heading
             new_text += text[prev_match_end:m.start()] + (
                 etree.tostring(elem, encoding="unicode")
                 .replace("&lt;", "<")
@@ -180,7 +180,7 @@ class ThmRefProcessor(Postprocessor):
                 text_to_add = thm_ref_map[ref_name]
             else:
                 text_to_add = m.group(0)
-            # convert all this to HTML and insert into final output, replacing the original match
+            # convert all this to html and insert into final output, replacing the original match
             new_text += text[prev_match_end:m.start()] + text_to_add
             prev_match_end = m.end()
         new_text += text[prev_match_end:] # fill in remaining text after last regex match

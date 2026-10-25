@@ -60,7 +60,7 @@ def test_test_method(filename_base, expected):
         ("thms_impls_base/gen_thm_heading_md_4"),
         ("thms_impls_base/gen_thm_heading_md_5"),
         ("thms_impls_base/gen_thm_heading_md_6"),
-        # test that curly braces (e.g. from LaTeX) don't interfere with parsing
+        # test that curly braces (e.g. from latex) don't interfere with parsing
         ("thms_impls_base/gen_thm_heading_md_7"),
         # test that thm headings with no trailing newlines are not parsed
         ("thms_impls_base/gen_thm_heading_md_8")

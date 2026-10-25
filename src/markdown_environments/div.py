@@ -36,7 +36,7 @@ class DivProcessor(BlockProcessor, ThmsImplsBase):
                 delim_found = True
                 # remove ending delim
                 blocks[i] = self.end_pattern.sub("", block)
-                # build HTML
+                # build html
                 elem = etree.SubElement(parent, "div")
                 if self.html_class != "" or self.type_opts.get("html_class") != "":
                     elem.set("class", f"{self.html_class} {self.type_opts.get('html_class')}")

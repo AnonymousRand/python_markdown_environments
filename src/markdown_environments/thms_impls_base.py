@@ -70,7 +70,7 @@ class ThmsImplsBase:
                 thm_heading_md += "[" + thm_name + "]"
             if thm_hidden_name is not None:
                 thm_heading_md += "{" + thm_hidden_name + "}"
-        # trailing newline to make sure text within the theorem heading (e.g. LaTeX curly brackets)
+        # trailing newline to make sure text within the theorem heading (e.g. latex curly brackets)
         # don't interfere with parsing and cause the regex pattern to stop matching prematurely
         return thm_heading_md + "\n"
 

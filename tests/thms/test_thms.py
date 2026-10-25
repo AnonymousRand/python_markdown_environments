@@ -79,14 +79,14 @@ DROPDOWN_TYPES = {
             ),
             "thms/success_6"
         ),
-        # test HTML sanitization on theorem element `id`s
+        # test html sanitization on theorem element `id`s
         (
             ThmsExtension(
                 div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}
             ),
             "thms/success_7"
         ),
-        # test that curly braces (e.g. from LaTeX) don't interfere with parsing
+        # test that curly braces (e.g. from latex) don't interfere with parsing
         (
             ThmsExtension(
                 div_config={"types": DIV_TYPES}, dropdown_config={"types": DROPDOWN_TYPES}
